@@ -1,0 +1,12 @@
+---
+title: 'Handling structured data using the Keras functional API'
+author: "Sigrid Keydana"
+date: "10/16/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Representation learning
