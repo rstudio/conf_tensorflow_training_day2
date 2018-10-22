@@ -1,0 +1,582 @@
+
+---
+title: "Representation learning with MMD-VAE"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+Goal: compare representation learning with a standard (ELBO loss) variational autoencoder vs. MMD-VAE, a subtype of Info-GAN.
+
+## Standard variational autoencoder
+
+
+#### Eager execution and setup
+
+We're using Keras with TensorFlow eager execution.
+
+```{r}
+# the following 5 lines have to be executed in this order
+library(keras)
+use_implementation("tensorflow")
+library(tensorflow)
+tfe_enable_eager_execution(device_policy = "silent")
+```
+
+
+```{r}
+library(tfdatasets)
+
+library(dplyr)
+library(ggplot2)
+library(glue)
+```
+
+
+#### Data prep
+
+```{r}
+fashion <- dataset_fashion_mnist()
+
+c(train_images, train_labels) %<-% fashion$train
+c(test_images, test_labels) %<-% fashion$test
+
+train_x <- train_images %>%
+  `/`(255) %>%
+  k_reshape(c(60000, 28, 28, 1))
+
+test_x <- test_images %>% `/`(255) %>%
+  k_reshape(c(10000, 28, 28, 1))
+```
+
+
+#### Streaming
+
+We use `tfdatasets` for streaming.
+
+```{r}
+buffer_size <- 60000
+batch_size <- 100
+batches_per_epoch <- buffer_size / batch_size
+
+train_dataset <- tensor_slices_dataset(train_x) %>%
+  dataset_shuffle(buffer_size) %>%
+  dataset_batch(batch_size)
+
+test_dataset <- tensor_slices_dataset(test_x) %>%
+  dataset_batch(10000)
+```
+
+
+
+#### Encoder-decoder model
+
+Both encoder and decoder are custom models.
+
+```{r}
+latent_dim <- 2
+
+encoder_model <- function(name = NULL) {
+  
+  keras_model_custom(name = name, function(self) {
+    self$conv1 <-
+      layer_conv_2d(
+        filters = 32,
+        kernel_size = 3,
+        strides = 2,
+        activation = "relu"
+      )
+    self$conv2 <-
+      layer_conv_2d(
+        filters = 64,
+        kernel_size = 3,
+        strides = 2,
+        activation = "relu"
+      )
+    self$flatten <- layer_flatten()
+    self$dense <- layer_dense(units = 2 * latent_dim)
+    
+    function (x, mask = NULL) {
+      x %>%
+        self$conv1() %>%
+        self$conv2() %>%
+        self$flatten() %>%
+        self$dense() %>%
+        tf$split(num_or_size_splits = 2L, axis = 1L) 
+    }
+  })
+}
+```
+
+
+The so-called "reparameterization trick":
+
+```{r}
+reparameterize <- function(mean, logvar) {
+  eps <- k_random_normal(shape = mean$shape, dtype = tf$float64)
+  eps * k_exp(logvar * 0.5) + mean
+}
+```
+
+
+
+```{r}
+decoder_model <- function(name = NULL) {
+  
+  keras_model_custom(name = name, function(self) {
+    
+    self$dense <- layer_dense(units = 7 * 7 * 32, activation = "relu")
+    self$reshape <- layer_reshape(target_shape = c(7, 7, 32))
+    self$deconv1 <-
+      layer_conv_2d_transpose(
+        filters = 64,
+        kernel_size = 3,
+        strides = 2,
+        padding = "same",
+        activation = "relu"
+      )
+    self$deconv2 <-
+      layer_conv_2d_transpose(
+        filters = 32,
+        kernel_size = 3,
+        strides = 2,
+        padding = "same",
+        activation = "relu"
+      )
+    self$deconv3 <-
+      layer_conv_2d_transpose(
+        filters = 1,
+        kernel_size = 3,
+        strides = 1,
+        padding = "same"
+      )
+    
+    function (x, mask = NULL) {
+      x %>%
+        self$dense() %>%
+        self$reshape() %>%
+        self$deconv1() %>%
+        self$deconv2() %>%
+        self$deconv3()
+    }
+  })
+}
+```
+
+
+
+#### Loss calculations
+
+The usual variational autoencoder loss is:
+
+$$ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$
+
+
+One way to implement the VAE loss is combining reconstruction loss (cross entropy, in the present case) and Kullback-Leibler divergence. In Keras, the latter is available directly as `loss_kullback_leibler_divergence`.
+
+Here, we batch-estimate the complete ELBO instead:
+
+$$ELBO \ batch \ estimate = log\ p(x_{batch}|z_{sampled})+log\ p(z)−log\ q(z_{sampled}|x_{batch})$$
+
+
+```{r}
+# we calculate with the log of the variance
+normal_loglik <- function(sample, mean, logvar, reduce_axis = 2) {
+  loglik <- k_constant(0.5, dtype = tf$float64) *
+    (k_log(2 * k_constant(pi, dtype = tf$float64)) +
+    logvar +
+    k_exp(-logvar) * (sample - mean) ^ 2)
+  - k_sum(loglik, axis = reduce_axis)
+}
+```
+
+
+Peeking ahead how we'll use this during training:
+
+First, 
+
+```{r}
+crossentropy_loss <- tf$nn$sigmoid_cross_entropy_with_logits(
+  logits = preds,
+  labels = x
+)
+logpx_z <- - k_sum(crossentropy_loss)
+```
+
+yields $log \ p(x|z)$, the loglikelihood of the reconstructed samples given values sampled from latent space (a.k.a. reconstruction loss).
+
+Then,
+
+```{r}
+logpz <- normal_loglik(
+  z,
+  k_constant(0, dtype = tf$float64),
+  k_constant(0, dtype = tf$float64)
+)
+```
+
+gives $log \ p(z)$, the prior loglikelihood of $z$. The prior is assumed to be standard normal, as is most often the case with VAEs.
+
+Finally,
+
+```{r}
+logqz_x <- normal_loglik(z, mean, logvar)
+```
+
+
+vields $log \ q(z|x)$, the loglikelihood of the samples $z$ given mean and variance computed from the observed samples $x$.
+
+From these three components, we will compute the final loss as
+
+```{r}
+loss <- -k_mean(logpx_z + logpz - logqz_x)
+```
+
+
+
+
+#### Final setup
+
+Optimizer is Adam:
+
+```{r}
+optimizer <- tf$train$AdamOptimizer(1e-4)
+```
+
+Instantiate models ...
+
+```{r}
+encoder <- encoder_model()
+decoder <- decoder_model()
+```
+
+... and set up checkpointing, so we can later restore trained weights.
+
+```{r}
+checkpoint_dir <- "./checkpoints_cvae"
+checkpoint_prefix <- file.path(checkpoint_dir, "ckpt")
+checkpoint <- tf$train$Checkpoint(
+  optimizer = optimizer,
+  encoder = encoder,
+  decoder = decoder
+)
+```
+
+
+#### Plotting functions to be used during training
+
+```{r}
+num_examples_to_generate <- 64
+
+random_vector_for_generation <-
+  k_random_normal(shape = list(num_examples_to_generate, latent_dim),
+                  dtype = tf$float64)
+
+generate_random_clothes <- function(epoch) {
+  predictions <-
+    decoder(random_vector_for_generation) %>% tf$nn$sigmoid()
+  png(paste0("cvae_clothes_epoch_", epoch, ".png"))
+  par(mfcol = c(8, 8))
+  par(mar = c(0.5, 0.5, 0.5, 0.5),
+      xaxs = 'i',
+      yaxs = 'i')
+  for (i in 1:64) {
+    img <- predictions[i, , , 1]
+    img <- t(apply(img, 2, rev))
+    image(
+      1:28,
+      1:28,
+      img * 127.5 + 127.5,
+      col = gray((0:255) / 255),
+      xaxt = 'n',
+      yaxt = 'n'
+    )
+  }
+  dev.off()
+}
+
+show_latent_space <- function(epoch) {
+  iter <- make_iterator_one_shot(test_dataset)
+  x <-  iterator_get_next(iter)
+  x_test_encoded <- encoder(x)[[1]]
+  x_test_encoded %>%
+    as.matrix() %>%
+    as.data.frame() %>%
+    mutate(class = class_names[fashion$test$y + 1]) %>%
+    ggplot(aes(x = V1, y = V2, colour = class)) + geom_point() +
+    theme(aspect.ratio = 1) +
+    theme(plot.margin = unit(c(0, 0, 0, 0), "null")) +
+    theme(panel.spacing = unit(c(0, 0, 0, 0), "null"))
+  
+  ggsave(
+    paste0("cvae_latentspace_epoch_", epoch, ".png"),
+    width = 10,
+    height = 10,
+    units = "cm"
+  )
+}
+
+
+show_grid <- function(epoch) {
+  png(paste0("cvae_grid_epoch_", epoch, ".png"))
+  par(mar = c(0.5, 0.5, 0.5, 0.5),
+      xaxs = 'i',
+      yaxs = 'i')
+  n <- 16
+  img_size <- 28
+  
+  grid_x <- seq(-4, 4, length.out = n)
+  grid_y <- seq(-4, 4, length.out = n)
+  rows <- NULL
+  
+  for (i in 1:length(grid_x)) {
+    column <- NULL
+    for (j in 1:length(grid_y)) {
+      z_sample <- matrix(c(grid_x[i], grid_y[j]), ncol = 2)
+      column <-
+        rbind(column,
+              (decoder(z_sample) %>% tf$nn$sigmoid() %>% as.numeric()) %>% matrix(ncol = img_size))
+    }
+    rows <- cbind(rows, column)
+  }
+  rows %>% as.raster() %>% plot()
+  dev.off()
+}
+
+```
+
+
+Before training:
+
+![](images/c_epoch_0.png){width=100%}
+
+#### Training loop
+
+Typical training procedure with eager execution.
+
+```{r}
+num_epochs <- 50
+
+for (epoch in seq_len(num_epochs)) {
+  iter <- make_iterator_one_shot(train_dataset)
+  
+  total_loss <- 0
+  logpx_z_total <- 0
+  logpz_total <- 0
+  logqz_x_total <- 0
+  
+  until_out_of_range({
+    x <-  iterator_get_next(iter)
+    
+    with(tf$GradientTape(persistent = TRUE) %as% tape, {
+      
+      c(mean, logvar) %<-% encoder(x)
+      z <- reparameterize(mean, logvar)
+      preds <- decoder(z)
+      
+      crossentropy_loss <-
+        tf$nn$sigmoid_cross_entropy_with_logits(logits = preds, labels = x)
+      logpx_z <-
+        - k_sum(crossentropy_loss)
+      logpz <-
+        normal_loglik(z,
+                      k_constant(0, dtype = tf$float64),
+                      k_constant(0, dtype = tf$float64)
+        )
+      logqz_x <- normal_loglik(z, mean, logvar)
+      loss <- -k_mean(logpx_z + logpz - logqz_x)
+      
+    })
+
+    total_loss <- total_loss + loss
+    logpx_z_total <- tf$reduce_mean(logpx_z) + logpx_z_total
+    logpz_total <- tf$reduce_mean(logpz) + logpz_total
+    logqz_x_total <- tf$reduce_mean(logqz_x) + logqz_x_total
+    
+    encoder_gradients <- tape$gradient(loss, encoder$variables)
+    decoder_gradients <- tape$gradient(loss, decoder$variables)
+    
+    optimizer$apply_gradients(
+      purrr::transpose(list(encoder_gradients, encoder$variables)),
+      global_step = tf$train$get_or_create_global_step()
+    )
+    optimizer$apply_gradients(
+      purrr::transpose(list(decoder_gradients, decoder$variables)),
+      global_step = tf$train$get_or_create_global_step()
+    )
+    
+  })
+  
+  checkpoint$save(file_prefix = checkpoint_prefix)
+  
+  cat(
+    glue(
+      "Losses (epoch): {epoch}:",
+      "  {(as.numeric(logpx_z_total)/batches_per_epoch) %>% round(2)} logpx_z_total,",
+      "  {(as.numeric(logpz_total)/batches_per_epoch) %>% round(2)} logpz_total,",
+      "  {(as.numeric(logqz_x_total)/batches_per_epoch) %>% round(2)} logqz_x_total,",
+      "  {(as.numeric(total_loss)/batches_per_epoch) %>% round(2)} total"
+    ),
+    "\n"
+  )
+  
+  if (epoch %% 10 == 0) {
+    generate_random_clothes(epoch)
+    show_latent_space(epoch)
+    show_grid(epoch)
+  }
+}
+
+```
+
+#### Results
+
+How well did that work? Let's see the kinds of clothes generated after 50 epochs.
+
+![](images/cvae_clothes_epoch_50.png){width=66%}
+
+
+Also, how disentangled (or not) are the different classes in latent space?
+
+![](images/cvae_latentspace_epoch_50.png){width=66%}
+
+And now watch different clothes morph into one another.
+
+![](images/cvae_grid_epoch_50.png){width=66%}
+
+
+
+## MMD-VAE
+
+Main difference is in loss function.
+
+#### Differences in the model(s)
+
+1. The encoder does not have to return the variance, so there is no need for `tf$split`. The encoder's `call` method now just is
+
+```{r}
+function (x, mask = NULL) {
+  x %>%
+    self$conv1() %>%
+    self$conv2() %>%
+    self$flatten() %>%
+    self$dense() 
+}
+```
+
+
+2. Between the encoder and the decoder, we don't need the sampling step anymore, so there is no _reparameterization_. 
+
+3. And since we won't use `tf$nn$sigmoid_cross_entropy_with_logits` to compute the loss, we let the decoder apply the sigmoid in the last deconvolution layer:
+
+```{r}
+self$deconv3 <- layer_conv_2d_transpose(
+  filters = 1,
+  kernel_size = 3,
+  strides = 1,
+  padding = "same",
+  activation = "sigmoid"
+)
+```
+
+
+#### Loss calculations
+
+Loss is _maximum mean discrepancy_:
+
+The loss, _maximum mean discrepancy_ (MMD), is based on the idea that two distributions are identical if and only if all moments are identical. 
+
+Concretely, MMD is estimated using a _kernel_, such as the Gaussian kernel
+
+$$k(z,z')=\frac{e^{||z-z'||}}{2\sigma^2}$$
+
+to assess similarity between distributions.
+
+The idea then is that if two distributions are identical, the average similarity between samples from each distribution should be identical to the average similarity between mixed samples from both distributions:
+
+$$MMD(p(z)||q(z))=E_{p(z),p(z')}[k(z,z')]+E_{q(z),q(z')}[k(z,z')]−2E_{p(z),q(z')}[k(z,z')]$$
+
+
+
+```{r}
+compute_kernel <- function(x, y) {
+  x_size <- k_shape(x)[1]
+  y_size <- k_shape(y)[1]
+  dim <- k_shape(x)[2]
+  tiled_x <- k_tile(
+    k_reshape(x, k_stack(list(x_size, 1, dim))),
+    k_stack(list(1, y_size, 1))
+  )
+  tiled_y <- k_tile(
+    k_reshape(y, k_stack(list(1, y_size, dim))),
+    k_stack(list(x_size, 1, 1))
+  )
+  k_exp(-k_mean(k_square(tiled_x - tiled_y), axis = 3) /
+          k_cast(dim, tf$float64))
+}
+
+compute_mmd <- function(x, y, sigma_sqr = 1) {
+  x_kernel <- compute_kernel(x, x)
+  y_kernel <- compute_kernel(y, y)
+  xy_kernel <- compute_kernel(x, y)
+  k_mean(x_kernel) + k_mean(y_kernel) - 2 * k_mean(xy_kernel)
+}
+```
+
+
+#### Training loop
+
+The training loop differs from the standard VAE example only in the loss calculations.
+
+
+```{r}
+ with(tf$GradientTape(persistent = TRUE) %as% tape, {
+      
+      mean <- encoder(x)
+      preds <- decoder(mean)
+      
+      true_samples <- k_random_normal(
+        shape = c(batch_size, latent_dim),
+        dtype = tf$float64
+      )
+      loss_mmd <- compute_mmd(true_samples, mean)
+      loss_nll <- k_mean(k_square(x - preds))
+      loss <- loss_nll + loss_mmd
+      
+    })
+```
+
+
+
+#### Results
+
+Again, let's look at some generated clothes first. It seems like edges are much sharper here.
+
+![](images/mmd_clothes_epoch_50.png){width=66%}
+
+The clusters too look more nicely spread out in the two dimensions. And, they are centered at (0,0), as we would have hoped for.
+
+![](images/mmd_latentspace_epoch_50.png){width=66%}
+
+
+Finally, let's see clothes morph into one another. Here, the smooth, continuous evolutions are impressive!
+Also, nearly all space is filled with meaningful objects, which hasn't been the case above.
+
+
+![](images/mmd_grid_epoch_50.png){width=66%}
+
+
+
+
+
+
+
+
+
+
+
