@@ -1,9 +1,12 @@
 
 ---
 title: "Representation learning with MMD-VAE"
-output: html_notebook
-editor_options: 
+editor_options:
   chunk_output_type: console
+output:
+  html_document:
+    df_print: paged
+bibliography: bibliography.bib
 ---
   
 
@@ -453,6 +456,8 @@ And now watch different clothes morph into one another.
 
 ## MMD-VAE
 
+We're following Zhao et al [-@ZhaoSE17b], _InfoVAE: Information Maximizing Variational Autoencoders_.
+
 Main difference is in loss function.
 
 #### Differences in the model(s)
@@ -570,6 +575,8 @@ Also, nearly all space is filled with meaningful objects, which hasn't been the 
 
 ![](images/mmd_grid_epoch_50.png){width=66%}
 
+
+### References
 
 
 
