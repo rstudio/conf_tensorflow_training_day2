@@ -1,0 +1,159 @@
+---
+title: "Representation learning, interpretability, and uncertainty"
+subtitle: "A pick of 'meta' topics in current DL"
+author: "Sigrid Keydana"
+date: "RStudio::conf 2019"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+    css: xaringan-themer.css
+
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r xaringan-themer, include = FALSE}
+library(xaringanthemer)
+mono_accent(
+  base_color = "#006d6f"
+)
+```
+
+```{r, load_refs, echo=FALSE, cache=FALSE}
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear", 
+           cite.style = 'alphabetic', 
+           style = "markdown",
+           hyperlink = FALSE, 
+           dashed = FALSE)
+bib <- ReadBib("./bibliography.bib", check = FALSE)
+```
+
+# Representation learning, interpretability, and uncertainty
+
+What do these topics have in common?
+
+--
+
+- Terms are not necessarily well-defined
+- We'll keep out of terminology-related controversies, and
+- Focus on the code
+
+--
+
+The idea being: Enable you to apply what's useful to you _in your area of work/interest_
+
+---
+class: inverse, middle, center
+
+# Representation learning
+
+
+---
+
+# Why representation learning?
+
+- Representation matters<sup>1</sup>
+- Good representations make subsequent prediction task easier 
+- Make use of abundant unlabeled data (unsupervised pretraining)
+- Transfer learning / domain adaptation
+- Density estimation
+- Object generation
+
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "authoryear"))
+c2 <- Citet(bib, key = "5538", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[[1] cf. `r c1`, chap. 15, and `r c2`.]
+
+---
+
+## Variational autoencoders (VAEs)
+
+- often used in object generation
+- learn a _latent space_ that can be sampled from
+- learning objective is a tradeoff between faithful input reconstruction and conforming to a (regularizing) prior
+- Minimize: Evidence lower bound (ELBO)
+
+$$ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$
+
+--
+
+#### Problems with traditional VAEs
+
+- may learn uninformative latent space
+- tends to overfit the data
+
+---
+
+# InfoVAE and subtypes
+
+- designed to learn more meaningful features
+- e.g. by maximizing mutual information between latent space prior and posterior
+- we'll see a subtype (MMD-VAE) soon
+
+--
+
+But before, we need some background on:
+
+---
+class: inverse, middle, center
+
+# Eager execution
+
+
+---
+
+# Eager execution
+
+- The non-graph way of doing TensorFlow/Keras
+- More intuitive than static Keras/TF especially if not following the usual define-compile-fit cycle:
+  - encoder-decoder models (as in GANs, VAEs ...)
+  - neural style transfer
+  - models with attention mechanisms
+  
+--
+
+#### Detailed examples on the TensorFlow for R blog:
+
+- [More flexible models with TensorFlow eager execution and Keras](https://blogs.rstudio.com/tensorflow/posts/2018-10-02-eager-wrapup/)
+- [Image-to-image translation with pix2pix](https://blogs.rstudio.com/tensorflow/posts/2018-09-20-eager-pix2pix/)
+- [Attention-based Image Captioning with Keras](https://blogs.rstudio.com/tensorflow/posts/2018-09-17-eager-captioning/)
+- [Neural style transfer with eager execution and Keras](https://blogs.rstudio.com/tensorflow/posts/2018-09-10-eager-style-transfer/)
+- [Generating images with Keras and TensorFlow eager execution](https://blogs.rstudio.com/tensorflow/posts/2018-08-26-eager-dcgan/)
+- [Attention-based Neural Machine Translation with Keras](https://blogs.rstudio.com/tensorflow/posts/2018-07-30-attention-layer/)
+
+
+---
+
+# Eager execution closeup
+
+- demo: [eager_intro.Rmd](../notebooks/eager_intro.Rmd)
+- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
+
+
+---
+class: inverse, middle, center
+
+# Variational autoencoder (MMD-VAE)
+
+
+---
+
+---
+
+# References
+
+```{r, 'refs', results='asis', echo=FALSE}
+PrintBibliography(bib)
+```
+
