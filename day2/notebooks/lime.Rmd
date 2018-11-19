@@ -1,0 +1,138 @@
+---
+title: "Explaining image classification with LIME"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+
+```{r}
+library(keras)
+library(lime)
+library(magick)
+```
+
+
+## Input images
+
+Here are 4 images for you to play with.
+
+```{r}
+# By mattbuck (category) - Own work by mattbuck., CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=20151244
+img_path <- "images/Bristol_Balloon_Fiesta_2009_MMB_06.png"
+
+# By GT1976 - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=70893756
+# img_path <- "images/wachauer_radtage.png"
+
+# By Thomas Bresson - Own work, CC BY 4.0, https://commons.wikimedia.org/w/index.php?curid=47191548
+#img_path <- "images/2016-02-23_16-01-09_paris.png"
+
+# Isiwal/Wikimedia Commons/CC BY-SA 4.0 [CC BY-SA 4.0  (https://creativecommons.org/licenses/by-sa/4.0)], from Wikimedia Commons
+# img_path <- "images/21160528_Lofer_Khne_Yan-Lorenz-5943.png"
+```
+
+## Model
+
+We will use VGG16 here:
+
+```{r}
+model <- application_vgg16()
+```
+
+## Explain prediction using LIME
+
+### Create an explainer
+
+First, you will need to create an `explainer` (a closure) using the `lime` factory function.
+In the case of images, you will have to pass in
+
+- a path to an image file,
+- a reference to the model to be used for prediction
+- a function to be used for preprocessing 
+
+ 
+#### Create a pre-processing function for LIME to use
+
+The pre-processing function should be able to work with a list of paths.
+
+```{r}
+image_prep <- function(x) {
+  arrays <- lapply(x, function(path) {
+    img <- image_load(path, target_size = c(224,224)) %>%
+      image_to_array()
+    img <- img %>%
+      array_reshape(c(1, dim(img))) %>%
+      imagenet_preprocess_input()
+  })
+  do.call(abind::abind, c(arrays, list(along = 1)))
+}
+```
+
+
+##### Explainer
+
+Now create the explainer. You should wrap the model into `as classifier`, passing the target labels to that function.
+Note that this wrapper is not optional - LIME needs it to be informed about the model type.
+
+```{r}
+model_labels <- readRDS(system.file('extdata', 'imagenet_labels.rds', package = 'lime'))
+explainer <- lime(img_path, as_classifier(model, model_labels), image_prep)
+```
+
+
+##### Get a prediction
+
+Before we look at explanations, let's get a prediction.
+This is also a good way to test the preprocessing function.
+
+```{r}
+preds <- predict(model, image_prep(img_path))
+```
+
+
+Which is the most probable class?
+
+```{r}
+preds %>% imagenet_decode_predictions()
+```
+
+
+#### Superpixels
+
+LIME determines essential image areas by successively masking homogeneous regions - the so-called superpixels.
+Explanation results will depend on adequacy of superpixel segmentation used.
+
+
+```{r}
+plot_superpixels(img_path, colour = "cyan", n_superpixels = 50, weight = 10)
+plot_superpixels(img_path, colour = "cyan", n_superpixels = 50, weight = 2)
+plot_superpixels(img_path, colour = "cyan", n_superpixels = 200, weight = 10)
+plot_superpixels(img_path, colour = "cyan", n_superpixels = 200, weight = 2)
+```
+
+
+##### Explanation
+
+Now use `explain` to find out what LIME has to say about the why of the model's "decision".
+
+```{r}
+explanation <- explain(
+  img_path, 
+  explainer,
+  n_labels = 1, 
+  n_features = 200,
+  n_superpixels = 200,
+  weight = 10, 
+  n_permutations = 10,
+  feature_select = "lasso_path")
+```
+
+Plot the explanation. Note too that you can view regions that contradict the model's findings.
+
+```{r}
+plot_image_explanation(explanation, fill_alpha = 0.6)
+plot_image_explanation(explanation, threshold = 0, show_negative = TRUE, fill_alpha = 0.6)
+plot_image_explanation(explanation, display = "block", block_col = "violet")
+```
+
+

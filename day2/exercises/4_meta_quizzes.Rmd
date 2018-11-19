@@ -46,3 +46,23 @@ quiz(
 )
 ```
 
+
+## Variational autoencoders
+
+In small groups of 3-4 people, talk about what could be interesting applications of a technique like this.
+
+- Applications that mean to generate "something" are fine, but you would perhaps go for a GAN (Generative Adversarial Network) there instead. Anything where the latent space matters?
+
+- Perhaps go beyond generation - anything where it'd help to have such a latent space at your disposal?
+
+## LIME
+
+Look at these explanations for the other 3 images we prepared. All were obtained with 200 superpixels and are displayed using the default display threshold of 0.02.
+
+In small groups of 3-4 people, discuss what you find convincing or not about the explanations.
+
+
+![](images/explanations_bicycle.png)
+![](images/explanations_bellcote.png)
+![](images/explanations_paddle.png)
+
