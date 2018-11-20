@@ -33,7 +33,7 @@ img_path <- "images/Bristol_Balloon_Fiesta_2009_MMB_06.jpg"
 # img_path <- "images/wachauer_radtage.jpg"
 
 # By Thomas Bresson - Own work, CC BY 4.0, https://commons.wikimedia.org/w/index.php?curid=47191548
-#img_path <- "images/2016-02-23_16-01-09_paris.jpg"
+# img_path <- "images/2016-02-23_16-01-09_paris.jpg"
 
 # Isiwal/Wikimedia Commons/CC BY-SA 4.0 [CC BY-SA 4.0  (https://creativecommons.org/licenses/by-sa/4.0)], from Wikimedia Commons
 # img_path <- "images/21160528_Lofer_Khne_Yan-Lorenz-5943.jpg"
@@ -76,7 +76,7 @@ Let's create them now.
 Firstly, we need a reference to the output tensor at the position that was found most probable in the prediction run. 
 
 ```{r}
-max_pred <- which.max(preds[1,])
+max_pred <- which.max(preds[1, ])
 max_pred
 
 image_output <- model$output[, max_pred]

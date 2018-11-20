@@ -1,7 +1,5 @@
 ---
 title: "Day 2 - TOC"
-author: "Sigrid Keydana"
-date: "11/20/2018"
 output: html_document
 ---
 

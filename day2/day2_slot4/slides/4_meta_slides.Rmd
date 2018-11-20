@@ -363,17 +363,16 @@ class: inverse, middle, center
 ---
 # Interpretability/explainability
 
-- Everybody wants it / demands it but it's actually not a well-defined term
+- Everybody wants it but it's actually not a well-defined term
 - Commonly, a division is made between _interpreting a model_ and _explaining model decisions_
-- But see e.g. "The Mythos of Model Interpretability"<sup>1</sup> for elaboration on the lack of agreed-upon definitions
+- But see e.g. "The Mythos of Model Interpretability"<sup>1</sup> for the lack of agreed-upon definitions
 - Here, we'll skip any theoretical discussion and focus on two different ways of _local explanations_
 - Just one quote on the theory before we leave that be<sup>2</sup>
 
 > However, it is
 fair to say that most work in explainable artificial intelligence uses only the researchers’
 intuition of what constitutes a ‘good’ explanation.  There exists vast and valuable bodies
-of research in philosophy, psychology, and cognitive science of how people define, gener-
-ate, select, evaluate, and present explanations, which argues that people employ certain
+of research in philosophy, psychology, and cognitive science of how people define, generate, select, evaluate, and present explanations, which argues that people employ certain
 cognitive  biases  and  social  expectations  towards  the  explanation  process. 
 
 ```{r, echo=FALSE, results=FALSE}
@@ -511,13 +510,14 @@ plot_image_explanation(explanation, display = "block", block_col = "violet")
 # Class activation maps (CAM)
 
 - For a given input image, class activation maps take the __output feature maps__ of a convolution layer and __weigh__ every channel in that feature map by the __gradient of the most probable class__ with respect to the channel.
+
 - Meaning: How much would that class probability change if that channel's activations were to change?
 
 
 ---
 # CAM (1): Get the most probable class
 
-```{r}
+```{r, eval=FALSE}
 preds <- model %>% predict(img)
 max_pred <- which.max(preds[1,])
 
@@ -529,7 +529,7 @@ We will want to compute this class output's gradient with respect to the activat
 ---
 # CAM (2): Get the last conv layer's output
 
-```{r}
+```{r, eval=FALSE}
 last_conv_layer <- model %>% get_layer("block5_conv3")
 last_conv_layer_output <- last_conv_layer$output
 ```
@@ -539,7 +539,10 @@ These are the activations w.r.t. which we want to compute the class probability'
 ---
 # CAM (3): Fetch the pooled gradients
 
-```{r}
+
+We build a little graph to fetch and average the gradients - and run it.
+
+```{r, eval=FALSE}
 grads <- k_gradients(image_output, last_conv_layer_output)[[1]]
 # average gradients over all but the channel dimension
 pooled_grads <- k_mean(grads, axis = c(1, 2, 3))
@@ -556,7 +559,9 @@ c(pooled_grads_value, conv_layer_output_value) %<-% iterate(list(img))
 ---
 # CAM (4): Multiply outputs by channel gradients
 
-```{r}
+This weights up the channels that have high impact on the classification.
+
+```{r, eval=FALSE}
 for (i in 1:512) {
   conv_layer_output_value[ , , i] <- 
     conv_layer_output_value[ , , i] * pooled_grads_value[i] 
@@ -566,13 +571,14 @@ for (i in 1:512) {
 Averaging over the channels dimension yields the heatmap:
 
 
-```{r}
+```{r, eval=FALSE}
 heatmap <- apply(conv_layer_output_value, c(1,2), mean)
 ```
 
 ---
 # CAM (5): Heatmap (overlayed over image)
 
+![](images/cam.png)
 
 ---
 # References

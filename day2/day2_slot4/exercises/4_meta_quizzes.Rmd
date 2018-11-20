@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Eager execution 
 
-All quizzes in this section start from the [eager execution notebook](../notebooks/eager_intro.Rmd).
+All quizzes in this section start from the eager execution notebook.
 
 ### Quiz 1
 
@@ -65,4 +65,23 @@ In small groups of 3-4 people, discuss what you find convincing or not about the
 ![](images/explanations_bicycle.png)
 ![](images/explanations_bellcote.png)
 ![](images/explanations_paddle.png)
+
+## Class activation maps
+
+Here are CAM explanations for the same 3 images we saw in the LIME exercise, again for the top 2 classes per image.
+
+Compare these with the explanations provided by LIME. What do you think?
+
+![Class activation map for label "unicycle"](images/cam_unicycle.png){width=70%}
+
+![Class activation map for label "mountainbike"](images/cam_mtb.png){width=70%}
+
+![Class activation map for label "bellcote"](images/cam_bellcote.png){width=70%}
+
+![Class activation map for label "church"](images/cam_church.png){width=70%}
+
+![Class activation map for label "paddle"](images/cam_paddle.png){width=70%}
+
+![Class activation map for label "ski"](images/cam_ski.png){width=70%}
+
 
