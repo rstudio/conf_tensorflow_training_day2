@@ -1,0 +1,68 @@
+---
+title: "Representation learning, interpretability, and uncertainty"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+## Eager execution 
+
+All quizzes in this section start from the [eager execution notebook](../notebooks/eager_intro.Rmd).
+
+### Quiz 1
+
+Modify the example ("complete example" at the bottom) to use the `mpg` dataset (available from ggplot2) and predict `cty` from `displ`. Use a random split of 20% for the validation set. Change the model to use the RMSProp optimizer instead of Adam.
+
+
+```{r quiz1}
+quiz(
+  question("Which learning rate worked best for you?",
+    answer("0.3"),
+    answer("0.001"),
+    answer("0.02", correct = TRUE)
+  )
+)
+```
+
+### Quiz 2
+
+What's the shape of the `gradients` we obtain using `gradients <- tape$gradient(loss, model$variables)`?
+`gradients` itself is a list of 4 tensors, what are their respective shapes?
+
+Hint: use any "quick and dirty" way that could give you the information. Would your way work with graph execution, too? In eager, could you get the actual values, too (not just the shapes)?
+
+```{r quiz2}
+quiz(
+  question("Which are the shapes of the gradient tensors?",
+    answer("1 32 , 32 , 32 1 , 1", correct = TRUE),
+    answer("1 32 , 32 , 32 1 , 32"),
+    answer("32 1, 32, 32, 1")
+  )
+)
+```
+
+
+## Variational autoencoders
+
+In small groups of 3-4 people, talk about what could be interesting applications of a technique like this.
+
+- Applications that mean to generate "something" are fine, but you would perhaps go for a GAN (Generative Adversarial Network) there instead. Anything where the latent space matters?
+
+- Perhaps go beyond generation - anything where it'd help to have such a latent space at your disposal?
+
+## LIME
+
+Look at these explanations for the other 3 images we prepared. All were obtained with 200 superpixels and are displayed using the default display threshold of 0.02.
+
+In small groups of 3-4 people, discuss what you find convincing or not about the explanations.
+
+
+![](images/explanations_bicycle.png)
+![](images/explanations_bellcote.png)
+![](images/explanations_paddle.png)
+
