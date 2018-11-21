@@ -55,33 +55,30 @@ In small groups of 3-4 people, talk about what could be interesting applications
 
 - Perhaps go beyond generation - anything where it'd help to have such a latent space at your disposal?
 
-## LIME
+## LIME and CAM (Class activation maps)
 
-Look at these explanations for the other 3 images we prepared. All were obtained with 200 superpixels and are displayed using the default display threshold of 0.02.
+Here you see LIME (200 superpixels, display threshold = of 0.02) as well as CAM explanations for 3 other images. The heatmaps are for the most probable and the second most probable class, respectively (thus, they match those indicated on the LIME plots).
 
-In small groups of 3-4 people, discuss what you find convincing or not about the explanations.
+In small groups of 3-4 people, talk about what makes sense or not to you. What could you vary or explore regarding the techniques used?
 
+### Road cycling race
 
 ![](images/explanations_bicycle.png)
+
+![](images/cam_1.png){width=80%}
+
+
+### Notre Dame
+
 ![](images/explanations_bellcote.png)
+
+![](images/cam_2.png){width=80%}
+
+
+### Kayak
+
 ![](images/explanations_paddle.png)
 
-## Class activation maps
-
-Here are CAM explanations for the same 3 images we saw in the LIME exercise, again for the top 2 classes per image.
-
-Compare these with the explanations provided by LIME. What do you think?
-
-![Class activation map for label "unicycle"](images/cam_unicycle.png){width=70%}
-
-![Class activation map for label "mountainbike"](images/cam_mtb.png){width=70%}
-
-![Class activation map for label "bellcote"](images/cam_bellcote.png){width=70%}
-
-![Class activation map for label "church"](images/cam_church.png){width=70%}
-
-![Class activation map for label "paddle"](images/cam_paddle.png){width=70%}
-
-![Class activation map for label "ski"](images/cam_ski.png){width=70%}
+![](images/cam_3.png){width=80%}
 
 

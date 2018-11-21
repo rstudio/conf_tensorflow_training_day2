@@ -490,13 +490,6 @@ plot_image_explanation(explanation, display = "block", block_col = "violet")
 
 
 ---
-# LIME: Exercise
-
-- demo: [lime.Rmd](../notebooks/eager_intro.Rmd) (not needed for this exercise)
-- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
-
-
----
 # Class activation maps (CAM)
 
 - For a given input image, class activation maps take the __output feature maps__ of a convolution layer and __weigh__ every channel in that feature map by the __gradient of the most probable class__ with respect to the channel.
@@ -575,6 +568,252 @@ heatmap &lt;- apply(conv_layer_output_value, c(1,2), mean)
 
 ![](images/cam.png)
 
+
+---
+# LIME/CAM: Exercise
+
+- demo: [lime.Rmd](../notebooks/lime.Rmd) (not needed for this exercise)
+- demo: [class_activation_maps.Rmd](../notebooks/class_activation_maps.Rmd) (not needed for this exercise)
+- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
+
+
+---
+class: inverse, middle, center
+# Obtaining uncertainty estimates from neural networks
+
+---
+# Why uncertainty estimates?
+
+- If we can _quantify_ network uncertainty, we can take appropriate measures (like, have humans inspect uncertain cases)&lt;sup&gt;1&lt;/sup&gt;
+- If we can _qualify_ network uncertainty (as in, e.g., reducible vs. irreducible), we can take appropriate counteractions (e.g., factoring in error margins)
+
+![Figure from Leibig et al.](images/retinopathy_scaled.png)
+
+- However, this is uncharted territory _to a higher degree even_  than interpretability (where we've just seen two out of quite a few available approaches)
+- There is one rather established approach for this though 
+
+
+
+
+
+.footnote[[1] cf. Leibig, Allken, Seckin Ayhan, et al. (2017)]
+
+---
+# Uncertainty estimates through Bayesian deep learning
+
+- Apply dropout at test time (Gal &amp; Gharahmani 2016&lt;sup&gt;1&lt;/sup&gt;)
+- Have the network learn the dropout rate (Gal et al. 2017&lt;sup&gt;2&lt;/sup&gt;, Kendall &amp; Gal 2017&lt;sup&gt;3&lt;/sup&gt;)
+- We are going to look at the latter approach
+
+
+
+
+.footnote[
+[1] cf. Gal and Ghahramani (2016)
+
+[2] cf. Gal, Hron, and Kendall (2017)
+
+[3] cf. Kendall and Gal (2017)
+]
+
+---
+# Types of uncertainty
+
+- Epistemic: What the model doesn't know (reducible by more data)
+- Aleatoric: Variations due to sampling/measurement process (irreducible)
+
+
+Example from class segmentation:&lt;sup&gt;1&lt;/sup&gt;
+
+![](images/segmentation_uncertainty_scaled.png)
+
+
+
+.footnote[
+[1] cf. Kendall and Gal (2017)]
+
+
+---
+# Implementation in R
+
+- Implementation follows the authors' Python Keras version
+- Read up later here: [You sure? A Bayesian approach to obtaining uncertainty estimates from neural networks](https://blogs.rstudio.com/tensorflow/posts/2018-11-12-uncertainty_estimates_dropout/)
+- Consists of 4 parts: a layer wrapper, a modified model, a specific loss function, and Monte Carlo prediction
+
+---
+# Wrapper class (extract)
+
+The wrapper's purpose is to calculate the optimal dropout rate for the layer it wraps.
+
+
+```r
+# R6 wrapper class, a subclass of KerasWrapper
+ConcreteDropout &lt;- R6::R6Class("ConcreteDropout",
+  
+  inherit = KerasWrapper,
+  
+  public = list(
+    # [...]
+    initialize = function( # [...]
+    
+    build = function(input_shape) {
+      super$build(input_shape)
+*    self$p_logit &lt;- super$add_weight(# [...]
+      # [...]
+      regularizer &lt;- k_sum(kernel_regularizer + dropout_regularizer)
+*    super$add_loss(regularizer)
+    },
+    
+    concrete_dropout = function(x) { # [...]
+      
+    call = function(x, mask = NULL, training = NULL) {# [...]
+  )
+)
+```
+
+
+---
+# Dropout model (1)
+
+This example has 3 hidden dense layers each wrapped with `ConcreteDropout`.
+
+
+```r
+output &lt;- input %&gt;% layer_concrete_dropout(
+  layer = layer_dense(units = hidden_dim, activation = "relu"),
+  # [...]
+  ) %&gt;% layer_concrete_dropout(
+  layer = layer_dense(units = hidden_dim, activation = "relu"),
+  # [...]
+  ) %&gt;% layer_concrete_dropout(
+  layer = layer_dense(units = hidden_dim, activation = "relu"),
+  # [...]
+)
+```
+
+---
+# Dropout model (2)
+
+The model outputs not just the _predictive (conditional) mean_, but also the _predictive variance_:
+
+
+```r
+mean &lt;- output %&gt;% layer_concrete_dropout(
+  layer = layer_dense(units = output_dim),
+  # [...]
+)
+
+log_var &lt;- output %&gt;% layer_concrete_dropout(
+  layer_dense(units = output_dim),
+  # [...]
+)
+output &lt;- layer_concatenate(list(mean, log_var))
+model &lt;- keras_model(input, output)
+```
+
+- This means we can learn _different variances for different data points_. 
+- We thus hope to be able to account for _heteroscedasticity_ in the data.
+
+---
+# Heteroscedastic loss (1)
+
+Instead of mean squared error we use a cost function that does not treat all estimates alike:
+
+`$$\frac{1}{N} \sum_i{\frac{1}{2 \hat{\sigma}^2_i} \ (\mathbf{y}_i - \mathbf{\hat{y}}_i)^2 + \frac{1}{2} log \ \hat{\sigma}^2_i}$$`
+
+In addition to the target vs. prediction check, this cost function contains two regularization terms: 
+
+- `\(\frac{1}{2 \hat{\sigma}^2_i}\)` downweights the high-uncertainty predictions in the loss function. The model is encouraged to indicate high uncertainty when its predictions are false.
+
+- `\(\frac{1}{2} log \ \hat{\sigma}^2_i\)` makes sure the network does not simply indicate high uncertainty everywhere.
+
+---
+# Heteroscedastic loss (2)
+
+R code (calculating with the log of the variance):
+
+
+```r
+heteroscedastic_loss &lt;- function(y_true, y_pred) {
+    mean &lt;- y_pred[, 1:output_dim]
+    log_var &lt;- y_pred[, (output_dim + 1):-1]
+    precision &lt;- k_exp(-log_var)
+    k_sum(precision * (y_true - mean) ^ 2 + log_var, axis = 2)
+}
+
+model %&gt;% compile(
+  optimizer = "adam",
+  loss = heteroscedastic_loss,
+  metrics = c(custom_metric("heteroscedastic_loss", heteroscedastic_loss))
+)
+```
+
+
+---
+# Obtain uncertainty estimates (Monte Carlo)
+
+
+```r
+MC_samples &lt;- array(0, dim = c(num_MC_samples, n_val, 2 * output_dim))
+for (k in 1:num_MC_samples) {
+  MC_samples[k, , ] &lt;- (model %&gt;% predict(X_val))
+}
+```
+
+Epistemic uncertainty is calculated from the model's "mean" output:
+
+
+```r
+means &lt;- MC_samples[, , 1:output_dim] 
+# predictive mean (average over the MC samples)
+predictive_mean &lt;- apply(means, 2, mean) 
+# epistemic_uncertainty = variance of the "mean" component of the MC samples
+epistemic_uncertainty &lt;- apply(means, 2, var) 
+```
+
+
+While aleatoric uncertainty is calculated from the "variance" output:
+
+
+```r
+# aleatoric_uncertainty = mean of the "variance" component of the MC samples
+logvar &lt;- MC_samples[, , (output_dim + 1):dim(MC_samples)[3]]
+aleatoric_uncertainty &lt;- exp(colMeans(logvar))
+```
+
+---
+# Results: Epistemic uncertainty
+
+Epistemic uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
+
+![](images/epistemic_1000.png)
+
+Uncertainty is high in regions where the model has not seen many datapoints.
+
+---
+# Results: Aleatoric uncertainty
+
+Aleatoric uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
+
+![](images/aleatoric_1000.png)
+
+The amount of data seen does not affect irreducible uncertainty.
+
+---
+# Results: Predictive uncertainty
+
+Overall predictive uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
+
+![](images/overall_1000.png)
+
+Both types of uncertainty add to yield the final predictive uncertainty.
+
+
+---
+# Wrapup/feedback
+
+
+
 ---
 # References
 
@@ -583,9 +822,37 @@ Feature Learning and Deep Learning: A Review and New
 Perspectives". In: _CoRR_ abs/1206.5538. eprint: 1206.5538. URL:
 [http://arxiv.org/abs/1206.5538](http://arxiv.org/abs/1206.5538).
 
+Gal, Y. and Z. Ghahramani (2016). "Dropout as a Bayesian
+Approximation: Representing Model Uncertainty in Deep Learning".
+In: _Proceedings of the 33nd International Conference on Machine
+Learning, ICML 2016, New York City, NY, USA, June 19-24, 2016_. ,
+pp. 1050-1059. URL:
+[http://jmlr.org/proceedings/papers/v48/gal16.html](http://jmlr.org/proceedings/papers/v48/gal16.html).
+
+Gal, Y, J. Hron and A. Kendall (2017). "Concrete Dropout". In:
+_ArXiv e-prints_. arXiv: 1705.07832 [stat.ML].
+
 Goodfellow, I, Y. Bengio and A. Courville (2016). _Deep Learning_.
 MIT Press. URL:
 [http://www.deeplearningbook.org](http://www.deeplearningbook.org).
+
+Kendall, A. and Y. Gal (2017). "What Uncertainties Do We Need in
+Bayesian Deep Learning for Computer Vision?" In: _Advances in
+Neural Information Processing Systems 30_. Ed. by I. Guyon, U. V.
+Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan and R.
+Garnett. Curran Associates, Inc, pp. 5574-5584. URL:
+[http://papers.nips.cc/paper/7141-what-uncertainties-do-we-need-in-bayesian-deep-learning-for-computer-vision.pdf](http://papers.nips.cc/paper/7141-what-uncertainties-do-we-need-in-bayesian-deep-learning-for-computer-vision.pdf).
+
+---
+# References (cont.)
+
+Leibig, C, V. Allken, M. Seckin Ayhan, et al. (2017). "Leveraging
+uncertainty information from deep neural networks for disease
+detection". In: _bioRxiv_. DOI:
+[10.1101/084210](https://doi.org/10.1101/084210). eprint:
+https://www.biorxiv.org/content/early/2017/10/18/084210.full.pdf.
+URL:
+[https://www.biorxiv.org/content/early/2017/10/18/084210](https://www.biorxiv.org/content/early/2017/10/18/084210).
 
 Lipton, Z. C. (2016). "The Mythos of Model Interpretability". In:
 _CoRR_ abs/1606.03490. eprint: 1606.03490. URL:

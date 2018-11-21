@@ -500,13 +500,6 @@ plot_image_explanation(explanation, display = "block", block_col = "violet")
 
 
 ---
-# LIME: Exercise
-
-- demo: [lime.Rmd](../notebooks/eager_intro.Rmd) (not needed for this exercise)
-- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
-
-
----
 # Class activation maps (CAM)
 
 - For a given input image, class activation maps take the __output feature maps__ of a convolution layer and __weigh__ every channel in that feature map by the __gradient of the most probable class__ with respect to the channel.
@@ -580,10 +573,264 @@ heatmap <- apply(conv_layer_output_value, c(1,2), mean)
 
 ![](images/cam.png)
 
+
+---
+# LIME/CAM: Exercise
+
+- demo: [lime.Rmd](../notebooks/lime.Rmd) (not needed for this exercise)
+- demo: [class_activation_maps.Rmd](../notebooks/class_activation_maps.Rmd) (not needed for this exercise)
+- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
+
+
+---
+class: inverse, middle, center
+# Obtaining uncertainty estimates from neural networks
+
+---
+# Why uncertainty estimates?
+
+- If we can _quantify_ network uncertainty, we can take appropriate measures (like, have humans inspect uncertain cases)<sup>1</sup>
+- If we can _qualify_ network uncertainty (as in, e.g., reducible vs. irreducible), we can take appropriate counteractions (e.g., factoring in error margins)
+
+![Figure from Leibig et al.](images/retinopathy_scaled.png)
+
+- However, this is uncharted territory _to a higher degree even_  than interpretability (where we've just seen two out of quite a few available approaches)
+- There is one rather established approach for this though 
+
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Leibig084210", .opts = list(cite.style = "authoryear"))
+```
+
+
+.footnote[[1] cf. `r c1`]
+
+---
+# Uncertainty estimates through Bayesian deep learning
+
+- Apply dropout at test time (Gal & Gharahmani 2016<sup>1</sup>)
+- Have the network learn the dropout rate (Gal et al. 2017<sup>2</sup>, Kendall & Gal 2017<sup>3</sup>)
+- We are going to look at the latter approach
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "GalG16", .opts = list(cite.style = "authoryear"))
+c2 <- Citet(bib, key = "2017arXiv170507832G", .opts = list(cite.style = "authoryear"))
+c3 <- Citet(bib, key = "NIPS2017_7141", .opts = list(cite.style = "authoryear"))
+```
+
+
+.footnote[
+[1] cf. `r c1`
+
+[2] cf. `r c2`
+
+[3] cf. `r c3`
+]
+
+---
+# Types of uncertainty
+
+- Epistemic: What the model doesn't know (reducible by more data)
+- Aleatoric: Variations due to sampling/measurement process (irreducible)
+
+
+Example from class segmentation:<sup>1</sup>
+
+![](images/segmentation_uncertainty_scaled.png)
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "NIPS2017_7141", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[
+[1] cf. `r c1`]
+
+
+---
+# Implementation in R
+
+- Implementation follows the authors' Python Keras version
+- Read up later here: [You sure? A Bayesian approach to obtaining uncertainty estimates from neural networks](https://blogs.rstudio.com/tensorflow/posts/2018-11-12-uncertainty_estimates_dropout/)
+- Consists of 4 parts: a layer wrapper, a modified model, a specific loss function, and Monte Carlo prediction
+
+---
+# Wrapper class (extract)
+
+The wrapper's purpose is to calculate the optimal dropout rate for the layer it wraps.
+
+```{r, eval=FALSE}
+# R6 wrapper class, a subclass of KerasWrapper
+ConcreteDropout <- R6::R6Class("ConcreteDropout",
+  
+  inherit = KerasWrapper,
+  
+  public = list(
+    # [...]
+    initialize = function( # [...]
+    
+    build = function(input_shape) {
+      super$build(input_shape)
+    {{self$p_logit <- super$add_weight(}}# [...]
+      # [...]
+      regularizer <- k_sum(kernel_regularizer + dropout_regularizer)
+    {{super$add_loss(regularizer)}}
+    },
+    
+    concrete_dropout = function(x) { # [...]
+      
+    call = function(x, mask = NULL, training = NULL) {# [...]
+  )
+)
+
+```
+
+
+---
+# Dropout model (1)
+
+This example has 3 hidden dense layers each wrapped with `ConcreteDropout`.
+
+```{r,eval=FALSE}
+output <- input %>% layer_concrete_dropout(
+  layer = layer_dense(units = hidden_dim, activation = "relu"),
+  # [...]
+  ) %>% layer_concrete_dropout(
+  layer = layer_dense(units = hidden_dim, activation = "relu"),
+  # [...]
+  ) %>% layer_concrete_dropout(
+  layer = layer_dense(units = hidden_dim, activation = "relu"),
+  # [...]
+)
+```
+
+---
+# Dropout model (2)
+
+The model outputs not just the _predictive (conditional) mean_, but also the _predictive variance_:
+
+```{r, eval=FALSE}
+mean <- output %>% layer_concrete_dropout(
+  layer = layer_dense(units = output_dim),
+  # [...]
+)
+
+log_var <- output %>% layer_concrete_dropout(
+  layer_dense(units = output_dim),
+  # [...]
+)
+output <- layer_concatenate(list(mean, log_var))
+model <- keras_model(input, output)
+```
+
+- This means we can learn _different variances for different data points_. 
+- We thus hope to be able to account for _heteroscedasticity_ in the data.
+
+---
+# Heteroscedastic loss (1)
+
+Instead of mean squared error we use a cost function that does not treat all estimates alike:
+
+$$\frac{1}{N} \sum_i{\frac{1}{2 \hat{\sigma}^2_i} \ (\mathbf{y}_i - \mathbf{\hat{y}}_i)^2 + \frac{1}{2} log \ \hat{\sigma}^2_i}$$
+
+In addition to the target vs. prediction check, this cost function contains two regularization terms: 
+
+- $\frac{1}{2 \hat{\sigma}^2_i}$ downweights the high-uncertainty predictions in the loss function. The model is encouraged to indicate high uncertainty when its predictions are false.
+
+- $\frac{1}{2} log \ \hat{\sigma}^2_i$ makes sure the network does not simply indicate high uncertainty everywhere.
+
+---
+# Heteroscedastic loss (2)
+
+R code (calculating with the log of the variance):
+
+```{r, eval=FALSE}
+heteroscedastic_loss <- function(y_true, y_pred) {
+    mean <- y_pred[, 1:output_dim]
+    log_var <- y_pred[, (output_dim + 1):-1]
+    precision <- k_exp(-log_var)
+    k_sum(precision * (y_true - mean) ^ 2 + log_var, axis = 2)
+}
+
+model %>% compile(
+  optimizer = "adam",
+  loss = heteroscedastic_loss,
+  metrics = c(custom_metric("heteroscedastic_loss", heteroscedastic_loss))
+)
+```
+
+
+---
+# Obtain uncertainty estimates (Monte Carlo)
+
+```{r, eval=FALSE}
+MC_samples <- array(0, dim = c(num_MC_samples, n_val, 2 * output_dim))
+for (k in 1:num_MC_samples) {
+  MC_samples[k, , ] <- (model %>% predict(X_val))
+}
+```
+
+Epistemic uncertainty is calculated from the model's "mean" output:
+
+```{r, eval=FALSE}
+means <- MC_samples[, , 1:output_dim] 
+# predictive mean (average over the MC samples)
+predictive_mean <- apply(means, 2, mean) 
+# epistemic_uncertainty = variance of the "mean" component of the MC samples
+epistemic_uncertainty <- apply(means, 2, var) 
+```
+
+
+While aleatoric uncertainty is calculated from the "variance" output:
+
+```{r, eval=FALSE}
+# aleatoric_uncertainty = mean of the "variance" component of the MC samples
+logvar <- MC_samples[, , (output_dim + 1):dim(MC_samples)[3]]
+aleatoric_uncertainty <- exp(colMeans(logvar))
+```
+
+---
+# Results: Epistemic uncertainty
+
+Epistemic uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
+
+![](images/epistemic_1000.png)
+
+Uncertainty is high in regions where the model has not seen many datapoints.
+
+---
+# Results: Aleatoric uncertainty
+
+Aleatoric uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
+
+![](images/aleatoric_1000.png)
+
+The amount of data seen does not affect irreducible uncertainty.
+
+---
+# Results: Predictive uncertainty
+
+Overall predictive uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
+
+![](images/overall_1000.png)
+
+Both types of uncertainty add to yield the final predictive uncertainty.
+
+
+---
+# Wrapup/feedback
+
+
+
 ---
 # References
 
-```{r, 'refs', results='asis', echo=FALSE}
-PrintBibliography(bib)
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 1, end = 5)
 ```
 
+---
+# References (cont.)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 6, end = 10)
+```
