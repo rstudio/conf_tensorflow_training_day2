@@ -13,7 +13,7 @@ class: center, middle, inverse, title-slide
 # Representation learning, interpretability, and uncertainty
 ## A pick of ‘meta’ topics in current DL
 ### Sigrid Keydana
-### RStudio::conf 2019
+### rstudio::conf 2019
 
 ---
 
@@ -31,12 +31,19 @@ What do these topics have in common?
 --
 
 - Terms are not necessarily well-defined
-- We'll keep out of terminology-related controversies, and
-- Focus on the code
+
+- No out-of-the-box solutions
+
+- You will have to evaluate what's useful _to you_
+
+- We just present techniques to choose from / adapt / extend ...
+
+&lt;br /&gt;
 
 --
 
 The idea being: Enable you to apply what's useful to you _in your area of work/interest_
+
 
 ---
 class: inverse, middle, center
@@ -46,23 +53,102 @@ class: inverse, middle, center
 
 ---
 
-# Why representation learning?
+# Representation matters.
 
-- Representation matters&lt;sup&gt;1&lt;/sup&gt;
-- Good representations make subsequent prediction task easier 
-- Make use of abundant unlabeled data (unsupervised pretraining)
-- Transfer learning / domain adaptation
-- Density estimation
-- Object generation
 
+Your task: Separate the green triangles from the blue circles.&lt;sup&gt;1&lt;/sup&gt;
+
+
+![](images/representationmatters.png)
 
 
 
-.footnote[[1] cf. Goodfellow, Bengio, and Courville (2016), chap. 15, and Bengio, Courville, and Vincent (2012).]
+
+.footnote[[1] Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning. http://www.deeplearningbook.org.]
+
+---
+
+# What makes one representation better than another?
+
+Good representations make a subsequent prediction task easier.&lt;sup&gt;1, 2&lt;/sup&gt;
+
+Examples: 
+
+- unsupervised pretraining (make use of vast amounts of unlabeled data)
+- transfer learning (use features learned on one task for solving another task)
+- use relations learned on one domain to infer relationships on another
+
+
+
+
+.footnote[[1] See chapter 15 in Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning. http://www.deeplearningbook.org.
+
+[2] Also, Bengio, Y, A. C. Courville and P. Vincent (2012). Unsupervised Feature Learning and Deep Learning: A Review and New Perspectives. http://arxiv.org/abs/1206.5538.]
+
+---
+# Example: Zero-shot learning with DeVise
+
+- Frome et al.&lt;sup&gt;1&lt;/sup&gt; trained an image classification model to predict label embeddings (that had been learned in an supervised manner) instead of the labels themselves
+
+- This allows for meaningful classification of objects not encountered before
+
+![](images/devise.png)
+
+
+
+.footnote[[1] Frome, A., G. S. Corrado, J. Shlens, et al. (2013). DeViSE: A Deep Visual-Semantic Embedding Model]
+
+
+---
+# To allow for good generalization, good latent features are
+
+- causal
+
+- disentangled
+
+- smooth
+
+- possibly, hierarchical
+
+- shared across domains / tasks
+
+- sparse 
+
+---
+# Example: Disentanglement
+
+- Radford et al.&lt;sup&gt;1&lt;/sup&gt; showed they could perform word-vector-like arithmetic manipulations on the space larned by a DCGAN (deep generative adversarial network):
+
+![](images/glasses_scaled.png)
+
+
+
+.footnote[[1] Radford, A, L. Metz and S. Chintala (2015). Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks]
+
+---
+# Other uses of representation learning
+
+Besides improving prediction, latent spaces (resp. learned distributions) also figure prominently in:
+
+- object generation
+
+- evaluating data likelihood at test time
+
+- learning conditional relationships
+
+--
+
+&lt;br /&gt;
+
+Let's see an example!
 
 ---
 
 ## Variational autoencoders (VAEs)
+
+
+- Density estimation
+- Object generation
 
 - often used in object generation
 - learn a _latent space_ that can be sampled from
@@ -822,6 +908,10 @@ Feature Learning and Deep Learning: A Review and New
 Perspectives". In: _CoRR_ abs/1206.5538. eprint: 1206.5538. URL:
 [http://arxiv.org/abs/1206.5538](http://arxiv.org/abs/1206.5538).
 
+Frome, A., G. S. Corrado, J. Shlens, et al. (2013). "DeViSE: A
+Deep Visual-Semantic Embedding Model". In: _NIPS_. , pp.
+2121-2129.
+
 Gal, Y. and Z. Ghahramani (2016). "Dropout as a Bayesian
 Approximation: Representing Model Uncertainty in Deep Learning".
 In: _Proceedings of the 33nd International Conference on Machine
@@ -836,15 +926,15 @@ Goodfellow, I, Y. Bengio and A. Courville (2016). _Deep Learning_.
 MIT Press. URL:
 [http://www.deeplearningbook.org](http://www.deeplearningbook.org).
 
+---
+# References (cont.)
+
 Kendall, A. and Y. Gal (2017). "What Uncertainties Do We Need in
 Bayesian Deep Learning for Computer Vision?" In: _Advances in
 Neural Information Processing Systems 30_. Ed. by I. Guyon, U. V.
 Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan and R.
 Garnett. Curran Associates, Inc, pp. 5574-5584. URL:
 [http://papers.nips.cc/paper/7141-what-uncertainties-do-we-need-in-bayesian-deep-learning-for-computer-vision.pdf](http://papers.nips.cc/paper/7141-what-uncertainties-do-we-need-in-bayesian-deep-learning-for-computer-vision.pdf).
-
----
-# References (cont.)
 
 Leibig, C, V. Allken, M. Seckin Ayhan, et al. (2017). "Leveraging
 uncertainty information from deep neural networks for disease
@@ -863,15 +953,9 @@ Insights from the Social Sciences". In: _CoRR_ abs/1706.07269.
 eprint: 1706.07269. URL:
 [http://arxiv.org/abs/1706.07269](http://arxiv.org/abs/1706.07269).
 
-Ribeiro, M. T, S. Singh and C. Guestrin (2016). ""Why Should I
-Trust You?": Explaining the Predictions of Any Classifier". In:
-_CoRR_ abs/1602.04938. eprint: 1602.04938. URL:
-[http://arxiv.org/abs/1602.04938](http://arxiv.org/abs/1602.04938).
-
-Zhao, S, J. Song and S. Ermon (2017). "InfoVAE: Information
-Maximizing Variational Autoencoders". In: _CoRR_ abs/1706.02262.
-eprint: 1706.02262. URL:
-[http://arxiv.org/abs/1706.02262](http://arxiv.org/abs/1706.02262).
+Radford, A, L. Metz and S. Chintala (2015). "Unsupervised
+Representation Learning with Deep Convolutional Generative
+Adversarial Networks". In: _CoRR_ abs/1511.06434.
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

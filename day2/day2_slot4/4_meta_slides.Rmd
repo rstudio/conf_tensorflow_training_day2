@@ -2,7 +2,7 @@
 title: "Representation learning, interpretability, and uncertainty"
 subtitle: "A pick of 'meta' topics in current DL"
 author: "Sigrid Keydana"
-date: "RStudio::conf 2019"
+date: "rstudio::conf 2019"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -43,12 +43,19 @@ What do these topics have in common?
 --
 
 - Terms are not necessarily well-defined
-- We'll keep out of terminology-related controversies, and
-- Focus on the code
+
+- No out-of-the-box solutions
+
+- You will have to evaluate what's useful _to you_
+
+- We just present techniques to choose from / adapt / extend ...
+
+<br />
 
 --
 
 The idea being: Enable you to apply what's useful to you _in your area of work/interest_
+
 
 ---
 class: inverse, middle, center
@@ -58,14 +65,32 @@ class: inverse, middle, center
 
 ---
 
-# Why representation learning?
+# Representation matters.
 
-- Representation matters<sup>1</sup>
-- Good representations make subsequent prediction task easier 
-- Make use of abundant unlabeled data (unsupervised pretraining)
-- Transfer learning / domain adaptation
-- Density estimation
-- Object generation
+
+Your task: Separate the green triangles from the blue circles.<sup>1</sup>
+
+
+![](images/representationmatters.png)
+
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[[1] Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning. http://www.deeplearningbook.org.]
+
+---
+
+# What makes one representation better than another?
+
+Good representations make a subsequent prediction task easier.<sup>1, 2</sup>
+
+Examples: 
+
+- unsupervised pretraining (make use of vast amounts of unlabeled data)
+- transfer learning (use features learned on one task for solving another task)
+- use relations learned on one domain to infer relationships on another
 
 
 ```{r, echo=FALSE, results=FALSE}
@@ -73,11 +98,78 @@ c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "autho
 c2 <- Citet(bib, key = "5538", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] cf. `r c1`, chap. 15, and `r c2`.]
+.footnote[[1] See chapter 15 in Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning. http://www.deeplearningbook.org.
+
+[2] Also, Bengio, Y, A. C. Courville and P. Vincent (2012). Unsupervised Feature Learning and Deep Learning: A Review and New Perspectives. http://arxiv.org/abs/1206.5538.]
+
+---
+# Example: Zero-shot learning with DeVise
+
+- Frome et al.<sup>1</sup> trained an image classification model to predict label embeddings (that had been learned in an supervised manner) instead of the labels themselves
+
+- This allows for meaningful classification of objects not encountered before
+
+![](images/devise.png)
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "FromeCSBDRM13", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[[1] Frome, A., G. S. Corrado, J. Shlens, et al. (2013). DeViSE: A Deep Visual-Semantic Embedding Model]
+
+
+---
+# To allow for good generalization, good latent features are
+
+- causal
+
+- disentangled
+
+- smooth
+
+- possibly, hierarchical
+
+- shared across domains / tasks
+
+- sparse 
+
+---
+# Example: Disentanglement
+
+- Radford et al.<sup>1</sup> showed they could perform word-vector-like arithmetic manipulations on the space larned by a DCGAN (deep generative adversarial network):
+
+![](images/glasses_scaled.png)
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "RadfordMC15", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[[1] Radford, A, L. Metz and S. Chintala (2015). Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks]
+
+---
+# Other uses of representation learning
+
+Besides improving prediction, latent spaces (resp. learned distributions) also figure prominently in:
+
+- object generation
+
+- evaluating data likelihood at test time
+
+- learning conditional relationships
+
+--
+
+<br />
+
+Let's see an example!
 
 ---
 
 ## Variational autoencoders (VAEs)
+
+
+- Density estimation
+- Object generation
 
 - often used in object generation
 - learn a _latent space_ that can be sampled from
