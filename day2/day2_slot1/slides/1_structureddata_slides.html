@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Deep learning for structured data</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Sigrid Keydana" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Deep learning for structured data
+### Sigrid Keydana
+### rstudio::conf 2019
+
+---
+
+
+
+
+
+
+
+
+# Topics
+
+- Intro/Recap: Keras Functional API
+
+- Dealing with mixed (continuous + categorical) datasets in deep learning
+
+- _Entity embeddings_ 1: Extracting relationships
+
+- _Entity embeddings_ 2: Improving accuracy
+
+
+
+---
+class: inverse, middle, center
+
+# Intro/Recap: Keras Functional API
+
+
+---
+class: inverse, middle, center
+
+# Dealing with mixed (continuous + categorical) datasets in deep learning
+
+---
+
+# Dataset
+
+- "Census Income" (a.k.a. "Adult") dataset available at [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income)
+
+- Task is to predict predict binarized salary (&lt; resp. &gt; 50k)
+
+- The dataset has continuous as well as categorical variables
+
+- We will explore 2 ways to combine them
+
+- Notebook to follow along: [heterogeneous_data.Rmd](../notebooks/heterogeneous_data.Rmd)
+
+
+---
+# A glimpse at the data
+
+```
+Observations: 32,561
+Variables: 15
+$ age            &lt;int&gt; 39, 50, 38, 53, 28, 37, 49, 52, 31, 42, 37, 30,...
+$ workclass      &lt;chr&gt; "State-gov", "Self-emp-not-inc", "Private", "Pr...
+$ fnlwgt         &lt;int&gt; 77516, 83311, 215646, 234721, 338409, 284582, 1...
+$ education      &lt;chr&gt; "Bachelors", "Bachelors", "HS-grad", "11th", "B...
+$ education_num  &lt;int&gt; 13, 13, 9, 7, 13, 14, 5, 9, 14, 13, 10, 13, 13,...
+$ marital_status &lt;chr&gt; "Never-married", "Married-civ-spouse", "Divorce...
+$ occupation     &lt;chr&gt; "Adm-clerical", "Exec-managerial", "Handlers-cl...
+$ relationship   &lt;chr&gt; "Not-in-family", "Husband", "Not-in-family", "H...
+$ race           &lt;chr&gt; "White", "White", "White", "Black", "Black", "W...
+$ sex            &lt;chr&gt; "Male", "Male", "Male", "Male", "Female", "Fema...
+$ capital_gain   &lt;int&gt; 2174, 0, 0, 0, 0, 0, 0, 0, 14084, 5178, 0, 0, 0...
+$ capital_loss   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
+$ hours_per_week &lt;int&gt; 40, 13, 40, 40, 40, 40, 16, 45, 50, 40, 80, 40,...
+$ native_country &lt;chr&gt; "United-States", "United-States", "United-State...
+$ salary         &lt;chr&gt; "&lt;=50K", "&lt;=50K", "&lt;=50K", "&lt;=50K", "&lt;=50K", "&lt;...
+```
+
+---
+# Common actions for all 2 approaches 
+
+
+
+```r
+# convert target variable to values 0 resp. 1
+y_train &lt;- train_data$salary %&gt;% factor() %&gt;% as.numeric() - 1
+```
+
+
+```r
+# convert character columns to factors
+train_data &lt;- train_data %&gt;%
+  select(-salary) %&gt;%
+  mutate_if(is.character, factor)
+```
+
+
+```r
+# Isolate the continuous variables into a new dataset
+x_train_continuous &lt;- train_data %&gt;% select_if(is.numeric)
+```
+
+
+```r
+# Scale all continuous data and convert to matrix
+x_train_continuous &lt;- x_train_continuous %&gt;%
+  mutate_all(scale) %&gt;% as.matrix()
+```
+
+
+
+```r
+# Also isolate categorical data
+x_train_categorical &lt;- train_data %&gt;% select_if(is.factor)  
+```
+
+
+---
+# Approach 1: One-hot-encode all categorical variables
+
+In this approach, every categorical variable gets one-hot encoded separately, using `to_categorical`.
+
+
+```r
+c(workclass, education, marital_status, occupation,
+  relationship, race, sex, native_country) %&lt;-%
+  map(x_train_categorical, compose(to_categorical, as.numeric))
+```
+
+Now we can bind all columns (continuous and one-hot-encoded categorical ones) together into a train matrix `x_train_all`.
+
+
+```r
+x_train_all &lt;- cbind(
+  x_train_continuous, workclass, education, marital_status,
+  occupation, relationship, race, sex, native_country)
+```
+
+
+---
+# Approach 1: Model training
+
+Please go ahead and run the model for approach 1.
+Note the resulting accuracy on the validation set.
+
+---
+# Approach 2: Let the network specialize
+
+- Again, we have a model using only dense layers, but this time we'll split the train data into 9 different inputs (one continuous and 8 categorical).
+- The idea is to give the network the chance to get some special knowledge on each input.
+- Here, we will need to use the functional API
+- We start by defining 9 different inputs:
+
+
+```r
+input_continuous &lt;- layer_input(shape = dim(x_train_continuous)[2]) 
+input_workclass &lt;- layer_input(shape = dim(workclass)[2])
+# and so on
+
+inputs &lt;- list(input_continuous, input_workclass, input_education, input_marital_status,
+               input_relationship, input_occupation, input_race, input_sex, input_native_country)
+```
+
+
+
+---
+class: inverse, middle, center
+
+# Entity embeddings 1: Extracting relationships
+
+---
+class: inverse, middle, center
+
+# Entity embeddings 2: Improving accuracy
+
+
+
+
+---
+
+# Why representation learning?
+
+- Representation matters&lt;sup&gt;1&lt;/sup&gt;
+- Good representations make subsequent prediction task easier 
+- Make use of abundant unlabeled data (unsupervised pretraining)
+- Transfer learning / domain adaptation
+- Density estimation
+- Object generation
+
+
+
+
+.footnote[[1] cf. , chap. 15, and .]
+
+---
+# Wrapup/feedback
+
+
+
+---
+# References
+
+
+```
+## You haven't cited any references in this bibliography yet.
+```
+
+NULL
+
+---
+# References (cont.)
+
+
+```
+## You haven't cited any references in this bibliography yet.
+```
+
+NULL
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "solarized",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
