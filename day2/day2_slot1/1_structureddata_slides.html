@@ -152,24 +152,28 @@ Please go ahead and run the model for approach 1.
 Note the resulting accuracy on the validation set.
 
 ---
-# Approach 2: Let the network specialize
+# Approach 2: Use embeddings on categorical data
 
-- Again, we have a model using only dense layers, but this time we'll split the train data into 9 different inputs (one continuous and 8 categorical).
-- The idea is to give the network the chance to get some special knowledge on each input.
-- Here, we will need to use the functional API
-- We start by defining 9 different inputs:
+Time for a little excursion...
+
+---
+class: inverse, middle, center
+
+# Entity embeddings are all the hype
+
+---
+# Most people know embeddings for this
+
+(or something like this)
+
+![](images/mikolov.png)
 
 
-```r
-input_continuous &lt;- layer_input(shape = dim(x_train_continuous)[2]) 
-input_workclass &lt;- layer_input(shape = dim(workclass)[2])
-# and so on
+---
+# But not just words or sentences can be embedded...
 
-inputs &lt;- list(input_continuous, input_workclass, input_education, input_marital_status,
-               input_relationship, input_occupation, input_race, input_sex, input_native_country)
-```
-
-
+- relations of all kinds (e.g., in knowledge bases)
+- 
 
 ---
 class: inverse, middle, center

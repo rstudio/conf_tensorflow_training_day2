@@ -23,7 +23,7 @@ Here, we're using the "Census Income" (a.k.a. "Adult") dataset available at the 
 We are going to predict binarized salary (< resp. > 50k).
 
 The focus of this exercise is to experiment with different ways of handling the presence of continuous as well as categorical variables.
-We will explore 3 ways to do this.
+We will explore 2 ways to do this.
 
 ## Prepare the data
 
@@ -178,80 +178,13 @@ model %>% fit(
 
 What's the final accuracy on the validation split?
 
+
 ## Way 2
 
-Now let's try a different way. We will have a very similar model using only dense layers, but this time we'll split the train data into 9 different inputs (one continuous and 8 categorical).
-The idea is to give the network the chance to get some special knowledge on each input.
+Now we'll wrap the categorical inputs in embedding layers.
+The continous input stays wired to a dense layer.
 
-```{r}
-input_continuous <- layer_input(shape = dim(x_train_continuous)[2]) 
-input_workclass <- layer_input(shape = dim(workclass)[2])
-input_education <- layer_input(shape = dim(education)[2])
-input_marital_status <- layer_input(shape = dim(marital_status)[2])
-input_relationship <- layer_input(shape = dim(relationship)[2])
-input_occupation <- layer_input(shape = dim(occupation)[2])
-input_race <- layer_input(shape = dim(race)[2])
-input_sex <- layer_input(shape = dim(sex)[2])
-input_native_country <- layer_input(shape = dim(native_country)[2])
-
-inputs <- list(input_continuous, input_workclass, input_education, input_marital_status,
-               input_relationship, input_occupation, input_race, input_sex, input_native_country)
-```
-
-
-You could for example connect 2 dense layers to every input, then unite all branches, add further dense layers and then, add the final classification layer.
-
-
-```{r}
-dense1 <- input_continuous %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense2 <- input_workclass %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense3 <- input_education %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense4 <- input_marital_status %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense5 <- input_relationship %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense6 <- input_occupation %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense7 <- input_race %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense8 <- input_sex %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-dense9 <- input_native_country %>% layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 64, activation = "relu")
-
-output <- layer_concatenate(list(dense1, dense2, dense3, dense4, dense5, dense6, dense7, dense8)) %>%
-  layer_dropout(rate = 0.5) %>%
-  layer_dense(units = 64, activation = "relu") %>%
-  layer_dropout(rate = 0.5) %>%
-  layer_dense(units = 1, activation = "sigmoid") 
-  
-model <- keras_model(inputs = inputs, outputs = output)  
-model
-```
-
-```{r}
-model %>% compile(loss = "binary_crossentropy", optimizer = "adam", metrics = "accuracy")
-```
-
-
-Now train the model and compare accuracies.
-
-```{r}
-model %>% fit(
-  x = list(x_train_continuous, workclass, education, marital_status, relationship, occupation, race, sex, native_country),
-  y = y_train,
-  epochs = 20,
-  validation_split = 0.2
-)
-```
-
-
-## Way 3
-
-Way 3 is similar to way 2 but now, we're embedding the different inputs (apart from the continous input which stays wired to a dense layer).
+So now we will have several inputs and thus, use the functional API.
 
 ```{r}
 input_continuous <- layer_input(shape = dim(x_train_continuous)[2]) 
@@ -269,7 +202,7 @@ inputs <- list(input_continuous, input_workclass, input_education, input_marital
 ```
 
 
-Here, you will want to have an embedding layer wired to every input but the first; then flatten the layers and have another dense layer attached.
+First, we attach an embedding layer to every input but the first; then flatten the tensors and attach a dense layer.
 
 ```{r}
 dense1 <-
@@ -277,7 +210,7 @@ dense1 <-
   layer_dense(units = 64, activation = "relu")
 dense2 <-
   input_workclass %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$workclass) + 1,
+    input_dim = nlevels(x_train_categorical$workclass),
     input_length = 1,
     output_dim = 64,
     name = "workclass_embedding"
@@ -285,7 +218,7 @@ dense2 <-
   layer_dense(units = 64, activation = "relu")
 dense3 <-
   input_education %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$education) + 1,
+    input_dim = nlevels(x_train_categorical$education),
     input_length = 1,
     output_dim = 64,
     name = "education_embedding"
@@ -293,7 +226,7 @@ dense3 <-
   layer_dense(units = 64, activation = "relu")
 dense4 <-
   input_marital_status %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$marital_status) + 1,
+    input_dim = nlevels(x_train_categorical$marital_status),
     input_length = 1,
     output_dim = 64,
     name = "marital_embedding"
@@ -301,7 +234,7 @@ dense4 <-
   layer_dense(units = 64, activation = "relu")
 dense5 <-
   input_occupation %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$occupation) + 1,
+    input_dim = nlevels(x_train_categorical$occupation),
     input_length = 1,
     output_dim = 64,
     name = "occupation_embedding"
@@ -309,7 +242,7 @@ dense5 <-
   layer_dense(units = 64, activation = "relu")
 dense6 <-
   input_relationship %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$relationship) + 1,
+    input_dim = nlevels(x_train_categorical$relationship),
     input_length = 1,
     output_dim = 64,
     name = "relationship_embedding"
@@ -317,7 +250,7 @@ dense6 <-
   layer_dense(units = 64, activation = "relu")
 dense7 <-
   input_race %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$race) + 1,
+    input_dim = nlevels(x_train_categorical$race),
     input_length = 1,
     output_dim = 64,
     name = "race_embedding"
@@ -325,7 +258,7 @@ dense7 <-
   layer_dense(units = 64, activation = "relu")
 dense8 <-
   input_sex %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$sex) + 1,
+    input_dim = nlevels(x_train_categorical$sex),
     input_length = 1,
     output_dim = 64,
     name = "sex_embedding"
@@ -333,13 +266,17 @@ dense8 <-
   layer_dense(units = 64, activation = "relu")
 dense9 <-
   input_native_country %>% layer_embedding(
-    input_dim = nlevels(x_train_categorical$native_country) + 1,
+    input_dim = nlevels(x_train_categorical$native_country),
     input_length = 1,
     output_dim = 64,
     name = "country_embedding"
   ) %>% layer_flatten() %>%
   layer_dense(units = 64, activation = "relu")
+```
 
+We concatenate the subgraphs and attach further dense layers.
+
+```{r}
 output <- layer_concatenate(list(dense1, dense2, dense3, dense4, dense5, dense6, dense7, dense8, dense9)) %>%
   layer_dropout(rate = 0.5) %>%
   layer_dense(units = 64, activation = "relu") %>%
@@ -350,16 +287,21 @@ model <- keras_model(inputs = inputs, outputs = output)
 model
 ```
 
+
 ```{r}
 model %>% compile(loss = "binary_crossentropy", optimizer = "adam", metrics = "accuracy")
 ```
 
-Again train the model and check accuracy.
+
 
 ```{r}
-x_train_categorical_matrix <- x_train_categorical %>% mutate_all(as.numeric) %>% as.matrix()
+x_train_categorical_matrix <- x_train_categorical %>%
+  mutate_all(as.numeric) %>% 
+  mutate_all(function(x) x - 1) %>%
+  as.matrix()
 ```
 
+Again train the model and check accuracy.
 
 ```{r}
 model %>% fit(
