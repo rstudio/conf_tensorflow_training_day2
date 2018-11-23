@@ -78,7 +78,7 @@ Your task: Separate the green triangles from the blue circles.<sup>1</sup>
 c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning. http://www.deeplearningbook.org.]
+.footnote[[1] Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.]
 
 ---
 
@@ -98,14 +98,14 @@ c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "autho
 c2 <- Citet(bib, key = "5538", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] See chapter 15 in Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning. http://www.deeplearningbook.org.
+.footnote[[1] See chapter 15 in Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.
 
-[2] Also, Bengio, Y, A. C. Courville and P. Vincent (2012). Unsupervised Feature Learning and Deep Learning: A Review and New Perspectives. http://arxiv.org/abs/1206.5538.]
+[2] Also, Bengio, Y, A. C. Courville and P. Vincent (2012). Unsupervised Feature Learning and Deep Learning: A Review and New Perspectives.]
 
 ---
 # Example: Zero-shot learning with DeVise
 
-- Frome et al.<sup>1</sup> trained an image classification model to predict label embeddings (that had been learned in an supervised manner) instead of the labels themselves
+- Frome et al.<sup>1</sup> trained an image classification model to predict label embeddings (that had been learned in an unsupervised manner) instead of the labels themselves
 
 - This allows for meaningful classification of objects not encountered before
 
@@ -115,7 +115,7 @@ c2 <- Citet(bib, key = "5538", .opts = list(cite.style = "authoryear"))
 c1 <- Citet(bib, key = "FromeCSBDRM13", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] Frome, A., G. S. Corrado, J. Shlens, et al. (2013). DeViSE: A Deep Visual-Semantic Embedding Model]
+.footnote[[1] Frome, A., G. S. Corrado, J. Shlens, et al. (2013). DeViSE: A Deep Visual-Semantic Embedding Model.]
 
 
 ---
@@ -136,7 +136,7 @@ c1 <- Citet(bib, key = "FromeCSBDRM13", .opts = list(cite.style = "authoryear"))
 ---
 # Example: Disentanglement
 
-- Radford et al.<sup>1</sup> showed they could perform word-vector-like arithmetic manipulations on the space larned by a DCGAN (deep generative adversarial network):
+- Radford et al.<sup>1</sup> showed they could perform word-vector-like arithmetic manipulations on the space learned by a DCGAN (deep generative adversarial network):
 
 ![](images/glasses_scaled.png)
 
@@ -144,7 +144,7 @@ c1 <- Citet(bib, key = "FromeCSBDRM13", .opts = list(cite.style = "authoryear"))
 c1 <- Citet(bib, key = "RadfordMC15", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] Radford, A, L. Metz and S. Chintala (2015). Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks]
+.footnote[[1] Radford, A, L. Metz and S. Chintala (2015). Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks.]
 
 ---
 # Other uses of representation learning
@@ -165,37 +165,54 @@ Let's see an example!
 
 ---
 
-## Variational autoencoders (VAEs)
+# Variational autoencoders (VAEs)
 
 
-- Density estimation
-- Object generation
+![](images/dpkingmavae_scaled.png)
 
-- often used in object generation
-- learn a _latent space_ that can be sampled from
-- learning objective is a tradeoff between faithful input reconstruction and conforming to a (regularizing) prior
-- Minimize: Evidence lower bound (ELBO)
-
-$$ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$
-
---
-
-#### Problems with traditional VAEs
-
-- may learn uninformative latent space
-- tends to overfit the data
 
 ---
 
-# InfoVAE and subtypes
+# Variational autoencoder (in words)
 
-- designed to learn more meaningful features
-- e.g. by maximizing mutual information between latent space prior and posterior
-- we'll see a subtype (MMD-VAE) soon
+- Encoder is a network
 
---
+- Decoder is a network
 
-But before, we need some background on
+- Latent space represents mean and variance of an approximating distribution $q(z)$
+
+- Latent space is regularized by a prior, often an isotropic Gaussian
+
+- Learning objective is a tradeoff between faithful input reconstruction and conforming to that regularizing prior:
+
+<br />
+
+Minimize: Evidence lower bound (ELBO)
+
+$$ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$
+
+---
+# VAE variants
+
+VAEs learning to minimize the __ELBO__ may:
+
+- learn an uninformative latent space
+
+- optimize the objective yet ignore the prior 
+
+- tend to overfit the data
+
+__InfoVAE__ and subtypes ( $\beta$ -VAE, MMD-VAE)
+
+- are designed to learn more meaningful features
+
+- e.g. by maximizing __mutual information__ between latent space prior and posterior
+
+
+-- 
+
+We'll see a subtype (__MMD-VAE__) soon. But before, we need some background on
+
 
 ---
 class: inverse, middle, center
@@ -205,13 +222,15 @@ class: inverse, middle, center
 
 ---
 
-# Eager execution
+# (TensorFlow) Keras with eager execution
 
-- The non-graph way of doing TensorFlow/Keras
-- More intuitive than static Keras/TF especially if not following the usual define-compile-fit cycle:
-  - encoder-decoder models (as in GANs, VAEs ...)
-  - neural style transfer
-  - models with attention mechanisms
+- Train a Keras model without building a graph
+
+- Operations return values, not tensors
+
+- Can inspect what goes in and comes out of an operation simply by printing a variable's contents
+
+- Makes model development and debugging a lot easier
   
 --
 
@@ -229,8 +248,8 @@ class: inverse, middle, center
 
 # Eager execution exercise
 
-- demo: [eager_intro.Rmd](../notebooks/eager_intro.Rmd)
-- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
+- notebook: [eager_intro.Rmd](../eager_intro.Rmd)
+- exercise: [4_meta_quizzes.Rmd](../4_meta_quizzes.Rmd)
 
 
 ---
@@ -255,10 +274,19 @@ class: inverse, middle, center
 c1 <- Citet(bib, key = "ZhaoSE17b", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] cf. `r c1`]
+.footnote[[1] cf. Zhao, S, J. Song and S. Ermon (2017). InfoVAE: Information Maximizing Variational Autoencoders.]
+
+---
+#### Task: learn a latent space on Fashion-MNIST (https://github.com/zalandoresearch/fashion-mnist)
+
+![](images/embedding.gif)
+
+
 
 ---
 # MMD-VAE, main steps (1): data streaming
+
+We use `tfdatasets` to stream the data.
 
 ```{r, eval=FALSE}
 library(keras)
@@ -266,22 +294,17 @@ use_implementation("tensorflow")
 library(tensorflow)
 tfe_enable_eager_execution(device_policy = "silent")
 
-library(tfdatasets)
-# also load dplyr, ggplot2, glue
+library(tfdatasets) 
 
 fashion <- dataset_fashion_mnist()
 c(train_images, train_labels) %<-% fashion$train
 c(test_images, test_labels) %<-% fashion$test
 
-train_x <- train_images %>% `/`(255) %>%
-  k_reshape(c(60000, 28, 28, 1))
-
-test_x <- test_images %>% `/`(255) %>%
-  k_reshape(c(10000, 28, 28, 1))
+train_x <- train_images %>% `/`(255) %>% k_reshape(c(60000, 28, 28, 1))
+test_x <- test_images %>% `/`(255) %>% k_reshape(c(10000, 28, 28, 1))
 
 buffer_size <- 60000
 batch_size <- 100
-
 {{train_dataset <- tensor_slices_dataset(train_x) %>%
   dataset_shuffle(buffer_size) %>%
   dataset_batch(batch_size)}}
@@ -290,36 +313,37 @@ batch_size <- 100
 ---
 # MMD-VAE, main steps (2): encoder model
 
+The encoder actually is a downsampling convolutional encoder:
+
 ```{r, eval=FALSE}
 encoder_model <- function(name = NULL) {
-  keras_model_custom(name = name, function(self) {
+  {{keras_model_custom(name = name, function(self) {}}
+    
 {{    self$conv1 <- 
-      layer_conv_2d(}}             # actually a convolutional encoder
-        filters = 32,
-        kernel_size = 3,
-        strides = 2,
-        activation = "relu")
+      layer_conv_2d(}}             
+        # [...]
+      )
      self$conv2 <-
       layer_conv_2d(
-        filters = 64,
-        kernel_size = 3,
-        strides = 2,
-        activation = "relu")
+        # [...]
+      )
     self$flatten <- layer_flatten()
-   {{self$dense <- layer_dense(units = latent_dim)}}     # 2 for easy viz
+   {{self$dense <- layer_dense(units = latent_dim)}}  
+    
     function (x, mask = NULL) {
       x %>%
         self$conv1() %>%
         self$conv2() %>%
         self$flatten() %>%
         self$dense()
-      }})}
+    }})}
 ```
 
 
 ---
 # MMD-VAE, main steps (3): decoder model
 
+The decoder counteracts downsampling by upsampling again, starting from randomly drawn values from latent space:
 
 ```{r, eval=FALSE}
 decoder_model <- function(name = NULL) {
@@ -329,14 +353,10 @@ decoder_model <- function(name = NULL) {
     self$reshape <- layer_reshape(target_shape = c(7, 7, 32))
 {{    self$deconv1 <-}} # first of 3 up-convolutions
       layer_conv_2d_transpose(
-        filters = 64,
-        kernel_size = 3,
-        strides = 2,
-        padding = "same",
-        activation = "relu"
+        # [...]
       )
- {{ self$deconv2 <- }} # another conv_2d_transpose, filters=32
- {{ self$deconv3 <- }} # another conv_2d_transpose, filters=1
+ {{ self$deconv2 <- }} # [...]  another conv_2d_transpose, filters=32
+ {{ self$deconv3 <- }} # [...]  another conv_2d_transpose, filters=1
     function (x, mask = NULL) {
       x %>%
         self$dense() %>%
@@ -344,51 +364,44 @@ decoder_model <- function(name = NULL) {
         self$deconv1() %>%
         self$deconv2() %>%
         self$deconv3()
-    }
-  })}
+    }})}
 ```
 
 ---
 # MMD-VAE, main steps (4): MMD loss
 
-The loss, _maximum mean discrepancy_ (MMD), is based on the idea that two distributions are identical if and only if all moments are identical. 
+- The loss, __maximum mean discrepancy__ (MMD), is based on the idea that two distributions are identical if and only if all moments are identical. 
 
-Concretely, MMD is estimated using a _kernel_, such as the Gaussian kernel
+- Concretely, similarity between distributions is estimated using a _kernel_, such as the Gaussian kernel
 
 $$k(z,z')=\frac{e^{||z-z'||}}{2\sigma^2}$$
 
-to assess similarity between distributions.
+- The idea then is:
 
-The idea then is that if two distributions are identical, the average similarity between samples from each distribution should be identical to the average similarity between mixed samples from both distributions:
+<br />
+
+If two distributions are identical, the average __within-distribution__ similarity should be identical to the average __between-distributions__ similarity:
 
 $$MMD(p(z)||q(z))=E_{p(z),p(z')}[k(z,z')]+E_{q(z),q(z')}[k(z,z')]−2E_{p(z),q(z')}[k(z,z')]$$
 
 ---
-# MMD-VAE, main steps (4): MMD loss
+# MMD-VAE, main steps (4): MMD loss (code)
 
+Implementing this loss amounts to just a few lines of code:
 
 ```{r, eval=FALSE}
 compute_kernel <- function(x, y) {
-  x_size <- k_shape(x)[1]
-  y_size <- k_shape(y)[1]
-  dim <- k_shape(x)[2]
-  tiled_x <- k_tile(
-    k_reshape(x, k_stack(list(x_size, 1, dim))),
-    k_stack(list(1, y_size, 1))
-  )
-  tiled_y <- k_tile(
-    k_reshape(y, k_stack(list(1, y_size, dim))),
-    k_stack(list(x_size, 1, 1))
-  )
-  k_exp(-k_mean(k_square(tiled_x - tiled_y), axis = 3) /
-          k_cast(dim, tf$float64))
+  # here we use a Gaussian kernel
+  # [...]
 }
 
 compute_mmd <- function(x, y, sigma_sqr = 1) {
+  
   x_kernel <- compute_kernel(x, x)
   y_kernel <- compute_kernel(y, y)
   xy_kernel <- compute_kernel(x, y)
   k_mean(x_kernel) + k_mean(y_kernel) - 2 * k_mean(xy_kernel)
+  
 }
 ```
 
@@ -398,28 +411,25 @@ compute_mmd <- function(x, y, sigma_sqr = 1) {
 
 ```{r, eval=FALSE}
 for (epoch in seq_len(num_epochs)) {
+  
   iter <- make_iterator_one_shot(train_dataset)
   until_out_of_range({
+    
     x <-  iterator_get_next(iter)
     with(tf$GradientTape(persistent = TRUE) %as% tape, {
+      
       mean <- encoder(x)
       preds <- decoder(mean)
       true_samples <- k_random_normal(
         shape = c(batch_size, latent_dim), dtype = tf$float64)
     {{loss_mmd <- compute_mmd(true_samples, mean)
-      loss_nll <- k_mean(k_square(x - preds))
-      loss <- loss_nll + loss_mmd}}
+    loss_nll <- k_mean(k_square(x - preds))
+    loss <- loss_nll + loss_mmd}}
     })
-    encoder_gradients <- tape$gradient(loss, encoder$variables)
-    decoder_gradients <- tape$gradient(loss, decoder$variables)
-    optimizer$apply_gradients(purrr::transpose(list(
-      encoder_gradients, encoder$variables
-    )),
-    global_step = tf$train$get_or_create_global_step())
-    optimizer$apply_gradients(purrr::transpose(list(
-      decoder_gradients, decoder$variables
-    )),
-    global_step = tf$train$get_or_create_global_step())
+    
+    #[...] here come the usual lines for gradient calculation/application
+    # that you've seen in the intro to eager execution
+    
   })}
 ```
 
@@ -427,16 +437,22 @@ for (epoch in seq_len(num_epochs)) {
 ---
 # MMD-VAE: Generated images
 
+Here are images generated from (unordered) random samples:
+
 ![](images/mmd_clothes_epoch_50.png)
 
 
 ---
 # MMD-VAE: Latent space
 
+And here we see how the different types of clothing cluster in latent space.
+
 ![](images/mmd_latentspace_epoch_50.png)
 
 ---
 # MMD-VAE: Interpolations
+
+(Drum roll:) Here finally we see clothes "morphing into each other" when drawing samples from an evenly spaced grid in latent space.
 
 ![](images/mmd_grid_epoch_50.png)
 
@@ -444,7 +460,7 @@ for (epoch in seq_len(num_epochs)) {
 ---
 # Variational autoencoders: Exercise
 
-- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
+- exercise: [4_meta_quizzes.Rmd](4_meta_quizzes.Rmd)
 
 
 ---
@@ -453,56 +469,75 @@ class: inverse, middle, center
 # Interpretability
 
 ---
-# Interpretability/explainability
+# Interpretability: Terminology
 
-- Everybody wants it but it's actually not a well-defined term
-- Commonly, a division is made between _interpreting a model_ and _explaining model decisions_
-- But see e.g. "The Mythos of Model Interpretability"<sup>1</sup> for the lack of agreed-upon definitions
-- Here, we'll skip any theoretical discussion and focus on two different ways of _local explanations_
-- Just one quote on the theory before we leave that be<sup>2</sup>
+You will see terminology distinguishing between
 
-> However, it is
-fair to say that most work in explainable artificial intelligence uses only the researchers’
-intuition of what constitutes a ‘good’ explanation.  There exists vast and valuable bodies
-of research in philosophy, psychology, and cognitive science of how people define, generate, select, evaluate, and present explanations, which argues that people employ certain
-cognitive  biases  and  social  expectations  towards  the  explanation  process. 
+- _interpreting a model_ (as a whole) and _explaining model decisions_ (individual predictions)
+
+- _interpretable models_ and _model-agnostic post-hoc interpretation tools_ 
+
+- _global_ and _local_ post-hoc explanations
+
+<br />
+
+__But:__
+
+- No technique is interpretable _per se_ (think lots of - possibly collinear - predictors in a linear regression)<sup>1</sup>
+
+- model-agnostic interpretation tools are models themselves (and thus, have their model-specific assumptions)
+
 
 ```{r, echo=FALSE, results=FALSE}
 c1 <- Citet(bib, key = "Lipton16a", .opts = list(cite.style = "authoryear"))
-c2 <- Citet(bib, key = "Miller17a", .opts = list(cite.style = "authoryear"))
 ```
 
 
-.footnote[[1] cf. `r c1`
+.footnote[[1] Lipton, Z. C. (2016). "The Mythos of Model Interpretability". ]
 
-[2] cf. `r c2`]
 
 ---
 # LIME<sup>1</sup>
 
-.pull-left[![](images/lime1.png)]
-.pull-right[![](images/lime2.png)]
+LIME provides sparse linear approximations by 
+
+- permuting _interpretable features_ of a sample,
+
+- getting predictions,
+
+- weighing them by distance to the instance being explained, and 
+
+- learning a local decision boundary.
+
 
 ```{r, echo=FALSE, results=FALSE}
 c1 <- Citet(bib, key = "RibeiroSG16", .opts = list(cite.style = "authoryear"))
 ```
 
+.footnote[[1] cf. Ribeiro, M. T, S. Singh and C. Guestrin (2016). Why Should I Trust You?: Explaining the Predictions of Any Classifier. ]
 
-.footnote[[1] cf. `r c1`]
 
+.pull-left[![](images/lime1.png)]
+.pull-right[![](images/lime2.png)]
 
 ---
 # LIME on images
 
-- Uses obfuscation on differently-sized _superpixels_
+
+- With images, the interpretable features are so-called _superpixels_ (homogeneous regions of pixels)
+
 - As LIME works by switching presence of superpixels on and off, obtaining an explanation for a high-res image can take some time
-- We will thus resize images before passing them to LIME as anyway the model will work with that size
+
+- We will thus resize images before passing them to LIME (and anyway the model will work with a resolution of 224x224)
+
+.pull-left[![](images/limecat1.png)]
+.pull-right[![](images/limecat2.png)]
 
 
 ---
 # LIME (1): Create an explainer
 
-##### We first create an _explainer_ using the `lime` factory function
+We first create an _explainer_ using the `lime` factory function
 
 ```{r, eval=FALSE}
 # the first argument is the path to the image
@@ -512,8 +547,9 @@ c1 <- Citet(bib, key = "RibeiroSG16", .opts = list(cite.style = "authoryear"))
 explainer <- lime(img_path, as_classifier(model, labels), image_prep)
 ```
 
+<br />
 
-##### And here's the preprocessing function that has to be passed to `lime`
+And here's the preprocessing function that has to be passed to `lime`
 
 ```{r, eval=FALSE}
 image_prep <- function(x) {
@@ -532,13 +568,15 @@ image_prep <- function(x) {
 ---
 # LIME(2): Get a prediction
 
-##### This also allows to test the preprocessing function
+Getting a prediction also allows for testing the preprocessing function:
 
 ```{r, eval=FALSE}
 preds <- predict(model, image_prep(img_path))
 ```
 
-##### Decode prediction
+<br />
+
+Decode prediction:
 
 ```{r, eval=FALSE}
 preds %>% imagenet_decode_predictions()
@@ -554,13 +592,15 @@ preds %>% imagenet_decode_predictions()
 ```
 
 ---
-# LIME (3): Explore superpixels
+# LIME (3): Explore different settings for number of superpixels
 
-##### Explore different settings for number of superpixels before actually getting an explanation:
+Try finding a good setting for the number of superpixels before actually getting an explanation:
 
 ```{r, eval=FALSE}
+# weight parameter: How high should locality be weighted compared to colour.
 plot_superpixels(img_path, colour = "cyan",
                  n_superpixels = 50, weight = 10)
+
 plot_superpixels(img_path, colour = "cyan",
                  n_superpixels = 200, weight = 10)
 ```
@@ -571,7 +611,7 @@ plot_superpixels(img_path, colour = "cyan",
 ---
 # LIME (4): Get explanation
 
-##### Call `explain` with the path to the image, the `explainer`, and optional parameters:
+Call `explain` with the path to the image, the `explainer`, and optional parameters:
 
 ```{r, eval=FALSE}
 explanation <- explain(
@@ -579,31 +619,45 @@ explanation <- explain(
   explainer,
   n_labels = 1, 
   n_features = 200,
-  n_superpixels = 200,
-  weight = 20)
+  n_superpixels = 200)
 ```
 
 ```{r, eval=FALSE}
 plot_image_explanation(explanation, fill_alpha = 0.6)
+# display = "block" greys out unimportant areas
 plot_image_explanation(explanation, display = "block", block_col = "violet")
 ```
 
-![2 of several ways to display an explanation](images/explanations.png)
+![](images/explanations.png)
 
 
 ---
 # Class activation maps (CAM)
 
-- For a given input image, class activation maps take the __output feature maps__ of a convolution layer and __weigh__ every channel in that feature map by the __gradient of the most probable class__ with respect to the channel.
+For a given input image: Class activation maps take 
 
-- Meaning: How much would that class probability change if that channel's activations were to change?
+- the __output feature maps__ of a convolution layer, and
+
+- __weight__ every channel in that feature map by
+
+- the __gradient of the most probable class__ with respect to the channel.
+
+
+Meaning: How much would that __class probability__ _change_ if __that channel's activations__ were to change?
+
+<br />
+
+They then average these coefficients over the channels and obtain an _aggregate measure of importance_ __per spatial location__.
 
 
 ---
 # CAM (1): Get the most probable class
 
+Which is the most probable class?
+
 ```{r, eval=FALSE}
 preds <- model %>% predict(img)
+
 max_pred <- which.max(preds[1,])
 
 image_output <- model$output[, max_pred]
@@ -614,8 +668,11 @@ We will want to compute this class output's gradient with respect to the activat
 ---
 # CAM (2): Get the last conv layer's output
 
+We now get a reference to the output tensor of the last conv layer.
+
 ```{r, eval=FALSE}
 last_conv_layer <- model %>% get_layer("block5_conv3")
+
 last_conv_layer_output <- last_conv_layer$output
 ```
 
@@ -625,26 +682,36 @@ These are the activations w.r.t. which we want to compute the class probability'
 # CAM (3): Fetch the pooled gradients
 
 
-We build a little graph to fetch and average the gradients - and run it.
+Now we build a little graph to fetch and average the gradients: 
 
 ```{r, eval=FALSE}
 grads <- k_gradients(image_output, last_conv_layer_output)[[1]]
 # average gradients over all but the channel dimension
 pooled_grads <- k_mean(grads, axis = c(1, 2, 3))
+```
 
+We also need a function to run this graph...
+
+```{r, eval=FALSE}
 iterate <- k_function(
   list(model$input),
   list(pooled_grads, last_conv_layer_output[1, , , ])
 )
+```
 
+And now we can actually run it!
+
+```{r, eval=FALSE}
 c(pooled_grads_value, conv_layer_output_value) %<-% iterate(list(img))
 ```
 
+<br />
+[BTW: You're right that this would be easier with eager execution.]
 
 ---
 # CAM (4): Multiply outputs by channel gradients
 
-This weights up the channels that have high impact on the classification.
+This upweights the channels that have high impact on the classification.
 
 ```{r, eval=FALSE}
 for (i in 1:512) {
@@ -669,9 +736,30 @@ heatmap <- apply(conv_layer_output_value, c(1,2), mean)
 ---
 # LIME/CAM: Exercise
 
-- demo: [lime.Rmd](../notebooks/lime.Rmd) (not needed for this exercise)
-- demo: [class_activation_maps.Rmd](../notebooks/class_activation_maps.Rmd) (not needed for this exercise)
-- exercise: [4_meta_quizzes.Rmd](../exercises/4_meta_quizzes.Rmd)
+The notebooks listed are for later reference; they are not needed for this exercise.
+
+- notebook: [lime.Rmd](lime.Rmd) 
+- notebook: [class_activation_maps.Rmd](class_activation_maps.Rmd) 
+- exercise: [4_meta_quizzes.Rmd](4_meta_quizzes.Rmd)
+
+---
+# Interpretability, a citation to go ... 
+
+
+<br />
+
+> However, it is
+fair to say that most work in explainable artificial intelligence uses only the researchers’
+intuition of what constitutes a ‘good’ explanation.  
+
+> There exists vast and valuable bodies of research in philosophy, psychology, and cognitive science of how people define, generate, select, evaluate, and present explanations, which argues that people employ certain cognitive  biases  and  social  expectations  towards  the  explanation  process.<sup>1</sup>
+
+```{r, echo=FALSE, results=FALSE}
+c2 <- Citet(bib, key = "Miller17a", .opts = list(cite.style = "authoryear"))
+```
+
+
+.footnote[[1]Miller, T. (2017). Explanation in Artificial Intelligence: Insights from the Social Sciences.]
 
 
 ---
@@ -682,12 +770,10 @@ class: inverse, middle, center
 # Why uncertainty estimates?
 
 - If we can _quantify_ network uncertainty, we can take appropriate measures (like, have humans inspect uncertain cases)<sup>1</sup>
+
 - If we can _qualify_ network uncertainty (as in, e.g., reducible vs. irreducible), we can take appropriate counteractions (e.g., factoring in error margins)
 
 ![Figure from Leibig et al.](images/retinopathy_scaled.png)
-
-- However, this is uncharted territory _to a higher degree even_  than interpretability (where we've just seen two out of quite a few available approaches)
-- There is one rather established approach for this though 
 
 
 ```{r, echo=FALSE, results=FALSE}
@@ -695,13 +781,15 @@ c1 <- Citet(bib, key = "Leibig084210", .opts = list(cite.style = "authoryear"))
 ```
 
 
-.footnote[[1] cf. `r c1`]
+.footnote[[1] cf. Leibig, C, V. Allken, M. Seckin Ayhan, et al. (2017). Leveraging uncertainty information from deep neural networks for disease detection.]
 
 ---
 # Uncertainty estimates through Bayesian deep learning
 
 - Apply dropout at test time (Gal & Gharahmani 2016<sup>1</sup>)
+
 - Have the network learn the dropout rate (Gal et al. 2017<sup>2</sup>, Kendall & Gal 2017<sup>3</sup>)
+
 - We are going to look at the latter approach
 
 ```{r, echo=FALSE, results=FALSE}
@@ -712,38 +800,42 @@ c3 <- Citet(bib, key = "NIPS2017_7141", .opts = list(cite.style = "authoryear"))
 
 
 .footnote[
-[1] cf. `r c1`
+[1] cf. Gal, Y. and Z. Ghahramani (2016). Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning.
 
-[2] cf. `r c2`
+[2] cf. Gal, Y, J. Hron and A. Kendall (2017). Concrete Dropout.
 
-[3] cf. `r c3`
+[3] cf. Kendall, A. and Y. Gal (2017). What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?
 ]
 
 ---
 # Types of uncertainty
 
-- Epistemic: What the model doesn't know (reducible by more data)
-- Aleatoric: Variations due to sampling/measurement process (irreducible)
+- Epistemic: What the model doesn't know 
 
+ - reducible by gathering more data
+ - should depend on how much data we've seen from a certain _range_ of the distribution
+ - should help guard us in case of train-test distribution  differences
 
-Example from class segmentation:<sup>1</sup>
+- Aleatoric: Variations due to sampling/measurement process
 
-![](images/segmentation_uncertainty_scaled.png)
+ - irreducible
+ - should help guard us against being over-confident in every single prediction
+ - with e.g. image classification, could occur if ground truth class is highly obfuscated, or scene illumination is very weak
 
-```{r, echo=FALSE, results=FALSE}
-c1 <- Citet(bib, key = "NIPS2017_7141", .opts = list(cite.style = "authoryear"))
-```
-
-.footnote[
-[1] cf. `r c1`]
 
 
 ---
 # Implementation in R
 
 - Implementation follows the authors' Python Keras version
+
 - Read up later here: [You sure? A Bayesian approach to obtaining uncertainty estimates from neural networks](https://blogs.rstudio.com/tensorflow/posts/2018-11-12-uncertainty_estimates_dropout/)
-- Consists of 4 parts: a layer wrapper, a modified model, a specific loss function, and Monte Carlo prediction
+
+- Consists of 4 parts: 
+ - a layer wrapper, 
+ - a two-outputs model,
+ - a specific loss function, and
+ - Monte Carlo prediction
 
 ---
 # Wrapper class (extract)
@@ -761,7 +853,6 @@ ConcreteDropout <- R6::R6Class("ConcreteDropout",
     initialize = function( # [...]
     
     build = function(input_shape) {
-      super$build(input_shape)
     {{self$p_logit <- super$add_weight(}}# [...]
       # [...]
       regularizer <- k_sum(kernel_regularizer + dropout_regularizer)
@@ -815,6 +906,7 @@ model <- keras_model(input, output)
 ```
 
 - This means we can learn _different variances for different data points_. 
+
 - We thus hope to be able to account for _heteroscedasticity_ in the data.
 
 ---
@@ -828,7 +920,7 @@ In addition to the target vs. prediction check, this cost function contains two 
 
 - $\frac{1}{2 \hat{\sigma}^2_i}$ downweights the high-uncertainty predictions in the loss function. The model is encouraged to indicate high uncertainty when its predictions are false.
 
-- $\frac{1}{2} log \ \hat{\sigma}^2_i$ makes sure the network does not simply indicate high uncertainty everywhere.
+- $\frac{1}{2} log \ \hat{\sigma}^2_i$ makes sure the network does not simply report high uncertainty everywhere.
 
 ---
 # Heteroscedastic loss (2)
@@ -917,12 +1009,20 @@ Both types of uncertainty add to yield the final predictive uncertainty.
 # References
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib, start = 1, end = 5)
+PrintBibliography(bib, start = 1, end = 4)
 ```
 
 ---
 # References (cont.)
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib, start = 6, end = 10)
+PrintBibliography(bib, start = 5, end = 8)
 ```
+
+---
+# References (cont.)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 9, end = 12)
+```
+

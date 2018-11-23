@@ -203,7 +203,7 @@ With eager execution, you take full control over the training process.
 In general, you will have at least two loops: an outer loop over epochs, and an inner loop over batches of data returned by the iterator (implemented implicitly by `until_out_of_range`).
 The iterator is recreated at the start of each new epoch.
 
-```{r}
+```{r, eval=FALSE}
 n_epochs <- 10
 
 for (i in seq_len(n_epochs)) {
@@ -344,7 +344,7 @@ until_out_of_range({
 
 Here is the complete example.
 
-```{r}
+```{r, eval=FALSE}
 library(keras)
 use_implementation("tensorflow")
 

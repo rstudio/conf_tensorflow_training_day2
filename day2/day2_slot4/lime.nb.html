@@ -1701,10 +1701,9 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShrZXJhcylcbmxpYnJhcnkobGltZSlcbmxpYnJhcnkobWFnaWNrKVxuYGBgIn0= -->
-<pre class="r"><code>library(keras)
-library(lime)
-library(magick)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeShrZXJhcylcbmxpYnJhcnkobGltZSlcbmxpYnJhcnkobWFnaWNrKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r library(keras) library(lime) library(magick)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1713,29 +1712,40 @@ library(magick)</code></pre>
 <p>Here are 4 images for you to play with.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBCeSBtYXR0YnVjayAoY2F0ZWdvcnkpIC0gT3duIHdvcmsgYnkgbWF0dGJ1Y2suLCBDQyBCWS1TQSAzLjAsIGh0dHBzOi8vY29tbW9ucy53aWtpbWVkaWEub3JnL3cvaW5kZXgucGhwP2N1cmlkPTIwMTUxMjQ0XG5pbWdfcGF0aCA8LSBcImltYWdlcy9CcmlzdG9sX0JhbGxvb25fRmllc3RhXzIwMDlfTU1CXzA2LnBuZ1wiXG5cbiMgQnkgR1QxOTc2IC0gT3duIHdvcmssIENDIEJZLVNBIDQuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9NzA4OTM3NTZcbiMgaW1nX3BhdGggPC0gXCJpbWFnZXMvd2FjaGF1ZXJfcmFkdGFnZS5wbmdcIlxuXG4jIEJ5IFRob21hcyBCcmVzc29uIC0gT3duIHdvcmssIENDIEJZIDQuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9NDcxOTE1NDhcbiNpbWdfcGF0aCA8LSBcImltYWdlcy8yMDE2LTAyLTIzXzE2LTAxLTA5X3BhcmlzLnBuZ1wiXG5cbiMgSXNpd2FsL1dpa2ltZWRpYSBDb21tb25zL0NDIEJZLVNBIDQuMCBbQ0MgQlktU0EgNC4wICAoaHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMCldLCBmcm9tIFdpa2ltZWRpYSBDb21tb25zXG4jIGltZ19wYXRoIDwtIFwiaW1hZ2VzLzIxMTYwNTI4X0xvZmVyX0tobmVfWWFuLUxvcmVuei01OTQzLnBuZ1wiXG5gYGAifQ== -->
-<pre class="r"><code># By mattbuck (category) - Own work by mattbuck., CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=20151244
-img_path &lt;- &quot;images/Bristol_Balloon_Fiesta_2009_MMB_06.png&quot;
-
-# By GT1976 - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=70893756
-# img_path &lt;- &quot;images/wachauer_radtage.png&quot;
-
-# By Thomas Bresson - Own work, CC BY 4.0, https://commons.wikimedia.org/w/index.php?curid=47191548
-#img_path &lt;- &quot;images/2016-02-23_16-01-09_paris.png&quot;
-
-# Isiwal/Wikimedia Commons/CC BY-SA 4.0 [CC BY-SA 4.0  (https://creativecommons.org/licenses/by-sa/4.0)], from Wikimedia Commons
-# img_path &lt;- &quot;images/21160528_Lofer_Khne_Yan-Lorenz-5943.png&quot;</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyBCeSBtYXR0YnVjayAoY2F0ZWdvcnkpIC0gT3duIHdvcmsgYnkgbWF0dGJ1Y2suLCBDQyBCWS1TQSAzLjAsIGh0dHBzOi8vY29tbW9ucy53aWtpbWVkaWEub3JnL3cvaW5kZXgucGhwP2N1cmlkPTIwMTUxMjQ0XG5pbWdfcGF0aCA8LSBcXGltYWdlcy9CcmlzdG9sX0JhbGxvb25fRmllc3RhXzIwMDlfTU1CXzA2LnBuZ1xcXG5cbiMgQnkgR1QxOTc2IC0gT3duIHdvcmssIENDIEJZLVNBIDQuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9NzA4OTM3NTZcbiMgaW1nX3BhdGggPC0gXFxpbWFnZXMvd2FjaGF1ZXJfcmFkdGFnZS5wbmdcXFxuXG4jIEJ5IFRob21hcyBCcmVzc29uIC0gT3duIHdvcmssIENDIEJZIDQuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9NDcxOTE1NDhcbiNpbWdfcGF0aCA8LSBcXGltYWdlcy8yMDE2LTAyLTIzXzE2LTAxLTA5X3BhcmlzLnBuZ1xcXG5cbiMgSXNpd2FsL1dpa2ltZWRpYSBDb21tb25zL0NDIEJZLVNBIDQuMCBbQ0MgQlktU0EgNC4wICAoaHR0cHM6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzQuMCldLCBmcm9tIFdpa2ltZWRpYSBDb21tb25zXG4jIGltZ19wYXRoIDwtIFxcaW1hZ2VzLzIxMTYwNTI4X0xvZmVyX0tobmVfWWFuLUxvcmVuei01OTQzLnBuZ1xcXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r # By mattbuck (category) - Own work by mattbuck., CC BY-SA 3.0, <a href="https://commons.wikimedia.org/w/index.php?curid=20151244" class="uri">https://commons.wikimedia.org/w/index.php?curid=20151244</a> img_path &lt;- /Bristol_Balloon_Fiesta_2009_MMB_06.png<br />
+</p>
+</div>
+<div id="by-gt1976---own-work-cc-by-sa-4.0-httpscommons.wikimedia.orgwindex.phpcurid70893756" class="section level1">
+<h1>By GT1976 - Own work, CC BY-SA 4.0, <a href="https://commons.wikimedia.org/w/index.php?curid=70893756" class="uri">https://commons.wikimedia.org/w/index.php?curid=70893756</a></h1>
+</div>
+<div id="img_path---wachauer_radtage.png" class="section level1">
+<h1>img_path &lt;- /wachauer_radtage.png<br />
+</h1>
+</div>
+<div id="by-thomas-bresson---own-work-cc-by-4.0-httpscommons.wikimedia.orgwindex.phpcurid47191548" class="section level1">
+<h1>By Thomas Bresson - Own work, CC BY 4.0, <a href="https://commons.wikimedia.org/w/index.php?curid=47191548" class="uri">https://commons.wikimedia.org/w/index.php?curid=47191548</a></h1>
+<p>#img_path &lt;- /2016-02-23_16-01-09_paris.png<br />
+</p>
+</div>
+<div id="isiwalwikimedia-commonscc-by-sa-4.0-cc-by-sa-4.0-httpscreativecommons.orglicensesby-sa4.0-from-wikimedia-commons" class="section level1">
+<h1>Isiwal/Wikimedia Commons/CC BY-SA 4.0 [CC BY-SA 4.0 (<a href="https://creativecommons.org/licenses/by-sa/4.0" class="uri">https://creativecommons.org/licenses/by-sa/4.0</a>)], from Wikimedia Commons</h1>
+</div>
+<div id="img_path---21160528_lofer_khne_yan-lorenz-5943.png" class="section level1">
+<h1>img_path &lt;- /21160528_Lofer_Khne_Yan-Lorenz-5943.png<br />
+</h1>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-</div>
 <div id="model" class="section level2">
 <h2>Model</h2>
 <p>We will use VGG16 here:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwgPC0gYXBwbGljYXRpb25fdmdnMTYoKVxuYGBgIn0= -->
-<pre class="r"><code>model &lt;- application_vgg16()</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubW9kZWwgPC0gYXBwbGljYXRpb25fdmdnMTYoKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r model &lt;- application_vgg16()</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1755,17 +1765,9 @@ img_path &lt;- &quot;images/Bristol_Balloon_Fiesta_2009_MMB_06.png&quot;
 <p>The pre-processing function should be able to work with a list of paths.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW1hZ2VfcHJlcCA8LSBmdW5jdGlvbih4KSB7XG4gIGFycmF5cyA8LSBsYXBwbHkoeCwgZnVuY3Rpb24ocGF0aCkge1xuICAgIGltZyA8LSBpbWFnZV9sb2FkKHBhdGgsIHRhcmdldF9zaXplID0gYygyMjQsMjI0KSkgJT4lXG4gICAgICBpbWFnZV90b19hcnJheSgpXG4gICAgaW1nIDwtIGltZyAlPiVcbiAgICAgIGFycmF5X3Jlc2hhcGUoYygxLCBkaW0oaW1nKSkpICU+JVxuICAgICAgaW1hZ2VuZXRfcHJlcHJvY2Vzc19pbnB1dCgpXG4gIH0pXG4gIGRvLmNhbGwoYWJpbmQ6OmFiaW5kLCBjKGFycmF5cywgbGlzdChhbG9uZyA9IDEpKSlcbn1cbmBgYCJ9 -->
-<pre class="r"><code>image_prep &lt;- function(x) {
-  arrays &lt;- lapply(x, function(path) {
-    img &lt;- image_load(path, target_size = c(224,224)) %&gt;%
-      image_to_array()
-    img &lt;- img %&gt;%
-      array_reshape(c(1, dim(img))) %&gt;%
-      imagenet_preprocess_input()
-  })
-  do.call(abind::abind, c(arrays, list(along = 1)))
-}</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuaW1hZ2VfcHJlcCA8LSBmdW5jdGlvbih4KSB7XG4gIGFycmF5cyA8LSBsYXBwbHkoeCwgZnVuY3Rpb24ocGF0aCkge1xuICAgIGltZyA8LSBpbWFnZV9sb2FkKHBhdGgsIHRhcmdldF9zaXplID0gYygyMjQsMjI0KSkgJT4lXG4gICAgICBpbWFnZV90b19hcnJheSgpXG4gICAgaW1nIDwtIGltZyAlPiVcbiAgICAgIGFycmF5X3Jlc2hhcGUoYygxLCBkaW0oaW1nKSkpICU+JVxuICAgICAgaW1hZ2VuZXRfcHJlcHJvY2Vzc19pbnB1dCgpXG4gIH0pXG4gIGRvLmNhbGwoYWJpbmQ6OmFiaW5kLCBjKGFycmF5cywgbGlzdChhbG9uZyA9IDEpKSlcbn1cbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r image_prep &lt;- function(x) { arrays &lt;- lapply(x, function(path) { img &lt;- image_load(path, target_size = c(224,224)) %&gt;% image_to_array() img &lt;- img %&gt;% array_reshape(c(1, dim(img))) %&gt;% imagenet_preprocess_input() }) do.call(abind::abind, c(arrays, list(along = 1))) }</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1774,9 +1776,9 @@ img_path &lt;- &quot;images/Bristol_Balloon_Fiesta_2009_MMB_06.png&quot;
 <p>Now create the explainer. You should wrap the model into <code>as classifier</code>, passing the target labels to that function. Note that this wrapper is not optional - LIME needs it to be informed about the model type.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWxfbGFiZWxzIDwtIHJlYWRSRFMoc3lzdGVtLmZpbGUoJ2V4dGRhdGEnLCAnaW1hZ2VuZXRfbGFiZWxzLnJkcycsIHBhY2thZ2UgPSAnbGltZScpKVxuZXhwbGFpbmVyIDwtIGxpbWUoaW1nX3BhdGgsIGFzX2NsYXNzaWZpZXIobW9kZWwsIG1vZGVsX2xhYmVscyksIGltYWdlX3ByZXApXG5gYGAifQ== -->
-<pre class="r"><code>model_labels &lt;- readRDS(system.file('extdata', 'imagenet_labels.rds', package = 'lime'))
-explainer &lt;- lime(img_path, as_classifier(model, model_labels), image_prep)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubW9kZWxfbGFiZWxzIDwtIHJlYWRSRFMoc3lzdGVtLmZpbGUoJ2V4dGRhdGEnLCAnaW1hZ2VuZXRfbGFiZWxzLnJkcycsIHBhY2thZ2UgPSAnbGltZScpKVxuZXhwbGFpbmVyIDwtIGxpbWUoaW1nX3BhdGgsIGFzX2NsYXNzaWZpZXIobW9kZWwsIG1vZGVsX2xhYmVscyksIGltYWdlX3ByZXApXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r model_labels &lt;- readRDS(system.file(‘extdata’, ‘imagenet_labels.rds’, package = ‘lime’)) explainer &lt;- lime(img_path, as_classifier(model, model_labels), image_prep)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1786,30 +1788,30 @@ explainer &lt;- lime(img_path, as_classifier(model, model_labels), image_prep)</
 <p>Before we look at explanations, let’s get a prediction. This is also a good way to test the preprocessing function.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlZHMgPC0gcHJlZGljdChtb2RlbCwgaW1hZ2VfcHJlcChpbWdfcGF0aCkpXG5gYGAifQ== -->
-<pre class="r"><code>preds &lt;- predict(model, image_prep(img_path))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJlZHMgPC0gcHJlZGljdChtb2RlbCwgaW1hZ2VfcHJlcChpbWdfcGF0aCkpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r preds &lt;- predict(model, image_prep(img_path))</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Which is the most probable class?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJlZHMgJT4lIGltYWdlbmV0X2RlY29kZV9wcmVkaWN0aW9ucygpXG5gYGAifQ== -->
-<pre class="r"><code>preds %&gt;% imagenet_decode_predictions()</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucHJlZHMgJT4lIGltYWdlbmV0X2RlY29kZV9wcmVkaWN0aW9ucygpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r preds %&gt;% imagenet_decode_predictions()</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cbiJ9 -->
-<pre><code>[[1]]</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cbk5BXG4ifQ== -->
+<pre><code>[[1]]
+NA</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibmNvbCI6MywibnJvdyI6NX0sInJkZiI6Ikg0c0lBQUFBQUFBQUExMVIwVTdDTUJRdEd4V1pBVFY4QjhzY2pvMFhlZkVMVEl5OEdDeWp5bUpwbDdZRTMvUVQvQVVUUDRSUDhka1gvUUt3N1RvY2E3TGQwM043eittOXZibWVoTjdFQXdBNHdJVU40TGdLTmgzMWE0QW1hT3Y0QW9EYlUwQm56dFFIYmFKTmd6Qk93bUEwK0NjR1NaS0VVVnc1TVJ5RlNWd2hMcU5oT0JwRVZTS0lMNktvSnQ2YUlVSVlvK1c1SEhHVUxsWVNsM21VY2JISWNyczlXU09KK1ZTeU5lYVdPbDR0Wnh3VGdoVHVhdVh4eis1OW84RFlsYTlmS2w3OWJtNGZkTVNmOXliZWZYOEFzdzc2aHhRdHNiRFhjeTNwcFFRSk1kVXB5NXdYekJ5TGxHZTV6UFpYaHlKbEhOZEUyNXl0L1ZLNG82Zi9WbGpEdXJ1UnRlNGw2YzJSUlA0ajErNEFiR3NsTFdic1ZaSFRLeFFQaWh1OFJweXVxTDdKdksvbVM1LzdzVFl3NldKMUxJWVY3QmFXenE3MmFrZVlQbVcwSEFra2FJYUozWFJWeDZaaFArY1psV1VuaWhXK1pCS1IvV1FaS1JuVEc5aitBZTYrWGxta0FnQUEifQ== -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjoiZGF0YS5mcmFtZSIsIm5jb2wiOjMsIm5yb3ciOjV9LCJyZGYiOiJINHNJQUFBQUFBQUFBMTFSMFU3Q01CUXRHeFdaQVRWOEI4c2NqbzBYZWZFTFRJeThHQ3lqeW1KcGw3WUUzL1FUL0FVVFA0UlA4ZGtYL1FLdzdUb2NhN0xkMDNON3orbTl2Ym1laE43RUF3QTR3SVVONExnS05oMzFhNEFtYU92NEFvRGJVMEJuenRRSGJhSk5nekJPd21BMCtDY0dTWktFVVZ3NU1SeUZTVndoTHFOaE9CcEVWU0tJTDZLb0p0NmFJVUlZbytXNUhIR1VMbFlTbDNtVWNiSEljcnM5V1NPSitWU3lOZWFXT2w0dFp4d1RnaFR1YXVYeHorNTlvOERZbGE5ZktsNzlibTRmZE1TZjl5YmVmWDhBc3c3Nmh4UXRzYkRYY3kzcHBRUUpNZFVweTV3WHpCeUxsR2U1elBaWGh5SmxITmRFMjV5dC9WSzRvNmYvVmxqRHVydVJ0ZTRsNmMyUlJQNGoxKzRBYkdzbExXYnNWWkhUS3hRUGlodThScHl1cUw3SnZLL21TNS83c1RZdzZXSjFMSVlWN0JhV3pxNzJha2VZUG1XMEhBa2thSWFKM1hSVng2WmhQK2NabFdVbmloVytaQktSL1dRWktSblRHOWorQWU2K1hsbWtBZ0FBIn0= -->
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
 {"columns":[{"label":["class_name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["class_description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["score"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"n02782093","2":"balloon","3":"9.999470e-01"},{"1":"n03888257","2":"parachute","3":"3.710761e-05"},{"1":"n02692877","2":"airship","3":"1.597529e-05"},{"1":"n04562935","2":"water_tower","3":"4.031146e-08"},{"1":"n04507155","2":"umbrella","3":"2.227399e-08"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[5]},"pages":{}}}
   </script>
 </div>
 <!-- rnb-frame-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTkFcbiJ9 -->
-<pre><code>NA</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -1819,11 +1821,9 @@ explainer &lt;- lime(img_path, as_classifier(model, model_labels), image_prep)</
 <p>LIME determines essential image areas by successively masking homogeneous regions - the so-called superpixels. Explanation results will depend on adequacy of superpixel segmentation used.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gXCJjeWFuXCIsIG5fc3VwZXJwaXhlbHMgPSA1MCwgd2VpZ2h0ID0gMTApXG5wbG90X3N1cGVycGl4ZWxzKGltZ19wYXRoLCBjb2xvdXIgPSBcImN5YW5cIiwgbl9zdXBlcnBpeGVscyA9IDUwLCB3ZWlnaHQgPSAyKVxucGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gXCJjeWFuXCIsIG5fc3VwZXJwaXhlbHMgPSAyMDAsIHdlaWdodCA9IDEwKVxucGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gXCJjeWFuXCIsIG5fc3VwZXJwaXhlbHMgPSAyMDAsIHdlaWdodCA9IDIpXG5gYGAifQ== -->
-<pre class="r"><code>plot_superpixels(img_path, colour = &quot;cyan&quot;, n_superpixels = 50, weight = 10)
-plot_superpixels(img_path, colour = &quot;cyan&quot;, n_superpixels = 50, weight = 2)
-plot_superpixels(img_path, colour = &quot;cyan&quot;, n_superpixels = 200, weight = 10)
-plot_superpixels(img_path, colour = &quot;cyan&quot;, n_superpixels = 200, weight = 2)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gXFxjeWFuXFwsIG5fc3VwZXJwaXhlbHMgPSA1MCwgd2VpZ2h0ID0gMTApXG5wbG90X3N1cGVycGl4ZWxzKGltZ19wYXRoLCBjb2xvdXIgPSBcXGN5YW5cXCwgbl9zdXBlcnBpeGVscyA9IDUwLCB3ZWlnaHQgPSAyKVxucGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gXFxjeWFuXFwsIG5fc3VwZXJwaXhlbHMgPSAyMDAsIHdlaWdodCA9IDEwKVxucGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gXFxjeWFuXFwsIG5fc3VwZXJwaXhlbHMgPSAyMDAsIHdlaWdodCA9IDIpXG5gYGBcbmBgYCJ9 -->
+<p><code>r</code>r plot_superpixels(img_path, colour = , n_superpixels = 50, weight = 10) plot_superpixels(img_path, colour = , n_superpixels = 50, weight = 2) plot_superpixels(img_path, colour = , n_superpixels = 200, weight = 10) plot_superpixels(img_path, colour = , n_superpixels = 200, weight = 2)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1832,26 +1832,18 @@ plot_superpixels(img_path, colour = &quot;cyan&quot;, n_superpixels = 200, weigh
 <p>Now use <code>explain</code> to find out what LIME has to say about the why of the model’s “decision”.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZXhwbGFuYXRpb24gPC0gZXhwbGFpbihcbiAgaW1nX3BhdGgsIFxuICBleHBsYWluZXIsXG4gIG5fbGFiZWxzID0gMSwgXG4gIG5fZmVhdHVyZXMgPSAyMDAsXG4gIG5fc3VwZXJwaXhlbHMgPSAyMDAsXG4gIHdlaWdodCA9IDEwLCBcbiAgbl9wZXJtdXRhdGlvbnMgPSAxMCxcbiAgZmVhdHVyZV9zZWxlY3QgPSBcImxhc3NvX3BhdGhcIilcbmBgYCJ9 -->
-<pre class="r"><code>explanation &lt;- explain(
-  img_path, 
-  explainer,
-  n_labels = 1, 
-  n_features = 200,
-  n_superpixels = 200,
-  weight = 10, 
-  n_permutations = 10,
-  feature_select = &quot;lasso_path&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZXhwbGFuYXRpb24gPC0gZXhwbGFpbihcbiAgaW1nX3BhdGgsIFxuICBleHBsYWluZXIsXG4gIG5fbGFiZWxzID0gMSwgXG4gIG5fZmVhdHVyZXMgPSAyMDAsXG4gIG5fc3VwZXJwaXhlbHMgPSAyMDAsXG4gIHdlaWdodCA9IDEwLCBcbiAgbl9wZXJtdXRhdGlvbnMgPSAxMCxcbiAgZmVhdHVyZV9zZWxlY3QgPSBcXGxhc3NvX3BhdGhcXClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r explanation &lt;- explain( img_path, explainer, n_labels = 1, n_features = 200, n_superpixels = 200, weight = 10, n_permutations = 10, feature_select = _path)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Plot the explanation. Note too that you can view regions that contradict the model’s findings.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdF9pbWFnZV9leHBsYW5hdGlvbihleHBsYW5hdGlvbiwgZmlsbF9hbHBoYSA9IDAuNilcbnBsb3RfaW1hZ2VfZXhwbGFuYXRpb24oZXhwbGFuYXRpb24sIHRocmVzaG9sZCA9IDAsIHNob3dfbmVnYXRpdmUgPSBUUlVFLCBmaWxsX2FscGhhID0gMC42KVxucGxvdF9pbWFnZV9leHBsYW5hdGlvbihleHBsYW5hdGlvbiwgZGlzcGxheSA9IFwiYmxvY2tcIiwgYmxvY2tfY29sID0gXCJ2aW9sZXRcIilcbmBgYCJ9 -->
-<pre class="r"><code>plot_image_explanation(explanation, fill_alpha = 0.6)
-plot_image_explanation(explanation, threshold = 0, show_negative = TRUE, fill_alpha = 0.6)
-plot_image_explanation(explanation, display = &quot;block&quot;, block_col = &quot;violet&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucGxvdF9pbWFnZV9leHBsYW5hdGlvbihleHBsYW5hdGlvbiwgZmlsbF9hbHBoYSA9IDAuNilcbnBsb3RfaW1hZ2VfZXhwbGFuYXRpb24oZXhwbGFuYXRpb24sIHRocmVzaG9sZCA9IDAsIHNob3dfbmVnYXRpdmUgPSBUUlVFLCBmaWxsX2FscGhhID0gMC42KVxucGxvdF9pbWFnZV9leHBsYW5hdGlvbihleHBsYW5hdGlvbiwgZGlzcGxheSA9IFxcYmxvY2tcXCwgYmxvY2tfY29sID0gXFx2aW9sZXRcXClcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r plot_image_explanation(explanation, fill_alpha = 0.6) plot_image_explanation(explanation, threshold = 0, show_negative = TRUE, fill_alpha = 0.6) plot_image_explanation(explanation, display = , block_col = )</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1860,8 +1852,9 @@ plot_image_explanation(explanation, display = &quot;block&quot;, block_col = &qu
 </div>
 </div>
 </div>
+</div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXhwbGFpbmluZyBpbWFnZSBjbGFzc2lmaWNhdGlvbiB3aXRoIExJTUUiCm91dHB1dDogaHRtbF9ub3RlYm9vawplZGl0b3Jfb3B0aW9uczogCiAgY2h1bmtfb3V0cHV0X3R5cGU6IGlubGluZQotLS0KCgpgYGB7cn0KbGlicmFyeShrZXJhcykKbGlicmFyeShsaW1lKQpsaWJyYXJ5KG1hZ2ljaykKYGBgCgoKIyMgSW5wdXQgaW1hZ2VzCgpIZXJlIGFyZSA0IGltYWdlcyBmb3IgeW91IHRvIHBsYXkgd2l0aC4KCmBgYHtyfQojIEJ5IG1hdHRidWNrIChjYXRlZ29yeSkgLSBPd24gd29yayBieSBtYXR0YnVjay4sIENDIEJZLVNBIDMuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9MjAxNTEyNDQKaW1nX3BhdGggPC0gImltYWdlcy9CcmlzdG9sX0JhbGxvb25fRmllc3RhXzIwMDlfTU1CXzA2LnBuZyIKCiMgQnkgR1QxOTc2IC0gT3duIHdvcmssIENDIEJZLVNBIDQuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9NzA4OTM3NTYKIyBpbWdfcGF0aCA8LSAiaW1hZ2VzL3dhY2hhdWVyX3JhZHRhZ2UucG5nIgoKIyBCeSBUaG9tYXMgQnJlc3NvbiAtIE93biB3b3JrLCBDQyBCWSA0LjAsIGh0dHBzOi8vY29tbW9ucy53aWtpbWVkaWEub3JnL3cvaW5kZXgucGhwP2N1cmlkPTQ3MTkxNTQ4CiNpbWdfcGF0aCA8LSAiaW1hZ2VzLzIwMTYtMDItMjNfMTYtMDEtMDlfcGFyaXMucG5nIgoKIyBJc2l3YWwvV2lraW1lZGlhIENvbW1vbnMvQ0MgQlktU0EgNC4wIFtDQyBCWS1TQSA0LjAgIChodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktc2EvNC4wKV0sIGZyb20gV2lraW1lZGlhIENvbW1vbnMKIyBpbWdfcGF0aCA8LSAiaW1hZ2VzLzIxMTYwNTI4X0xvZmVyX0tobmVfWWFuLUxvcmVuei01OTQzLnBuZyIKYGBgCgojIyBNb2RlbAoKV2Ugd2lsbCB1c2UgVkdHMTYgaGVyZToKCmBgYHtyfQptb2RlbCA8LSBhcHBsaWNhdGlvbl92Z2cxNigpCmBgYAoKIyMgRXhwbGFpbiBwcmVkaWN0aW9uIHVzaW5nIExJTUUKCiMjIyBDcmVhdGUgYW4gZXhwbGFpbmVyCgpGaXJzdCwgeW91IHdpbGwgbmVlZCB0byBjcmVhdGUgYW4gYGV4cGxhaW5lcmAgKGEgY2xvc3VyZSkgdXNpbmcgdGhlIGBsaW1lYCBmYWN0b3J5IGZ1bmN0aW9uLgpJbiB0aGUgY2FzZSBvZiBpbWFnZXMsIHlvdSB3aWxsIGhhdmUgdG8gcGFzcyBpbgoKLSBhIHBhdGggdG8gYW4gaW1hZ2UgZmlsZSwKLSBhIHJlZmVyZW5jZSB0byB0aGUgbW9kZWwgdG8gYmUgdXNlZCBmb3IgcHJlZGljdGlvbgotIGEgZnVuY3Rpb24gdG8gYmUgdXNlZCBmb3IgcHJlcHJvY2Vzc2luZyAKCiAKIyMjIyBDcmVhdGUgYSBwcmUtcHJvY2Vzc2luZyBmdW5jdGlvbiBmb3IgTElNRSB0byB1c2UKClRoZSBwcmUtcHJvY2Vzc2luZyBmdW5jdGlvbiBzaG91bGQgYmUgYWJsZSB0byB3b3JrIHdpdGggYSBsaXN0IG9mIHBhdGhzLgoKYGBge3J9CmltYWdlX3ByZXAgPC0gZnVuY3Rpb24oeCkgewogIGFycmF5cyA8LSBsYXBwbHkoeCwgZnVuY3Rpb24ocGF0aCkgewogICAgaW1nIDwtIGltYWdlX2xvYWQocGF0aCwgdGFyZ2V0X3NpemUgPSBjKDIyNCwyMjQpKSAlPiUKICAgICAgaW1hZ2VfdG9fYXJyYXkoKQogICAgaW1nIDwtIGltZyAlPiUKICAgICAgYXJyYXlfcmVzaGFwZShjKDEsIGRpbShpbWcpKSkgJT4lCiAgICAgIGltYWdlbmV0X3ByZXByb2Nlc3NfaW5wdXQoKQogIH0pCiAgZG8uY2FsbChhYmluZDo6YWJpbmQsIGMoYXJyYXlzLCBsaXN0KGFsb25nID0gMSkpKQp9CmBgYAoKCiMjIyMjIEV4cGxhaW5lcgoKTm93IGNyZWF0ZSB0aGUgZXhwbGFpbmVyLiBZb3Ugc2hvdWxkIHdyYXAgdGhlIG1vZGVsIGludG8gYGFzIGNsYXNzaWZpZXJgLCBwYXNzaW5nIHRoZSB0YXJnZXQgbGFiZWxzIHRvIHRoYXQgZnVuY3Rpb24uCk5vdGUgdGhhdCB0aGlzIHdyYXBwZXIgaXMgbm90IG9wdGlvbmFsIC0gTElNRSBuZWVkcyBpdCB0byBiZSBpbmZvcm1lZCBhYm91dCB0aGUgbW9kZWwgdHlwZS4KCmBgYHtyfQptb2RlbF9sYWJlbHMgPC0gcmVhZFJEUyhzeXN0ZW0uZmlsZSgnZXh0ZGF0YScsICdpbWFnZW5ldF9sYWJlbHMucmRzJywgcGFja2FnZSA9ICdsaW1lJykpCmV4cGxhaW5lciA8LSBsaW1lKGltZ19wYXRoLCBhc19jbGFzc2lmaWVyKG1vZGVsLCBtb2RlbF9sYWJlbHMpLCBpbWFnZV9wcmVwKQpgYGAKCgojIyMjIyBHZXQgYSBwcmVkaWN0aW9uCgpCZWZvcmUgd2UgbG9vayBhdCBleHBsYW5hdGlvbnMsIGxldCdzIGdldCBhIHByZWRpY3Rpb24uClRoaXMgaXMgYWxzbyBhIGdvb2Qgd2F5IHRvIHRlc3QgdGhlIHByZXByb2Nlc3NpbmcgZnVuY3Rpb24uCgpgYGB7cn0KcHJlZHMgPC0gcHJlZGljdChtb2RlbCwgaW1hZ2VfcHJlcChpbWdfcGF0aCkpCmBgYAoKCldoaWNoIGlzIHRoZSBtb3N0IHByb2JhYmxlIGNsYXNzPwoKYGBge3J9CnByZWRzICU+JSBpbWFnZW5ldF9kZWNvZGVfcHJlZGljdGlvbnMoKQpgYGAKCgojIyMjIFN1cGVycGl4ZWxzCgpMSU1FIGRldGVybWluZXMgZXNzZW50aWFsIGltYWdlIGFyZWFzIGJ5IHN1Y2Nlc3NpdmVseSBtYXNraW5nIGhvbW9nZW5lb3VzIHJlZ2lvbnMgLSB0aGUgc28tY2FsbGVkIHN1cGVycGl4ZWxzLgpFeHBsYW5hdGlvbiByZXN1bHRzIHdpbGwgZGVwZW5kIG9uIGFkZXF1YWN5IG9mIHN1cGVycGl4ZWwgc2VnbWVudGF0aW9uIHVzZWQuCgoKYGBge3J9CnBsb3Rfc3VwZXJwaXhlbHMoaW1nX3BhdGgsIGNvbG91ciA9ICJjeWFuIiwgbl9zdXBlcnBpeGVscyA9IDUwLCB3ZWlnaHQgPSAxMCkKcGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gImN5YW4iLCBuX3N1cGVycGl4ZWxzID0gNTAsIHdlaWdodCA9IDIpCnBsb3Rfc3VwZXJwaXhlbHMoaW1nX3BhdGgsIGNvbG91ciA9ICJjeWFuIiwgbl9zdXBlcnBpeGVscyA9IDIwMCwgd2VpZ2h0ID0gMTApCnBsb3Rfc3VwZXJwaXhlbHMoaW1nX3BhdGgsIGNvbG91ciA9ICJjeWFuIiwgbl9zdXBlcnBpeGVscyA9IDIwMCwgd2VpZ2h0ID0gMikKYGBgCgoKIyMjIyMgRXhwbGFuYXRpb24KCk5vdyB1c2UgYGV4cGxhaW5gIHRvIGZpbmQgb3V0IHdoYXQgTElNRSBoYXMgdG8gc2F5IGFib3V0IHRoZSB3aHkgb2YgdGhlIG1vZGVsJ3MgImRlY2lzaW9uIi4KCmBgYHtyfQpleHBsYW5hdGlvbiA8LSBleHBsYWluKAogIGltZ19wYXRoLCAKICBleHBsYWluZXIsCiAgbl9sYWJlbHMgPSAxLCAKICBuX2ZlYXR1cmVzID0gMjAwLAogIG5fc3VwZXJwaXhlbHMgPSAyMDAsCiAgd2VpZ2h0ID0gMTAsIAogIG5fcGVybXV0YXRpb25zID0gMTAsCiAgZmVhdHVyZV9zZWxlY3QgPSAibGFzc29fcGF0aCIpCmBgYAoKUGxvdCB0aGUgZXhwbGFuYXRpb24uIE5vdGUgdG9vIHRoYXQgeW91IGNhbiB2aWV3IHJlZ2lvbnMgdGhhdCBjb250cmFkaWN0IHRoZSBtb2RlbCdzIGZpbmRpbmdzLgoKYGBge3J9CnBsb3RfaW1hZ2VfZXhwbGFuYXRpb24oZXhwbGFuYXRpb24sIGZpbGxfYWxwaGEgPSAwLjYpCnBsb3RfaW1hZ2VfZXhwbGFuYXRpb24oZXhwbGFuYXRpb24sIHRocmVzaG9sZCA9IDAsIHNob3dfbmVnYXRpdmUgPSBUUlVFLCBmaWxsX2FscGhhID0gMC42KQpwbG90X2ltYWdlX2V4cGxhbmF0aW9uKGV4cGxhbmF0aW9uLCBkaXNwbGF5ID0gImJsb2NrIiwgYmxvY2tfY29sID0gInZpb2xldCIpCmBgYAoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXhwbGFpbmluZyBpbWFnZSBjbGFzc2lmaWNhdGlvbiB3aXRoIExJTUUiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCgpgYGB7cn0KbGlicmFyeShrZXJhcykKbGlicmFyeShsaW1lKQpsaWJyYXJ5KG1hZ2ljaykKYGBgCgoKIyMgSW5wdXQgaW1hZ2VzCgpIZXJlIGFyZSA0IGltYWdlcyBmb3IgeW91IHRvIHBsYXkgd2l0aC4KCmBgYHtyfQojIEJ5IG1hdHRidWNrIChjYXRlZ29yeSkgLSBPd24gd29yayBieSBtYXR0YnVjay4sIENDIEJZLVNBIDMuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9MjAxNTEyNDQKaW1nX3BhdGggPC0gImltYWdlcy9CcmlzdG9sX0JhbGxvb25fRmllc3RhXzIwMDlfTU1CXzA2LnBuZyIKCiMgQnkgR1QxOTc2IC0gT3duIHdvcmssIENDIEJZLVNBIDQuMCwgaHR0cHM6Ly9jb21tb25zLndpa2ltZWRpYS5vcmcvdy9pbmRleC5waHA/Y3VyaWQ9NzA4OTM3NTYKIyBpbWdfcGF0aCA8LSAiaW1hZ2VzL3dhY2hhdWVyX3JhZHRhZ2UucG5nIgoKIyBCeSBUaG9tYXMgQnJlc3NvbiAtIE93biB3b3JrLCBDQyBCWSA0LjAsIGh0dHBzOi8vY29tbW9ucy53aWtpbWVkaWEub3JnL3cvaW5kZXgucGhwP2N1cmlkPTQ3MTkxNTQ4CiNpbWdfcGF0aCA8LSAiaW1hZ2VzLzIwMTYtMDItMjNfMTYtMDEtMDlfcGFyaXMucG5nIgoKIyBJc2l3YWwvV2lraW1lZGlhIENvbW1vbnMvQ0MgQlktU0EgNC4wIFtDQyBCWS1TQSA0LjAgIChodHRwczovL2NyZWF0aXZlY29tbW9ucy5vcmcvbGljZW5zZXMvYnktc2EvNC4wKV0sIGZyb20gV2lraW1lZGlhIENvbW1vbnMKIyBpbWdfcGF0aCA8LSAiaW1hZ2VzLzIxMTYwNTI4X0xvZmVyX0tobmVfWWFuLUxvcmVuei01OTQzLnBuZyIKYGBgCgojIyBNb2RlbAoKV2Ugd2lsbCB1c2UgVkdHMTYgaGVyZToKCmBgYHtyfQptb2RlbCA8LSBhcHBsaWNhdGlvbl92Z2cxNigpCmBgYAoKIyMgRXhwbGFpbiBwcmVkaWN0aW9uIHVzaW5nIExJTUUKCiMjIyBDcmVhdGUgYW4gZXhwbGFpbmVyCgpGaXJzdCwgeW91IHdpbGwgbmVlZCB0byBjcmVhdGUgYW4gYGV4cGxhaW5lcmAgKGEgY2xvc3VyZSkgdXNpbmcgdGhlIGBsaW1lYCBmYWN0b3J5IGZ1bmN0aW9uLgpJbiB0aGUgY2FzZSBvZiBpbWFnZXMsIHlvdSB3aWxsIGhhdmUgdG8gcGFzcyBpbgoKLSBhIHBhdGggdG8gYW4gaW1hZ2UgZmlsZSwKLSBhIHJlZmVyZW5jZSB0byB0aGUgbW9kZWwgdG8gYmUgdXNlZCBmb3IgcHJlZGljdGlvbgotIGEgZnVuY3Rpb24gdG8gYmUgdXNlZCBmb3IgcHJlcHJvY2Vzc2luZyAKCiAKIyMjIyBDcmVhdGUgYSBwcmUtcHJvY2Vzc2luZyBmdW5jdGlvbiBmb3IgTElNRSB0byB1c2UKClRoZSBwcmUtcHJvY2Vzc2luZyBmdW5jdGlvbiBzaG91bGQgYmUgYWJsZSB0byB3b3JrIHdpdGggYSBsaXN0IG9mIHBhdGhzLgoKYGBge3J9CmltYWdlX3ByZXAgPC0gZnVuY3Rpb24oeCkgewogIGFycmF5cyA8LSBsYXBwbHkoeCwgZnVuY3Rpb24ocGF0aCkgewogICAgaW1nIDwtIGltYWdlX2xvYWQocGF0aCwgdGFyZ2V0X3NpemUgPSBjKDIyNCwyMjQpKSAlPiUKICAgICAgaW1hZ2VfdG9fYXJyYXkoKQogICAgaW1nIDwtIGltZyAlPiUKICAgICAgYXJyYXlfcmVzaGFwZShjKDEsIGRpbShpbWcpKSkgJT4lCiAgICAgIGltYWdlbmV0X3ByZXByb2Nlc3NfaW5wdXQoKQogIH0pCiAgZG8uY2FsbChhYmluZDo6YWJpbmQsIGMoYXJyYXlzLCBsaXN0KGFsb25nID0gMSkpKQp9CmBgYAoKCiMjIyMjIEV4cGxhaW5lcgoKTm93IGNyZWF0ZSB0aGUgZXhwbGFpbmVyLiBZb3Ugc2hvdWxkIHdyYXAgdGhlIG1vZGVsIGludG8gYGFzIGNsYXNzaWZpZXJgLCBwYXNzaW5nIHRoZSB0YXJnZXQgbGFiZWxzIHRvIHRoYXQgZnVuY3Rpb24uCk5vdGUgdGhhdCB0aGlzIHdyYXBwZXIgaXMgbm90IG9wdGlvbmFsIC0gTElNRSBuZWVkcyBpdCB0byBiZSBpbmZvcm1lZCBhYm91dCB0aGUgbW9kZWwgdHlwZS4KCmBgYHtyfQptb2RlbF9sYWJlbHMgPC0gcmVhZFJEUyhzeXN0ZW0uZmlsZSgnZXh0ZGF0YScsICdpbWFnZW5ldF9sYWJlbHMucmRzJywgcGFja2FnZSA9ICdsaW1lJykpCmV4cGxhaW5lciA8LSBsaW1lKGltZ19wYXRoLCBhc19jbGFzc2lmaWVyKG1vZGVsLCBtb2RlbF9sYWJlbHMpLCBpbWFnZV9wcmVwKQpgYGAKCgojIyMjIyBHZXQgYSBwcmVkaWN0aW9uCgpCZWZvcmUgd2UgbG9vayBhdCBleHBsYW5hdGlvbnMsIGxldCdzIGdldCBhIHByZWRpY3Rpb24uClRoaXMgaXMgYWxzbyBhIGdvb2Qgd2F5IHRvIHRlc3QgdGhlIHByZXByb2Nlc3NpbmcgZnVuY3Rpb24uCgpgYGB7cn0KcHJlZHMgPC0gcHJlZGljdChtb2RlbCwgaW1hZ2VfcHJlcChpbWdfcGF0aCkpCmBgYAoKCldoaWNoIGlzIHRoZSBtb3N0IHByb2JhYmxlIGNsYXNzPwoKYGBge3J9CnByZWRzICU+JSBpbWFnZW5ldF9kZWNvZGVfcHJlZGljdGlvbnMoKQpgYGAKCgojIyMjIFN1cGVycGl4ZWxzCgpMSU1FIGRldGVybWluZXMgZXNzZW50aWFsIGltYWdlIGFyZWFzIGJ5IHN1Y2Nlc3NpdmVseSBtYXNraW5nIGhvbW9nZW5lb3VzIHJlZ2lvbnMgLSB0aGUgc28tY2FsbGVkIHN1cGVycGl4ZWxzLgpFeHBsYW5hdGlvbiByZXN1bHRzIHdpbGwgZGVwZW5kIG9uIGFkZXF1YWN5IG9mIHN1cGVycGl4ZWwgc2VnbWVudGF0aW9uIHVzZWQuCgoKYGBge3J9CnBsb3Rfc3VwZXJwaXhlbHMoaW1nX3BhdGgsIGNvbG91ciA9ICJjeWFuIiwgbl9zdXBlcnBpeGVscyA9IDUwLCB3ZWlnaHQgPSAxMCkKcGxvdF9zdXBlcnBpeGVscyhpbWdfcGF0aCwgY29sb3VyID0gImN5YW4iLCBuX3N1cGVycGl4ZWxzID0gNTAsIHdlaWdodCA9IDIpCnBsb3Rfc3VwZXJwaXhlbHMoaW1nX3BhdGgsIGNvbG91ciA9ICJjeWFuIiwgbl9zdXBlcnBpeGVscyA9IDIwMCwgd2VpZ2h0ID0gMTApCnBsb3Rfc3VwZXJwaXhlbHMoaW1nX3BhdGgsIGNvbG91ciA9ICJjeWFuIiwgbl9zdXBlcnBpeGVscyA9IDIwMCwgd2VpZ2h0ID0gMikKYGBgCgoKIyMjIyMgRXhwbGFuYXRpb24KCk5vdyB1c2UgYGV4cGxhaW5gIHRvIGZpbmQgb3V0IHdoYXQgTElNRSBoYXMgdG8gc2F5IGFib3V0IHRoZSB3aHkgb2YgdGhlIG1vZGVsJ3MgImRlY2lzaW9uIi4KCmBgYHtyfQpleHBsYW5hdGlvbiA8LSBleHBsYWluKAogIGltZ19wYXRoLCAKICBleHBsYWluZXIsCiAgbl9sYWJlbHMgPSAxLCAKICBuX2ZlYXR1cmVzID0gMjAwLAogIG5fc3VwZXJwaXhlbHMgPSAyMDAsCiAgd2VpZ2h0ID0gMTAsIAogIG5fcGVybXV0YXRpb25zID0gMTAsCiAgZmVhdHVyZV9zZWxlY3QgPSAibGFzc29fcGF0aCIpCmBgYAoKUGxvdCB0aGUgZXhwbGFuYXRpb24uIE5vdGUgdG9vIHRoYXQgeW91IGNhbiB2aWV3IHJlZ2lvbnMgdGhhdCBjb250cmFkaWN0IHRoZSBtb2RlbCdzIGZpbmRpbmdzLgoKYGBge3J9CnBsb3RfaW1hZ2VfZXhwbGFuYXRpb24oZXhwbGFuYXRpb24sIGZpbGxfYWxwaGEgPSAwLjYpCnBsb3RfaW1hZ2VfZXhwbGFuYXRpb24oZXhwbGFuYXRpb24sIHRocmVzaG9sZCA9IDAsIHNob3dfbmVnYXRpdmUgPSBUUlVFLCBmaWxsX2FscGhhID0gMC42KQpwbG90X2ltYWdlX2V4cGxhbmF0aW9uKGV4cGxhbmF0aW9uLCBkaXNwbGF5ID0gImJsb2NrIiwgYmxvY2tfY29sID0gInZpb2xldCIpCmBgYAoKCg==</div>
 
 
 

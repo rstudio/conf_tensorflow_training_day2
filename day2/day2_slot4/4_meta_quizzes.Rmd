@@ -12,16 +12,21 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Eager execution 
 
-All quizzes in this section start from the eager execution notebook.
+All quizzes in this section start from the eager execution notebook in the same folder (`eager_intro.Rmd`).
 
 ### Quiz 1
 
-Modify the example ("complete example" at the bottom) to use the `mpg` dataset (available from ggplot2) and predict `cty` from `displ`. Use a random split of 20% for the validation set. Change the model to use the RMSProp optimizer instead of Adam.
+This exercise's purpose is for you to get some practice with eager execution.
+
+- Modify the example ("complete example" at the bottom of `eager_intro.Rmd`) to use the `mpg` dataset (available from `ggplot2`).
+- Predict `cty` from `displ`.
+- Use a random split of 20% for the validation set.
+- Change the model to use the `RMSProp` optimizer instead of `Adam`.
 
 
 ```{r quiz1}
 quiz(
-  question("Which learning rate worked best for you?",
+  question("Which learning rate results in lowest error on the validation set?",
     answer("0.3"),
     answer("0.001"),
     answer("0.02", correct = TRUE)
@@ -31,17 +36,26 @@ quiz(
 
 ### Quiz 2
 
-What's the shape of the `gradients` we obtain using `gradients <- tape$gradient(loss, model$variables)`?
-`gradients` itself is a list of 4 tensors, what are their respective shapes?
+This exercise is supposed to demonstrate the flexibility you gain when working with eager execution.
 
-Hint: use any "quick and dirty" way that could give you the information. Would your way work with graph execution, too? In eager, could you get the actual values, too (not just the shapes)?
+Look at the line where we obtain the gradients:
+
+```
+gradients <- tape$gradient(loss, model$variables)
+```
+
+
+`gradients` here is a list of 4 tensors.
+
+- What are their respective shapes? (Hint: use any "quick and dirty", "one-time" way that could give you that information).
+- What would you do to get the actual values?
 
 ```{r quiz2}
 quiz(
   question("Which are the shapes of the gradient tensors?",
-    answer("1 32 , 32 , 32 1 , 1", correct = TRUE),
-    answer("1 32 , 32 , 32 1 , 32"),
-    answer("32 1, 32, 32, 1")
+    answer("1x32 , 32 , 32x1 , 1", correct = TRUE),
+    answer("1x32 , 32 , 32x1 , 32"),
+    answer("32x1, 32, 32, 1")
   )
 )
 ```
@@ -49,35 +63,56 @@ quiz(
 
 ## Variational autoencoders
 
-In small groups of 3-4 people, talk about what could be interesting applications of a technique like this.
+Talk to your neighbour.
 
-- Applications that mean to generate "something" are fine, but you would perhaps go for a GAN (Generative Adversarial Network) there instead. Anything where the latent space matters?
+- Do you see any interesting applications of this technique (__modeling latent spaces__) in your lines of work/interest?
 
-- Perhaps go beyond generation - anything where it'd help to have such a latent space at your disposal?
+- This morning we investigated in detail learning representations via _embeddings_. Think about the difference to learning a latent space like we did here. Which technique would you choose if you wanted to
+  - recommend books or DVDs to customers, based on what they - and other customers - bought before?
+  - detect outliers in daily product sales?
+  - underpin your theory of human emotion?
+
+
 
 ## LIME and CAM (Class activation maps)
 
-Here you see LIME (200 superpixels, display threshold = of 0.02) as well as CAM explanations for 3 other images. The heatmaps are for the most probable and the second most probable class, respectively (thus, they match those indicated on the LIME plots).
+Here you see LIME (200 superpixels, display threshold = 0.02) as well as CAM explanations for 3 other images. 
 
-In small groups of 3-4 people, talk about what makes sense or not to you. What could you vary or explore regarding the techniques used?
+The heatmaps are for the most probable and the second most probable class, respectively (thus, they match those indicated on the LIME plots).
+
+Take a look at what makes sense to you, and what doesn't. How satisfied would you be with these _explanations_? 
+What would you change?
+
 
 ### Road cycling race
 
+#### LIME
+
 ![](images/explanations_bicycle.png)
+
+#### CAM
 
 ![](images/cam_1.png){width=80%}
 
 
 ### Notre Dame
 
+#### LIME
+
 ![](images/explanations_bellcote.png)
+
+#### CAM
 
 ![](images/cam_2.png){width=80%}
 
 
 ### Kayak
 
+#### LIME
+
 ![](images/explanations_paddle.png)
+
+#### CAM
 
 ![](images/cam_3.png){width=80%}
 

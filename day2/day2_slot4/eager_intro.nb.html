@@ -1715,28 +1715,24 @@ $(document).ready(function () {
 <p>The following preamble is required when using eager execution:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxubGlicmFyeShrZXJhcylcbiMgbWFrZSBzdXJlIHdlIHVzZSB0aGUgdGVuc29yZmxvdyBpbXBsZW1lbnRhdGlvbiBvZiBLZXJhc1xuIyB0aGlzIGxpbmUgaGFzIHRvIGJlIGV4ZWN1dGVkIGltbWVkaWF0ZWx5IGFmdGVyIGxvYWRpbmcgdGhlIGxpYnJhcnlcbnVzZV9pbXBsZW1lbnRhdGlvbihcXHRlbnNvcmZsb3dcXClcblxubGlicmFyeSh0ZW5zb3JmbG93KVxuIyBlbmFibGUgZWFnZXIgZXhlY3V0aW9uXG4jIHRoZSBhcmd1bWVudCBkZXZpY2VfcG9saWN5IGlzIG5lZWRlZCBvbmx5IHdoZW4gdXNpbmcgYSBHUFVcbnRmZV9lbmFibGVfZWFnZXJfZXhlY3V0aW9uKGRldmljZV9wb2xpY3kgPSBcXHNpbGVudFxcKVxuYGBgXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r</p>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShrZXJhcylcbiMgbWFrZSBzdXJlIHdlIHVzZSB0aGUgdGVuc29yZmxvdyBpbXBsZW1lbnRhdGlvbiBvZiBLZXJhc1xuIyB0aGlzIGxpbmUgaGFzIHRvIGJlIGV4ZWN1dGVkIGltbWVkaWF0ZWx5IGFmdGVyIGxvYWRpbmcgdGhlIGxpYnJhcnlcbnVzZV9pbXBsZW1lbnRhdGlvbihcInRlbnNvcmZsb3dcIilcblxubGlicmFyeSh0ZW5zb3JmbG93KVxuIyBlbmFibGUgZWFnZXIgZXhlY3V0aW9uXG4jIHRoZSBhcmd1bWVudCBkZXZpY2VfcG9saWN5IGlzIG5lZWRlZCBvbmx5IHdoZW4gdXNpbmcgYSBHUFVcbnRmZV9lbmFibGVfZWFnZXJfZXhlY3V0aW9uKGRldmljZV9wb2xpY3kgPSBcInNpbGVudFwiKVxuYGBgIn0= -->
 <pre class="r"><code>library(keras)
 # make sure we use the tensorflow implementation of Keras
 # this line has to be executed immediately after loading the library
-use_implementation(\tensorflow\)
+use_implementation(&quot;tensorflow&quot;)
 
 library(tensorflow)
 # enable eager execution
 # the argument device_policy is needed only when using a GPU
-tfe_enable_eager_execution(device_policy = \silent\)</code></pre>
-<pre><code></code></pre>
+tfe_enable_eager_execution(device_policy = &quot;silent&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>When in doubt, check if you are in fact using eager execution:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxudGYkZXhlY3V0aW5nX2VhZ2VybHkoKVxuYGBgXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r</p>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGYkZXhlY3V0aW5nX2VhZ2VybHkoKVxuYGBgIn0= -->
 <pre class="r"><code>tf$executing_eagerly()</code></pre>
-<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIFRSVUVcbiJ9 -->
 <pre><code>[1] TRUE</code></pre>
@@ -1752,8 +1748,7 @@ tfe_enable_eager_execution(device_policy = \silent\)</code></pre>
 <p>Here is a model that can be used for that purpose:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxuIyBtb2RlbCBpbnN0YW50aWF0b3IgXG5pcmlzX3JlZ3Jlc3Npb25fbW9kZWwgPC0gZnVuY3Rpb24obmFtZSA9IE5VTEwpIHtcbiAgXG4gIGtlcmFzX21vZGVsX2N1c3RvbShuYW1lID0gbmFtZSwgZnVuY3Rpb24oc2VsZikge1xuICAgIFxuICAgICMgZGVmaW5lIGFueSBudW1iZXIgb2YgbGF5ZXJzIGhlcmVcbiAgICBzZWxmJGRlbnNlMSA8LSBsYXllcl9kZW5zZSh1bml0cyA9IDMyKVxuICAgIHNlbGYkZHJvcG91dCA8LSBsYXllcl9kcm9wb3V0KHJhdGUgPSAwLjUpXG4gICAgc2VsZiRkZW5zZTIgPC0gbGF5ZXJfZGVuc2UodW5pdHMgPSAxKVxuICAgIFxuICAgICMgdGhpcyBpcyB0aGUgXFxjYWxsXFwgZnVuY3Rpb24gdGhhdCBkZWZpbmVzIHdoYXQgaGFwcGVucyB3aGVuIHRoZSBtb2RlbCBpcyBjYWxsZWRcbiAgICBmdW5jdGlvbiAoeCwgbWFzayA9IE5VTEwpIHtcbiAgICAgIHggJT4lIFxuICAgICAgICBzZWxmJGRlbnNlMSgpICU+JVxuICAgICAgICBzZWxmJGRyb3BvdXQoKSAlPiVcbiAgICAgICAgc2VsZiRkZW5zZTIoKVxuICAgIH1cbiAgfSlcbn1cbmBgYFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r</p>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBtb2RlbCBpbnN0YW50aWF0b3IgXG5pcmlzX3JlZ3Jlc3Npb25fbW9kZWwgPC0gZnVuY3Rpb24obmFtZSA9IE5VTEwpIHtcbiAgXG4gIGtlcmFzX21vZGVsX2N1c3RvbShuYW1lID0gbmFtZSwgZnVuY3Rpb24oc2VsZikge1xuICAgIFxuICAgICMgZGVmaW5lIGFueSBudW1iZXIgb2YgbGF5ZXJzIGhlcmVcbiAgICBzZWxmJGRlbnNlMSA8LSBsYXllcl9kZW5zZSh1bml0cyA9IDMyKVxuICAgIHNlbGYkZHJvcG91dCA8LSBsYXllcl9kcm9wb3V0KHJhdGUgPSAwLjUpXG4gICAgc2VsZiRkZW5zZTIgPC0gbGF5ZXJfZGVuc2UodW5pdHMgPSAxKVxuICAgIFxuICAgICMgdGhpcyBpcyB0aGUgXCJjYWxsXCIgZnVuY3Rpb24gdGhhdCBkZWZpbmVzIHdoYXQgaGFwcGVucyB3aGVuIHRoZSBtb2RlbCBpcyBjYWxsZWRcbiAgICBmdW5jdGlvbiAoeCwgbWFzayA9IE5VTEwpIHtcbiAgICAgIHggJT4lIFxuICAgICAgICBzZWxmJGRlbnNlMSgpICU+JVxuICAgICAgICBzZWxmJGRyb3BvdXQoKSAlPiVcbiAgICAgICAgc2VsZiRkZW5zZTIoKVxuICAgIH1cbiAgfSlcbn1cbmBgYCJ9 -->
 <pre class="r"><code># model instantiator 
 iris_regression_model &lt;- function(name = NULL) {
   
@@ -1764,7 +1759,7 @@ iris_regression_model &lt;- function(name = NULL) {
     self$dropout &lt;- layer_dropout(rate = 0.5)
     self$dense2 &lt;- layer_dense(units = 1)
     
-    # this is the \call\ function that defines what happens when the model is called
+    # this is the &quot;call&quot; function that defines what happens when the model is called
     function (x, mask = NULL) {
       x %&gt;% 
         self$dense1() %&gt;%
@@ -1773,33 +1768,30 @@ iris_regression_model &lt;- function(name = NULL) {
     }
   })
 }</code></pre>
-<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>The model is created simply by instantiating it via its wrapper:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxubW9kZWwgPC0gaXJpc19yZWdyZXNzaW9uX21vZGVsKClcbmBgYFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r</p>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwgPC0gaXJpc19yZWdyZXNzaW9uX21vZGVsKClcbmBgYCJ9 -->
 <pre class="r"><code>model &lt;- iris_regression_model()</code></pre>
-<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>At this point, the shapes of the model’s weights are still unknown (note how no <code>input_shape</code> has been defined for its first layer). You can, however, already call the model on some dummy data:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxubW9kZWwoa19jb25zdGFudChtYXRyaXgoMTo2LCBucm93ID0gMiwgbmNvbCA9IDMpKSlcbmBgYFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r</p>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwoa19jb25zdGFudChtYXRyaXgoMTo2LCBucm93ID0gMiwgbmNvbCA9IDMpKSlcbmBgYCJ9 -->
 <pre class="r"><code>model(k_constant(matrix(1:6, nrow = 2, ncol = 3)))</code></pre>
-<pre><code></code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiMjAxOC0xMS0xNiAxNDo0MzoyMi43MjY4ODE6IEkgdGVuc29yZmxvdy9jb3JlL3BsYXRmb3JtL2NwdV9mZWF0dXJlX2d1YXJkLmNjOjE0MV0gWW91ciBDUFUgc3VwcG9ydHMgaW5zdHJ1Y3Rpb25zIHRoYXQgdGhpcyBUZW5zb3JGbG93IGJpbmFyeSB3YXMgbm90IGNvbXBpbGVkIHRvIHVzZTogQVZYMiBGTUFcbnRmLlRlbnNvcihcbltbLTIuOTg0OTI5XVxuIFstMy41NTUxMzldXSwgc2hhcGU9KDIsIDEpLCBkdHlwZT1mbG9hdDMyKVxuIn0= -->
-<pre><code>2018-11-16 14:43:22.726881: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
-tf.Tensor(
-[[-2.984929]
- [-3.555139]], shape=(2, 1), dtype=float32)</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiMjAxOC0xMS0yMyAxNjozNDoxMS4zMTQxNzQ6IEkgdGVuc29yZmxvdy9jb3JlL3BsYXRmb3JtL2NwdV9mZWF0dXJlX2d1YXJkLmNjOjE0MV0gWW91ciBDUFUgc3VwcG9ydHMgaW5zdHJ1Y3Rpb25zIHRoYXQgdGhpcyBUZW5zb3JGbG93IGJpbmFyeSB3YXMgbm90IGNvbXBpbGVkIHRvIHVzZTogQVZYMiBGTUFcbiJ9 -->
+<pre><code>2018-11-23 16:34:11.314174: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-output-begin eyJkYXRhIjoidGYuVGVuc29yKFxuW1stMS43NzU5NTM1XVxuIFstMi4yMjUwMjE4XV0sIHNoYXBlPSgyLCAxKSwgZHR5cGU9ZmxvYXQzMilcbiJ9 -->
+<pre><code>tf.Tensor(
+[[-1.7759535]
+ [-2.2250218]], shape=(2, 1), dtype=float32)</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1809,12 +1801,78 @@ tf.Tensor(
 <p>After that call, you can inspect the model’s weights using</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxuaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRyYWluX2RhdGFzZXQpXG5iYXRjaCA8LSAgaXRlcmF0b3JfZ2V0X25leHQoaXRlcilcbmBgYFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r</p>
-<pre class="r"><code>iter &lt;- make_iterator_one_shot(train_dataset)
-batch &lt;-  iterator_get_next(iter)</code></pre>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwkd2VpZ2h0c1xuYGBgIn0= -->
+<pre class="r"><code>model$weights</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cbjx0Zi5WYXJpYWJsZSAnZGVuc2Uva2VybmVsOjAnIHNoYXBlPSgzLCAzMikgZHR5cGU9ZmxvYXQzMiwgbnVtcHk9XG5hcnJheShbWy0wLjE4MjY1MTM2LCAgMC4xNTc4MTgyOSwgLTAuMTc4MTYzODksICAwLjIzMTAwMzk3LCAtMC4xNTU0NjQ4NixcbiAgICAgICAgLTAuMTkxMTIyNzYsICAwLjE3MDY0MjY0LCAgMC4yMzM0MjY3MiwgLTAuMDc5MDU0MjcsIC0wLjE1MzUxMDY5LFxuICAgICAgICAgMC40MTMxOTU0NiwgLTAuMzY2OTQ5MyAsICAwLjI2MTA0NSAgLCAtMC4zNTY0ODkxOCwgIDAuMzIzMzI1NDgsXG4gICAgICAgIC0wLjMyNDYyMjYgLCAtMC4wMjUwMzg4NywgLTAuMjUyNjU0ODUsIC0wLjM3NDg0MjcgLCAgMC4wNDY1Mzk4MSxcbiAgICAgICAgIDAuMzMwMDg0NiAsIC0wLjEzNzExMjkyLCAgMC4yMjQ0NTcyMywgIDAuMDg4ODQ0ODEsICAwLjM1MjQ3NDk2LFxuICAgICAgICAtMC4yMjM3NTY4NSwgIDAuMzMzMjIxMzUsICAwLjA5NTU5NjE2LCAgMC4yODU0MTkzNywgLTAuMTQ4OTIxMDQsXG4gICAgICAgICAwLjQwNTU4MDUgLCAgMC4zNTMxNDk3NF0sXG4gICAgICAgWyAwLjA5MDk1MjA3LCAtMC4wMzE0NzY5NCwgIDAuMDEzMzQzMzYsIC0wLjExNDc2NTc2LCAtMC4zNjM3MTk0MyxcbiAgICAgICAgIDAuMDg4NzYxOTYsICAwLjM1NjAyMTA4LCAtMC4yMTEzNTE1NywgIDAuMzg5NjQ1OTYsIC0wLjEwNDgwOTkxLFxuICAgICAgICAgMC4xNjM1Nzk2NywgIDAuMzUxMzUyMzYsIC0wLjEyMDYxNDQxLCAgMC4wMjA5MTk5MiwgIDAuMzU0OTQ4MjUsXG4gICAgICAgIC0wLjE1NjUxNDY3LCAtMC4zNTM2MzU5NCwgLTAuMTU3NDg0MzUsIC0wLjI2MjA4Nzk0LCAtMC4wMDIwMDc3NSxcbiAgICAgICAgIDAuMDY5MDQ4NjQsIC0wLjIyOTE4NzM0LCAgMC4zODA3NjI5ICwgIDAuNDEzMjkzMjcsICAwLjE5NDQzMDYyLFxuICAgICAgICAtMC4zNjA3MzY1ICwgLTAuMDU0MzY0MDYsIC0wLjE0OTQ2OTUyLCAtMC4zMDMyMzU2OCwgLTAuMjEyNTAzNDYsXG4gICAgICAgIC0wLjQwNzI4NTc4LCAtMC4yODQwNjQ5IF0sXG4gICAgICAgWyAwLjI0NjQ0OTY4LCAtMC4zODQyMjE2NywgLTAuMzAyMjcyMTQsIC0wLjI3MTQyOSAgLCAtMC4zOTU4NTYxICxcbiAgICAgICAgLTAuMDczOTE1NTcsICAwLjM2NTg0MTI0LCAgMC4xNDE4NzYzNywgLTAuMTkzNjgxMjQsICAwLjExMDY1MTQ2LFxuICAgICAgICAtMC4zMjc0MzU1ICwgLTAuMzk2MzQ0NDUsIC0wLjIyMzgzODE4LCAgMC4xMzM1MzM4ICwgLTAuMDMwNDc2NTcsXG4gICAgICAgICAwLjIwNTc4NjQ0LCAgMC4yMjEyMTQ5MiwgLTAuMDM1NDA4MjYsIC0wLjI3NTI4NjY3LCAtMC4wMzg4MjI4ICxcbiAgICAgICAgIDAuMTkzODU1OTcsIC0wLjE2NjUyNDA1LCAtMC4zMTgyOTc1NiwgIDAuMTk1ODY5MjQsIC0wLjAwMTQyNzExLFxuICAgICAgICAtMC4xODQ2MTU1ICwgLTAuMzc2OTUyNjUsICAwLjAwMjI2MTE2LCAgMC4xMDA5OTQ1NiwgIDAuMzI4NTc3OSAsXG4gICAgICAgIC0wLjA0OTE2NTU1LCAgMC4yODE2Mjc0NV1dLCBkdHlwZT1mbG9hdDMyKT5cblxuW1syXV1cbjx0Zi5WYXJpYWJsZSAnZGVuc2UvYmlhczowJyBzaGFwZT0oMzIsKSBkdHlwZT1mbG9hdDMyLCBudW1weT1cbmFycmF5KFswLiwgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLiwgMC4sXG4gICAgICAgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLiwgMC4sIDAuLCAwLl0sXG4gICAgICBkdHlwZT1mbG9hdDMyKT5cblxuW1szXV1cbjx0Zi5WYXJpYWJsZSAnZGVuc2VfMS9rZXJuZWw6MCcgc2hhcGU9KDMyLCAxKSBkdHlwZT1mbG9hdDMyLCBudW1weT1cbmFycmF5KFtbLTAuNDE2NDc5MDJdLFxuICAgICAgIFstMC4xMzkyMjE5N10sXG4gICAgICAgWy0wLjA4NTI5MzgzXSxcbiAgICAgICBbLTAuMTgyMjUwMjJdLFxuICAgICAgIFsgMC4xNTk2ODU0M10sXG4gICAgICAgWyAwLjAyODY5NjAzXSxcbiAgICAgICBbLTAuMTM3NjkzMjldLFxuICAgICAgIFsgMC4yODEyMTk0Ml0sXG4gICAgICAgWy0wLjI5MDkzNzcyXSxcbiAgICAgICBbLTAuMjk0NDUxMTVdLFxuICAgICAgIFsgMC4zNjIwMTIxIF0sXG4gICAgICAgWyAwLjMyODMxNjEgXSxcbiAgICAgICBbIDAuMDg0ODMxMThdLFxuICAgICAgIFstMC4zODgwMDU5IF0sXG4gICAgICAgWyAwLjIxMzYxMzc1XSxcbiAgICAgICBbIDAuMTUwMzk1MzNdLFxuICAgICAgIFstMC4zODY3OTYwNl0sXG4gICAgICAgWyAwLjM5OTQ0Mzc1XSxcbiAgICAgICBbLTAuMzQxOTg3NyBdLFxuICAgICAgIFstMC4yOTUxNzUyOF0sXG4gICAgICAgWy0wLjA3NTI4NzA0XSxcbiAgICAgICBbIDAuMTk4OTAzNSBdLFxuICAgICAgIFstMC4yODU4NDQ3NF0sXG4gICAgICAgWy0wLjI5MjI2Nzg2XSxcbiAgICAgICBbLTAuMTIzODA1NzNdLFxuICAgICAgIFsgMC4wODQ2NDQ2Ml0sXG4gICAgICAgWy0wLjIxOTgxMTggXSxcbiAgICAgICBbLTAuNDEwMTM5NiBdLFxuICAgICAgIFstMC40MTgzNjIxIF0sXG4gICAgICAgWyAwLjE4NDM1NTc0XSxcbiAgICAgICBbIDAuMjEwNTYxOTldLFxuICAgICAgIFstMC4wMjQzNzcyM11dLCBkdHlwZT1mbG9hdDMyKT5cblxuW1s0XV1cbjx0Zi5WYXJpYWJsZSAnZGVuc2VfMS9iaWFzOjAnIHNoYXBlPSgxLCkgZHR5cGU9ZmxvYXQzMiwgbnVtcHk9YXJyYXkoWzAuXSwgZHR5cGU9ZmxvYXQzMik+XG4ifQ== -->
+<pre><code>[[1]]
+&lt;tf.Variable 'dense/kernel:0' shape=(3, 32) dtype=float32, numpy=
+array([[-0.18265136,  0.15781829, -0.17816389,  0.23100397, -0.15546486,
+        -0.19112276,  0.17064264,  0.23342672, -0.07905427, -0.15351069,
+         0.41319546, -0.3669493 ,  0.261045  , -0.35648918,  0.32332548,
+        -0.3246226 , -0.02503887, -0.25265485, -0.3748427 ,  0.04653981,
+         0.3300846 , -0.13711292,  0.22445723,  0.08884481,  0.35247496,
+        -0.22375685,  0.33322135,  0.09559616,  0.28541937, -0.14892104,
+         0.4055805 ,  0.35314974],
+       [ 0.09095207, -0.03147694,  0.01334336, -0.11476576, -0.36371943,
+         0.08876196,  0.35602108, -0.21135157,  0.38964596, -0.10480991,
+         0.16357967,  0.35135236, -0.12061441,  0.02091992,  0.35494825,
+        -0.15651467, -0.35363594, -0.15748435, -0.26208794, -0.00200775,
+         0.06904864, -0.22918734,  0.3807629 ,  0.41329327,  0.19443062,
+        -0.3607365 , -0.05436406, -0.14946952, -0.30323568, -0.21250346,
+        -0.40728578, -0.2840649 ],
+       [ 0.24644968, -0.38422167, -0.30227214, -0.271429  , -0.3958561 ,
+        -0.07391557,  0.36584124,  0.14187637, -0.19368124,  0.11065146,
+        -0.3274355 , -0.39634445, -0.22383818,  0.1335338 , -0.03047657,
+         0.20578644,  0.22121492, -0.03540826, -0.27528667, -0.0388228 ,
+         0.19385597, -0.16652405, -0.31829756,  0.19586924, -0.00142711,
+        -0.1846155 , -0.37695265,  0.00226116,  0.10099456,  0.3285779 ,
+        -0.04916555,  0.28162745]], dtype=float32)&gt;
+
+[[2]]
+&lt;tf.Variable 'dense/bias:0' shape=(32,) dtype=float32, numpy=
+array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+      dtype=float32)&gt;
+
+[[3]]
+&lt;tf.Variable 'dense_1/kernel:0' shape=(32, 1) dtype=float32, numpy=
+array([[-0.41647902],
+       [-0.13922197],
+       [-0.08529383],
+       [-0.18225022],
+       [ 0.15968543],
+       [ 0.02869603],
+       [-0.13769329],
+       [ 0.28121942],
+       [-0.29093772],
+       [-0.29445115],
+       [ 0.3620121 ],
+       [ 0.3283161 ],
+       [ 0.08483118],
+       [-0.3880059 ],
+       [ 0.21361375],
+       [ 0.15039533],
+       [-0.38679606],
+       [ 0.39944375],
+       [-0.3419877 ],
+       [-0.29517528],
+       [-0.07528704],
+       [ 0.1989035 ],
+       [-0.28584474],
+       [-0.29226786],
+       [-0.12380573],
+       [ 0.08464462],
+       [-0.2198118 ],
+       [-0.4101396 ],
+       [-0.4183621 ],
+       [ 0.18435574],
+       [ 0.21056199],
+       [-0.02437723]], dtype=float32)&gt;
+
+[[4]]
+&lt;tf.Variable 'dense_1/bias:0' shape=(1,) dtype=float32, numpy=array([0.], dtype=float32)&gt;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>This will not just display the tensor shapes, but the actual weight values.</p>
@@ -1824,10 +1882,72 @@ batch &lt;-  iterator_get_next(iter)</code></pre>
 <p>An appropriate loss function for a regression task like this is mean squared error:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxuYmF0Y2hcbmBgYFxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r</p>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXNlX2xvc3MgPC0gZnVuY3Rpb24oeV90cnVlLCB5X3ByZWQpIHtcbiAgIyBpdCdzIHJlcXVpcmVkIHRvIHVzZSBhIFRlbnNvckZsb3cgZnVuY3Rpb24gaGVyZSwgbm90IGxvc3NfbWVhbl9zcXVhcmVkX2Vycm9yKCkgZnJvbSBLZXJhc1xuICBtc2UgPC0gdGYkbG9zc2VzJG1lYW5fc3F1YXJlZF9lcnJvcih5X3RydWUsIHlfcHJlZClcbiAgIyBoZXJlIHlvdSBjb3VsZCBjb21wdXRlIGFuZCBhZGQgb3RoZXIgbG9zc2VzIFxuICBtc2Vcbn1cbmBgYCJ9 -->
+<pre class="r"><code>mse_loss &lt;- function(y_true, y_pred) {
+  # it's required to use a TensorFlow function here, not loss_mean_squared_error() from Keras
+  mse &lt;- tf$losses$mean_squared_error(y_true, y_pred)
+  # here you could compute and add other losses 
+  mse
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Note how we have to use loss functions from TensorFlow, not the Keras equivalents. In the same vein, we need to use an optimizer from the <code>tf$train</code> module.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBoYXZlIHRvIHVzZSBhbiBvcHRpbWl6ZXIgZnJvbSB0ZiR0cmFpbiwgbm90IEtlcmFzXG5vcHRpbWl6ZXIgPC0gdGYkdHJhaW4kQWRhbU9wdGltaXplcigpXG5gYGAifQ== -->
+<pre class="r"><code># have to use an optimizer from tf$train, not Keras
+optimizer &lt;- tf$train$AdamOptimizer()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="use-tfdatasets-to-feed-the-data" class="section level2">
+<h2>Use tfdatasets to feed the data</h2>
+<p>In eager execution, you use <a href="https://tensorflow.rstudio.com/tools/tfdatasets">tfdatasets</a> to stream input and target data to the model. In our simple <code>iris</code> example, we use <a href="https://tensorflow.rstudio.com/tools/tfdatasets/reference/tensor_slices_dataset.html">tensor_slices_dataset</a> to directly create a dataset from the underlying R matrices <code>x_train</code> and <code>y_train</code>.</p>
+<p>However, a wide variety of other <a href="https://tensorflow.rstudio.com/tools/tfdatasets/reference/#section-creating-datasets">dataset creation</a> functions is available. Datasets also allow for a variety of pre-processing <a href="https://tensorflow.rstudio.com/tools/tfdatasets/reference/#section-transforming-datasets">transformations</a>.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueF90cmFpbiA8LVxuICBpcmlzWzE6MTIwLCBjKFwiUGV0YWwuTGVuZ3RoXCIsIFwiU2VwYWwuTGVuZ3RoXCIsIFwiUGV0YWwuV2lkdGhcIildICU+JSBhcy5tYXRyaXgoKVxueV90cmFpbiA8LVxuICBpcmlzWzE6MTIwLCBjKFwiU2VwYWwuV2lkdGhcIildICU+JSBhcy5tYXRyaXgoKVxuXG4jIENvbnZlcnQgdG8gYXBwcm9yaWF0ZSB0ZW5zb3IgZmxvYXRpbmcgcG9pbnQgdHlwZSBmb3IgYmFja2VuZFxueF90cmFpbiA8LSBrX2NvbnN0YW50KHhfdHJhaW4pXG55X3RyYWluIDwtIGtfY29uc3RhbnQoeV90cmFpbilcblxuIyBzYW1lIGZvciB0ZXN0IHNldFxueF90ZXN0IDwtXG4gIGlyaXNbMTIxOjE1MCwgYyhcIlBldGFsLkxlbmd0aFwiLCBcIlNlcGFsLkxlbmd0aFwiLCBcIlBldGFsLldpZHRoXCIpXSAlPiUgYXMubWF0cml4KClcbnlfdGVzdCA8LVxuICBpcmlzWzEyMToxNTAsIGMoXCJTZXBhbC5XaWR0aFwiKV0gJT4lIGFzLm1hdHJpeCgpXG54X3Rlc3QgPC0ga19jb25zdGFudCh4X3Rlc3QpXG55X3Rlc3QgPC0ga19jb25zdGFudCh5X3Rlc3QpXG5cbmxpYnJhcnkodGZkYXRhc2V0cylcbnRyYWluX2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdHJhaW4sIHlfdHJhaW4pKSAlPiUgXG4gIGRhdGFzZXRfYmF0Y2goMTApXG50ZXN0X2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdGVzdCwgeV90ZXN0KSkgJT4lXG4gIGRhdGFzZXRfYmF0Y2goMTApXG5gYGAifQ== -->
+<pre class="r"><code>x_train &lt;-
+  iris[1:120, c(&quot;Petal.Length&quot;, &quot;Sepal.Length&quot;, &quot;Petal.Width&quot;)] %&gt;% as.matrix()
+y_train &lt;-
+  iris[1:120, c(&quot;Sepal.Width&quot;)] %&gt;% as.matrix()
+
+# Convert to approriate tensor floating point type for backend
+x_train &lt;- k_constant(x_train)
+y_train &lt;- k_constant(y_train)
+
+# same for test set
+x_test &lt;-
+  iris[121:150, c(&quot;Petal.Length&quot;, &quot;Sepal.Length&quot;, &quot;Petal.Width&quot;)] %&gt;% as.matrix()
+y_test &lt;-
+  iris[121:150, c(&quot;Sepal.Width&quot;)] %&gt;% as.matrix()
+x_test &lt;- k_constant(x_test)
+y_test &lt;- k_constant(y_test)
+
+library(tfdatasets)
+train_dataset &lt;- tensor_slices_dataset(list (x_train, y_train)) %&gt;% 
+  dataset_batch(10)
+test_dataset &lt;- tensor_slices_dataset(list (x_test, y_test)) %&gt;%
+  dataset_batch(10)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Data is accessed from a dataset via <code>make_iterator_one_shot</code> (to create an iterator) and <code>iterator_get_next</code> (to obtain the next batch).</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRyYWluX2RhdGFzZXQpXG5iYXRjaCA8LSAgaXRlcmF0b3JfZ2V0X25leHQoaXRlcilcbmBgYCJ9 -->
+<pre class="r"><code>iter &lt;- make_iterator_one_shot(train_dataset)
+batch &lt;-  iterator_get_next(iter)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Datasets are available in non-eager (graph) execution as well. However, in eager mode, we can examine the actual values returned from the iterator:</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmF0Y2hcbmBgYCJ9 -->
 <pre class="r"><code>batch</code></pre>
-<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiW1sxXV1cbnRmLlRlbnNvcihcbltbMS40IDUuMSAwLjJdXG4gWzEuNCA0LjkgMC4yXVxuIFsxLjMgNC43IDAuMl1cbiBbMS41IDQuNiAwLjJdXG4gWzEuNCA1LiAgMC4yXVxuIFsxLjcgNS40IDAuNF1cbiBbMS40IDQuNiAwLjNdXG4gWzEuNSA1LiAgMC4yXVxuIFsxLjQgNC40IDAuMl1cbiBbMS41IDQuOSAwLjFdXSwgc2hhcGU9KDEwLCAzKSwgZHR5cGU9ZmxvYXQzMilcblxuW1syXV1cbnRmLlRlbnNvcihcbltbMy41XVxuIFszLiBdXG4gWzMuMl1cbiBbMy4xXVxuIFszLjZdXG4gWzMuOV1cbiBbMy40XVxuIFszLjRdXG4gWzIuOV1cbiBbMy4xXV0sIHNoYXBlPSgxMCwgMSksIGR0eXBlPWZsb2F0MzIpXG4ifQ== -->
 <pre><code>[[1]]
@@ -1855,133 +1975,6 @@ tf.Tensor(
  [3.4]
  [2.9]
  [3.1]], shape=(10, 1), dtype=float32)</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Note how we have to use loss functions from TensorFlow, not the Keras equivalents. In the same vein, we need to use an optimizer from the <code>tf$train</code> module.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxubl9lcG9jaHMgPC0gMTBcblxuZm9yIChpIGluIHNlcV9sZW4obl9lcG9jaHMpKSB7XG4gIFxuICBpdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodHJhaW5fZGF0YXNldClcbiAgdG90YWxfbG9zcyA8LSAwXG4gIFxuICB1bnRpbF9vdXRfb2ZfcmFuZ2Uoe1xuICAgIFxuICAgICMgZ2V0IGEgbmV3IGJhdGNoIGFuZCBydW4gZm9yd2FyZCBwYXNzIG9uIGl0IFxuICAgIFxuICAgICMgY2FsY3VsYXRlIGxvc3MgXG4gICAgXG4gICAgIyBjYWxjdWxhdGUgZ3JhZGllbnRzIG9mIGxvc3Mgdy5yLnQuIG1vZGVsIHdlaWdodHNcbiAgICBcbiAgICAjIHVwZGF0ZSBtb2RlbCB3ZWlnaHRzXG4gICAgXG4gIH0pXG4gIFxuICBjYXQoXFxUb3RhbCBsb3NzIChlcG9jaCk6IFxcLCBpLCBcXDogXFwsIGFzLm51bWVyaWModG90YWxfbG9zcyksIFxcXFxuXFwpXG59XG5gYGBcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r</p>
-<pre class="r"><code>n_epochs &lt;- 10
-
-for (i in seq_len(n_epochs)) {
-  
-  iter &lt;- make_iterator_one_shot(train_dataset)
-  total_loss &lt;- 0
-  
-  until_out_of_range({
-    
-    # get a new batch and run forward pass on it 
-    
-    # calculate loss 
-    
-    # calculate gradients of loss w.r.t. model weights
-    
-    # update model weights
-    
-  })
-  
-  cat(\Total loss (epoch): \, i, \: \, as.numeric(total_loss), \\n\)
-}</code></pre>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="use-tfdatasets-to-feed-the-data" class="section level2">
-<h2>Use tfdatasets to feed the data</h2>
-<p>In eager execution, you use <a href="https://tensorflow.rstudio.com/tools/tfdatasets">tfdatasets</a> to stream input and target data to the model. In our simple <code>iris</code> example, we use <a href="https://tensorflow.rstudio.com/tools/tfdatasets/reference/tensor_slices_dataset.html">tensor_slices_dataset</a> to directly create a dataset from the underlying R matrices <code>x_train</code> and <code>y_train</code>.</p>
-<p>However, a wide variety of other <a href="https://tensorflow.rstudio.com/tools/tfdatasets/reference/#section-creating-datasets">dataset creation</a> functions is available. Datasets also allow for a variety of pre-processing <a href="https://tensorflow.rstudio.com/tools/tfdatasets/reference/#section-transforming-datasets">transformations</a>.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxubl9lcG9jaHMgPC0gMTBcblxuIyBsb29wIG92ZXIgZXBvY2hzXG5mb3IgKGkgaW4gc2VxX2xlbihuX2Vwb2NocykpIHtcbiAgXG4gICMgY3JlYXRlIGZyZXNoIGl0ZXJhdG9yIGZyb20gZGF0YXNldFxuICBpdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodHJhaW5fZGF0YXNldClcbiAgXG4gICMgYWNjdW11bGF0ZSBjdXJyZW50IGVwb2NoJ3MgbG9zcyAoZm9yIGRpc3BsYXkgcHVycG9zZXMgb25seSlcbiAgdG90YWxfbG9zcyA8LSAwXG4gIFxuICAjIGxvb3Agb25jZSB0aHJvdWdoIHRoZSBkYXRhc2V0XG4gIHVudGlsX291dF9vZl9yYW5nZSh7XG4gICAgXG4gICAgIyBnZXQgbmV4dCBiYXRjaFxuICAgIGJhdGNoIDwtICBpdGVyYXRvcl9nZXRfbmV4dChpdGVyKVxuICAgIHggPC0gYmF0Y2hbWzFdXVxuICAgIHkgPC0gYmF0Y2hbWzJdXVxuICAgIFxuICAgICMgZm9yd2FyZCBwYXNzIGlzIHJlY29yZGVkIGJ5IHRmJEdyYWRpZW50VGFwZVxuICAgIHdpdGgodGYkR3JhZGllbnRUYXBlKCkgJWFzJSB0YXBlLCB7XG4gICAgIFxuICAgICAgIyBydW4gbW9kZWwgb24gY3VycmVudCBiYXRjaFxuICAgICAgcHJlZHMgPC0gbW9kZWwoeClcbiAgICAgXG4gICAgICAjIGNvbXB1dGUgdGhlIGxvc3NcbiAgICAgIGxvc3MgPC0gbXNlX2xvc3MoeSwgcHJlZHMsIHgpXG4gICAgfSlcbiAgICBcbiAgICAjIHVwZGF0ZSB0b3RhbCBsb3NzXG4gICAgdG90YWxfbG9zcyA8LSB0b3RhbF9sb3NzICsgbG9zc1xuICAgIFxuICAgICMgZ2V0IGdyYWRpZW50cyBvZiBsb3NzIHcuci50LiBtb2RlbCB3ZWlnaHRzXG4gICAgZ3JhZGllbnRzIDwtIHRhcGUkZ3JhZGllbnQobG9zcywgbW9kZWwkdmFyaWFibGVzKVxuICAgIFxuICAgICMgdXBkYXRlIG1vZGVsIHdlaWdodHNcbiAgICBvcHRpbWl6ZXIkYXBwbHlfZ3JhZGllbnRzKFxuICAgICAgcHVycnI6OnRyYW5zcG9zZShsaXN0KGdyYWRpZW50cywgbW9kZWwkdmFyaWFibGVzKSksXG4gICAgICBnbG9iYWxfc3RlcCA9IHRmJHRyYWluJGdldF9vcl9jcmVhdGVfZ2xvYmFsX3N0ZXAoKVxuICAgIClcblxuICB9KVxuICBcbiAgY2F0KFxcVG90YWwgbG9zcyAoZXBvY2gpOiBcXCwgaSwgXFw6IFxcLCBhcy5udW1lcmljKHRvdGFsX2xvc3MpLCBcXFxcblxcKVxufVxuYGBgXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r</p>
-<pre class="r"><code>n_epochs &lt;- 10
-
-# loop over epochs
-for (i in seq_len(n_epochs)) {
-  
-  # create fresh iterator from dataset
-  iter &lt;- make_iterator_one_shot(train_dataset)
-  
-  # accumulate current epoch's loss (for display purposes only)
-  total_loss &lt;- 0
-  
-  # loop once through the dataset
-  until_out_of_range({
-    
-    # get next batch
-    batch &lt;-  iterator_get_next(iter)
-    x &lt;- batch[[1]]
-    y &lt;- batch[[2]]
-    
-    # forward pass is recorded by tf$GradientTape
-    with(tf$GradientTape() %as% tape, {
-     
-      # run model on current batch
-      preds &lt;- model(x)
-     
-      # compute the loss
-      loss &lt;- mse_loss(y, preds, x)
-    })
-    
-    # update total loss
-    total_loss &lt;- total_loss + loss
-    
-    # get gradients of loss w.r.t. model weights
-    gradients &lt;- tape$gradient(loss, model$variables)
-    
-    # update model weights
-    optimizer$apply_gradients(
-      purrr::transpose(list(gradients, model$variables)),
-      global_step = tf$train$get_or_create_global_step()
-    )
-
-  })
-  
-  cat(\Total loss (epoch): \, i, \: \, as.numeric(total_loss), \\n\)
-}</code></pre>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiVG90YWwgbG9zcyAoZXBvY2gpOiAgMSA6ICAxMTguMzgyMSBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDIgOiAgNDcuNzg0MjggXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICAzIDogIDE3LjA1OTc3IFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgNCA6ICA5LjA1NjU0NyBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDUgOiAgNy4zNTE1NDMgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICA2IDogIDYuMTUzOTU3IFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgNyA6ICA1LjQ2ODMzMiBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDggOiAgNS4xNjExNTYgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICA5IDogIDQuODQ2OTYgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICAxMCA6ICA0LjQ1ODcyNiBcbiJ9 -->
-<pre><code>Total loss (epoch):  1 :  118.3821 
-Total loss (epoch):  2 :  47.78428 
-Total loss (epoch):  3 :  17.05977 
-Total loss (epoch):  4 :  9.056547 
-Total loss (epoch):  5 :  7.351543 
-Total loss (epoch):  6 :  6.153957 
-Total loss (epoch):  7 :  5.468332 
-Total loss (epoch):  8 :  5.161156 
-Total loss (epoch):  9 :  4.84696 
-Total loss (epoch):  10 :  4.458726 </code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Data is accessed from a dataset via <code>make_iterator_one_shot</code> (to create an iterator) and <code>iterator_get_next</code> (to obtain the next batch).</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxuY2hlY2twb2ludCRzYXZlKGZpbGVfcHJlZml4ID0gY2hlY2twb2ludF9wcmVmaXgpXG5gYGBcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r</p>
-<pre class="r"><code>checkpoint$save(file_prefix = checkpoint_prefix)</code></pre>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFxcLi9jaGVja3BvaW50cy9ja3B0LTFcXFxuIn0= -->
-<pre><code>[1] \./checkpoints/ckpt-1\</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Datasets are available in non-eager (graph) execution as well. However, in eager mode, we can examine the actual values returned from the iterator:</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYGBgclxuIyByZXN0b3JlIGZyb20gcmVjZW50IGNoZWNrcG9pbnQsIHlvdSBjYW4gYWxzbyB1c2UgYSBkaWZmZXJlbnQgb25lXG5jaGVja3BvaW50JHJlc3RvcmUodGYkdHJhaW4kbGF0ZXN0X2NoZWNrcG9pbnQoY2hlY2twb2ludF9kaXIpKVxuYGBgXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r</p>
-<pre class="r"><code># restore from recent checkpoint, you can also use a different one
-checkpoint$restore(tf$train$latest_checkpoint(checkpoint_dir))</code></pre>
-<pre><code></code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiPHRlbnNvcmZsb3cucHl0aG9uLnRyYWluaW5nLmNoZWNrcG9pbnRhYmxlLnV0aWwuQ2hlY2twb2ludExvYWRTdGF0dXM+XG4ifQ== -->
-<pre><code>&lt;tensorflow.python.training.checkpointable.util.CheckpointLoadStatus&gt;</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -2017,9 +2010,28 @@ tf.Tensor(
 <p>In general, you will have at least two loops: an outer loop over epochs, and an inner loop over batches of data returned by the iterator (implemented implicitly by <code>until_out_of_range</code>). The iterator is recreated at the start of each new epoch.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuY2hlY2twb2ludCRzYXZlKGZpbGVfcHJlZml4ID0gY2hlY2twb2ludF9wcmVmaXgpXG5gYGBcbmBgYCJ9 -->
-<p><code>r</code>r checkpoint$save(file_prefix = checkpoint_prefix)</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjpbIm5fZXBvY2hzIDwtIDEwIiwiIiwiZm9yIChpIGluIHNlcV9sZW4obl9lcG9jaHMpKSB7IiwiICAiLCIgIGl0ZXIgPC0gbWFrZV9pdGVyYXRvcl9vbmVfc2hvdCh0cmFpbl9kYXRhc2V0KSIsIiAgdG90YWxfbG9zcyA8LSAwIiwiICAiLCIgIHVudGlsX291dF9vZl9yYW5nZSh7IiwiICAgICIsIiAgICAjIGdldCBhIG5ldyBiYXRjaCBhbmQgcnVuIGZvcndhcmQgcGFzcyBvbiBpdCAiLCIgICAgIiwiICAgICMgY2FsY3VsYXRlIGxvc3MgIiwiICAgICIsIiAgICAjIGNhbGN1bGF0ZSBncmFkaWVudHMgb2YgbG9zcyB3LnIudC4gbW9kZWwgd2VpZ2h0cyIsIiAgICAiLCIgICAgIyB1cGRhdGUgbW9kZWwgd2VpZ2h0cyIsIiAgICAiLCIgIH0pIiwiICAiLCIgIGNhdChcIlRvdGFsIGxvc3MgKGVwb2NoKTogXCIsIGksIFwiOiBcIiwgYXMubnVtZXJpYyh0b3RhbF9sb3NzKSwgXCJcXG5cIikiLCJ9Il19 -->
+<pre class="r"><code>n_epochs &lt;- 10
+
+for (i in seq_len(n_epochs)) {
+  
+  iter &lt;- make_iterator_one_shot(train_dataset)
+  total_loss &lt;- 0
+  
+  until_out_of_range({
+    
+    # get a new batch and run forward pass on it 
+    
+    # calculate loss 
+    
+    # calculate gradients of loss w.r.t. model weights
+    
+    # update model weights
+    
+  })
+  
+  cat(&quot;Total loss (epoch): &quot;, i, &quot;: &quot;, as.numeric(total_loss), &quot;\n&quot;)
+}</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -2034,10 +2046,65 @@ tf.Tensor(
 <p>Here is the complete code for the training loop:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyByZXN0b3JlIGZyb20gcmVjZW50IGNoZWNrcG9pbnQsIHlvdSBjYW4gYWxzbyB1c2UgYSBkaWZmZXJlbnQgb25lXG5jaGVja3BvaW50JHJlc3RvcmUodGYkdHJhaW4kbGF0ZXN0X2NoZWNrcG9pbnQoY2hlY2twb2ludF9kaXIpKVxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r # restore from recent checkpoint, you can also use a different one checkpoint<span class="math inline">\(restore(tf\)</span>train$latest_checkpoint(checkpoint_dir))</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubl9lcG9jaHMgPC0gMTBcblxuIyBsb29wIG92ZXIgZXBvY2hzXG5mb3IgKGkgaW4gc2VxX2xlbihuX2Vwb2NocykpIHtcbiAgXG4gICMgY3JlYXRlIGZyZXNoIGl0ZXJhdG9yIGZyb20gZGF0YXNldFxuICBpdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodHJhaW5fZGF0YXNldClcbiAgXG4gICMgYWNjdW11bGF0ZSBjdXJyZW50IGVwb2NoJ3MgbG9zcyAoZm9yIGRpc3BsYXkgcHVycG9zZXMgb25seSlcbiAgdG90YWxfbG9zcyA8LSAwXG4gIFxuICAjIGxvb3Agb25jZSB0aHJvdWdoIHRoZSBkYXRhc2V0XG4gIHVudGlsX291dF9vZl9yYW5nZSh7XG4gICAgXG4gICAgIyBnZXQgbmV4dCBiYXRjaFxuICAgIGJhdGNoIDwtICBpdGVyYXRvcl9nZXRfbmV4dChpdGVyKVxuICAgIHggPC0gYmF0Y2hbWzFdXVxuICAgIHkgPC0gYmF0Y2hbWzJdXVxuICAgIFxuICAgICMgZm9yd2FyZCBwYXNzIGlzIHJlY29yZGVkIGJ5IHRmJEdyYWRpZW50VGFwZVxuICAgIHdpdGgodGYkR3JhZGllbnRUYXBlKCkgJWFzJSB0YXBlLCB7XG4gICAgIFxuICAgICAgIyBydW4gbW9kZWwgb24gY3VycmVudCBiYXRjaFxuICAgICAgcHJlZHMgPC0gbW9kZWwoeClcbiAgICAgXG4gICAgICAjIGNvbXB1dGUgdGhlIGxvc3NcbiAgICAgIGxvc3MgPC0gbXNlX2xvc3MoeSwgcHJlZHMpXG4gICAgfSlcbiAgICBcbiAgICAjIHVwZGF0ZSB0b3RhbCBsb3NzXG4gICAgdG90YWxfbG9zcyA8LSB0b3RhbF9sb3NzICsgbG9zc1xuICAgIFxuICAgICMgZ2V0IGdyYWRpZW50cyBvZiBsb3NzIHcuci50LiBtb2RlbCB3ZWlnaHRzXG4gICAgZ3JhZGllbnRzIDwtIHRhcGUkZ3JhZGllbnQobG9zcywgbW9kZWwkdmFyaWFibGVzKVxuICAgIFxuICAgICMgdXBkYXRlIG1vZGVsIHdlaWdodHNcbiAgICBvcHRpbWl6ZXIkYXBwbHlfZ3JhZGllbnRzKFxuICAgICAgcHVycnI6OnRyYW5zcG9zZShsaXN0KGdyYWRpZW50cywgbW9kZWwkdmFyaWFibGVzKSksXG4gICAgICBnbG9iYWxfc3RlcCA9IHRmJHRyYWluJGdldF9vcl9jcmVhdGVfZ2xvYmFsX3N0ZXAoKVxuICAgIClcblxuICB9KVxuICBcbiAgY2F0KFwiVG90YWwgbG9zcyAoZXBvY2gpOiBcIiwgaSwgXCI6IFwiLCBhcy5udW1lcmljKHRvdGFsX2xvc3MpLCBcIlxcblwiKVxufVxuYGBgIn0= -->
+<pre class="r"><code>n_epochs &lt;- 10
+
+# loop over epochs
+for (i in seq_len(n_epochs)) {
+  
+  # create fresh iterator from dataset
+  iter &lt;- make_iterator_one_shot(train_dataset)
+  
+  # accumulate current epoch's loss (for display purposes only)
+  total_loss &lt;- 0
+  
+  # loop once through the dataset
+  until_out_of_range({
+    
+    # get next batch
+    batch &lt;-  iterator_get_next(iter)
+    x &lt;- batch[[1]]
+    y &lt;- batch[[2]]
+    
+    # forward pass is recorded by tf$GradientTape
+    with(tf$GradientTape() %as% tape, {
+     
+      # run model on current batch
+      preds &lt;- model(x)
+     
+      # compute the loss
+      loss &lt;- mse_loss(y, preds)
+    })
+    
+    # update total loss
+    total_loss &lt;- total_loss + loss
+    
+    # get gradients of loss w.r.t. model weights
+    gradients &lt;- tape$gradient(loss, model$variables)
+    
+    # update model weights
+    optimizer$apply_gradients(
+      purrr::transpose(list(gradients, model$variables)),
+      global_step = tf$train$get_or_create_global_step()
+    )
+
+  })
+  
+  cat(&quot;Total loss (epoch): &quot;, i, &quot;: &quot;, as.numeric(total_loss), &quot;\n&quot;)
+}</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiVG90YWwgbG9zcyAoZXBvY2gpOiAgMSA6ICAxNTIuMzM1NiBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDIgOiAgNjEuMTc3MDkgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICAzIDogIDIzLjM2NzQxIFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgNCA6ICAxMy44MzQ1MiBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDUgOiAgMTEuMzk5MzIgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICA2IDogIDkuNjMwMjY3IFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgNyA6ICA4LjYyMTQwNiBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDggOiAgOC4wOTEwMzMgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICA5IDogIDcuNTM5NzA2IFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgMTAgOiAgNi44ODU2MDkgXG4ifQ== -->
+<pre><code>Total loss (epoch):  1 :  152.3356 
+Total loss (epoch):  2 :  61.17709 
+Total loss (epoch):  3 :  23.36741 
+Total loss (epoch):  4 :  13.83452 
+Total loss (epoch):  5 :  11.39932 
+Total loss (epoch):  6 :  9.630267 
+Total loss (epoch):  7 :  8.621406 
+Total loss (epoch):  8 :  8.091033 
+Total loss (epoch):  9 :  7.539706 
+Total loss (epoch):  10 :  6.885609 </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2046,11 +2113,42 @@ tf.Tensor(
 <p>Getting predictions on the test set is just a call to <code>model</code>, just like training has been.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubW9kZWwoeF90ZXN0KVxuXG5pdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodGVzdF9kYXRhc2V0KVxudW50aWxfb3V0X29mX3JhbmdlKHtcbiAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpXG4gIHByZWRzIDwtIG1vZGVsKGJhdGNoW1sxXV0pXG4gIHByaW50KHByZWRzKVxufSlcbmBgYFxuYGBgIn0= -->
-<p><code>r</code>r model(x_test)</p>
-<p>iter &lt;- make_iterator_one_shot(test_dataset) until_out_of_range({ batch &lt;- iterator_get_next(iter) preds &lt;- model(batch[[1]]) print(preds) })</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwoeF90ZXN0KVxuYGBgIn0= -->
+<pre class="r"><code>model(x_test)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoidGYuVGVuc29yKFxuW1szLjQ3OTUyNCBdXG4gWzIuOTAzODM4OV1cbiBbMy45NzA1OTQ0XVxuIFszLjIxNTM2MyBdXG4gWzMuNDI5NjU2IF1cbiBbMy43MTMzNDMxXVxuIFszLjE2Mjc5MTVdXG4gWzMuMTM1MDUzOV1cbiBbMy4yOTY3NzUzXVxuIFszLjcxODk1MDVdXG4gWzMuNzkwODQ4N11cbiBbNC4wMTM2NTMzXVxuIFszLjI4MTU1NDddXG4gWzMuMjg1ODU5M11cbiBbMy4yODI4NTYgXVxuIFszLjg1MDQzMDNdXG4gWzMuMjEwOTU4Ml1cbiBbMy4zMzAwMjAyXVxuIFszLjA4MjQ4MiBdXG4gWzMuNDcyNzE0Ml1cbiBbMy4zNzE1NzY4XVxuIFszLjQwNTAyMjFdXG4gWzMuMDI0MjAzIF1cbiBbMy40NjQyMDM2XVxuIFszLjM2ODc3MyBdXG4gWzMuMzM3MTI5Nl1cbiBbMy4yMTI1NjAyXVxuIFszLjMwMjQ4MjRdXG4gWzMuMTYxMTg5OF1cbiBbMy4wNzk1Nzg0XV0sIHNoYXBlPSgzMCwgMSksIGR0eXBlPWZsb2F0MzIpXG4ifQ== -->
+<pre><code>tf.Tensor(
+[[3.479524 ]
+ [2.9038389]
+ [3.9705944]
+ [3.215363 ]
+ [3.429656 ]
+ [3.7133431]
+ [3.1627915]
+ [3.1350539]
+ [3.2967753]
+ [3.7189505]
+ [3.7908487]
+ [4.0136533]
+ [3.2815547]
+ [3.2858593]
+ [3.282856 ]
+ [3.8504303]
+ [3.2109582]
+ [3.3300202]
+ [3.082482 ]
+ [3.4727142]
+ [3.3715768]
+ [3.4050221]
+ [3.024203 ]
+ [3.4642036]
+ [3.368773 ]
+ [3.3371296]
+ [3.2125602]
+ [3.3024824]
+ [3.1611898]
+ [3.0795784]], shape=(30, 1), dtype=float32)</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2059,45 +2157,15 @@ tf.Tensor(
 <p>To save model weights, create an instance of <code>tf$Checkpoint</code> and pass it the objects to be saved: in our case, the <code>model</code> and the <code>optimizer</code>. This has to happen after the respective objects have been created, but before the training loop.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxudW50aWxfb3V0X29mX3JhbmdlKHtcbiAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpXG4gIHByZWRzIDwtIG1vZGVsKGJhdGNoW1sxXV0pXG4gIHByaW50KHByZWRzKVxufSlcblxuYGBgXG5gYGAifQ== -->
-<p><code>r</code>r until_out_of_range({ batch &lt;- iterator_get_next(iter) preds &lt;- model(batch[[1]]) print(preds) })</p>
-<pre><code></code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2hlY2twb2ludF9kaXIgPC0gXCIuL2NoZWNrcG9pbnRzXCJcbmNoZWNrcG9pbnRfcHJlZml4IDwtIGZpbGUucGF0aChjaGVja3BvaW50X2RpciwgXCJja3B0XCIpXG5jaGVja3BvaW50IDwtXG4gIHRmJHRyYWluJENoZWNrcG9pbnQoXG4gICAgb3B0aW1pemVyID0gb3B0aW1pemVyLFxuICAgIG1vZGVsID0gbW9kZWxcbiAgKVxuYGBgIn0= -->
+<pre class="r"><code>checkpoint_dir &lt;- &quot;./checkpoints&quot;
+checkpoint_prefix &lt;- file.path(checkpoint_dir, &quot;ckpt&quot;)
+checkpoint &lt;-
+  tf$train$Checkpoint(
+    optimizer = optimizer,
+    model = model
+  )</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidGYuVGVuc29yKFxuW1szLjg3Nzk0NCBdXG4gWzMuMzE4MTY5OF1cbiBbNC41MDczOTQzXVxuIFszLjQ2Nzk1OSBdXG4gWzMuODY1MTUyNF1cbiBbNC4xMjU0NiAgXVxuIFszLjQwNDkwMiBdXG4gWzMuNDMxODMgIF1cbiBbMy43NjU5NjY0XVxuIFs0LjA1ODgxMjZdXSwgc2hhcGU9KDEwLCAxKSwgZHR5cGU9ZmxvYXQzMilcbnRmLlRlbnNvcihcbltbNC4xOTQ5MTI0XVxuIFs0LjQwODU0NTVdXG4gWzMuNzU0Mjk3N11cbiBbMy41OTI5NTA4XVxuIFszLjc5MzQ1NSBdXG4gWzQuMjAyNDMxN11cbiBbMy43MTI4OTU5XVxuIFszLjc1NTk4MDNdXG4gWzMuMzY4NzcyIF1cbiBbMy43NjYzMDM4XV0sIHNoYXBlPSgxMCwgMSksIGR0eXBlPWZsb2F0MzIpXG50Zi5UZW5zb3IoXG5bWzMuNzg1MTUzOV1cbiBbMy42MDc5ODc0XVxuIFszLjQ1NTk1MzFdXG4gWzMuOTQ5ODY1M11cbiBbMy44MTg0Nzc2XVxuIFszLjYxNjg1MDldXG4gWzMuNTAxMjgzIF1cbiBbMy42MTU3Mjg2XVxuIFszLjYxNjUxNDRdXG4gWzMuNDg1Njg2NV1dLCBzaGFwZT0oMTAsIDEpLCBkdHlwZT1mbG9hdDMyKVxuIn0= -->
-<pre><code>tf.Tensor(
-[[3.877944 ]
- [3.3181698]
- [4.5073943]
- [3.467959 ]
- [3.8651524]
- [4.12546  ]
- [3.404902 ]
- [3.43183  ]
- [3.7659664]
- [4.0588126]], shape=(10, 1), dtype=float32)
-tf.Tensor(
-[[4.1949124]
- [4.4085455]
- [3.7542977]
- [3.5929508]
- [3.793455 ]
- [4.2024317]
- [3.7128959]
- [3.7559803]
- [3.368772 ]
- [3.7663038]], shape=(10, 1), dtype=float32)
-tf.Tensor(
-[[3.7851539]
- [3.6079874]
- [3.4559531]
- [3.9498653]
- [3.8184776]
- [3.6168509]
- [3.501283 ]
- [3.6157286]
- [3.6165144]
- [3.4856865]], shape=(10, 1), dtype=float32)</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Then at the end of each epoch, you save the model’s current weights, like so:</p>
@@ -2106,6 +2174,9 @@ tf.Tensor(
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY2hlY2twb2ludCRzYXZlKGZpbGVfcHJlZml4ID0gY2hlY2twb2ludF9wcmVmaXgpXG5gYGAifQ== -->
 <pre class="r"><code>checkpoint$save(file_prefix = checkpoint_prefix)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiLi9jaGVja3BvaW50cy9ja3B0LTFcIlxuIn0= -->
+<pre><code>[1] &quot;./checkpoints/ckpt-1&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>This call saves model weights only, not the complete graph. Thus on restore, you re-create all components in the same way as above, and then load saved the model weights using e.g.</p>
@@ -2115,21 +2186,93 @@ tf.Tensor(
 <pre class="r"><code># restore from recent checkpoint, you can also use a different one
 checkpoint$restore(tf$train$latest_checkpoint(checkpoint_dir))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiPHRlbnNvcmZsb3cucHl0aG9uLnRyYWluaW5nLmNoZWNrcG9pbnRhYmxlLnV0aWwuQ2hlY2twb2ludExvYWRTdGF0dXM+XG4ifQ== -->
+<pre><code>&lt;tensorflow.python.training.checkpointable.util.CheckpointLoadStatus&gt;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>You can then obtain predictions from the restored model, on the test set as a whole or batch-wise, using an iterator.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwoeF90ZXN0KVxuXG5pdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodGVzdF9kYXRhc2V0KVxudW50aWxfb3V0X29mX3JhbmdlKHtcbiAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpXG4gIHByZWRzIDwtIG1vZGVsKGJhdGNoW1sxXV0pXG4gIHByaW50KHByZWRzKVxufSlcbmBgYCJ9 -->
-<pre class="r"><code>model(x_test)
-
-iter &lt;- make_iterator_one_shot(test_dataset)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubW9kZWwoeF90ZXN0KVxuYGBgIn0= -->
+<pre class="r"><code>model(x_test)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoidGYuVGVuc29yKFxuW1szLjQ3OTUyNCBdXG4gWzIuOTAzODM4OV1cbiBbMy45NzA1OTQ0XVxuIFszLjIxNTM2MyBdXG4gWzMuNDI5NjU2IF1cbiBbMy43MTMzNDMxXVxuIFszLjE2Mjc5MTVdXG4gWzMuMTM1MDUzOV1cbiBbMy4yOTY3NzUzXVxuIFszLjcxODk1MDVdXG4gWzMuNzkwODQ4N11cbiBbNC4wMTM2NTMzXVxuIFszLjI4MTU1NDddXG4gWzMuMjg1ODU5M11cbiBbMy4yODI4NTYgXVxuIFszLjg1MDQzMDNdXG4gWzMuMjEwOTU4Ml1cbiBbMy4zMzAwMjAyXVxuIFszLjA4MjQ4MiBdXG4gWzMuNDcyNzE0Ml1cbiBbMy4zNzE1NzY4XVxuIFszLjQwNTAyMjFdXG4gWzMuMDI0MjAzIF1cbiBbMy40NjQyMDM2XVxuIFszLjM2ODc3MyBdXG4gWzMuMzM3MTI5Nl1cbiBbMy4yMTI1NjAyXVxuIFszLjMwMjQ4MjRdXG4gWzMuMTYxMTg5OF1cbiBbMy4wNzk1Nzg0XV0sIHNoYXBlPSgzMCwgMSksIGR0eXBlPWZsb2F0MzIpXG4ifQ== -->
+<pre><code>tf.Tensor(
+[[3.479524 ]
+ [2.9038389]
+ [3.9705944]
+ [3.215363 ]
+ [3.429656 ]
+ [3.7133431]
+ [3.1627915]
+ [3.1350539]
+ [3.2967753]
+ [3.7189505]
+ [3.7908487]
+ [4.0136533]
+ [3.2815547]
+ [3.2858593]
+ [3.282856 ]
+ [3.8504303]
+ [3.2109582]
+ [3.3300202]
+ [3.082482 ]
+ [3.4727142]
+ [3.3715768]
+ [3.4050221]
+ [3.024203 ]
+ [3.4642036]
+ [3.368773 ]
+ [3.3371296]
+ [3.2125602]
+ [3.3024824]
+ [3.1611898]
+ [3.0795784]], shape=(30, 1), dtype=float32)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRlc3RfZGF0YXNldClcbnVudGlsX291dF9vZl9yYW5nZSh7XG4gIGJhdGNoIDwtICBpdGVyYXRvcl9nZXRfbmV4dChpdGVyKVxuICBwcmVkcyA8LSBtb2RlbChiYXRjaFtbMV1dKVxuICBwcmludChwcmVkcylcbn0pXG5gYGAifQ== -->
+<pre class="r"><code>iter &lt;- make_iterator_one_shot(test_dataset)
 until_out_of_range({
   batch &lt;-  iterator_get_next(iter)
   preds &lt;- model(batch[[1]])
   print(preds)
 })</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoidGYuVGVuc29yKFxuW1szLjQ3OTUyNCBdXG4gWzIuOTAzODM4OV1cbiBbMy45NzA1OTQ0XVxuIFszLjIxNTM2MyBdXG4gWzMuNDI5NjU2IF1cbiBbMy43MTMzNDMxXVxuIFszLjE2Mjc5MTVdXG4gWzMuMTM1MDUzOV1cbiBbMy4yOTY3NzUzXVxuIFszLjcxODk1MDVdXSwgc2hhcGU9KDEwLCAxKSwgZHR5cGU9ZmxvYXQzMilcbnRmLlRlbnNvcihcbltbMy43OTA4NDg3XVxuIFs0LjAxMzY1MzNdXG4gWzMuMjgxNTU0N11cbiBbMy4yODU4NTkzXVxuIFszLjI4Mjg1NiBdXG4gWzMuODUwNDMwM11cbiBbMy4yMTA5NTgyXVxuIFszLjMzMDAyMDJdXG4gWzMuMDgyNDgyIF1cbiBbMy40NzI3MTQyXV0sIHNoYXBlPSgxMCwgMSksIGR0eXBlPWZsb2F0MzIpXG50Zi5UZW5zb3IoXG5bWzMuMzcxNTc2OF1cbiBbMy40MDUwMjIxXVxuIFszLjAyNDIwMyBdXG4gWzMuNDY0MjAzNl1cbiBbMy4zNjg3NzMgXVxuIFszLjMzNzEyOTZdXG4gWzMuMjEyNTYwMl1cbiBbMy4zMDI0ODI0XVxuIFszLjE2MTE4OThdXG4gWzMuMDc5NTc4NF1dLCBzaGFwZT0oMTAsIDEpLCBkdHlwZT1mbG9hdDMyKVxuIn0= -->
+<pre><code>tf.Tensor(
+[[3.479524 ]
+ [2.9038389]
+ [3.9705944]
+ [3.215363 ]
+ [3.429656 ]
+ [3.7133431]
+ [3.1627915]
+ [3.1350539]
+ [3.2967753]
+ [3.7189505]], shape=(10, 1), dtype=float32)
+tf.Tensor(
+[[3.7908487]
+ [4.0136533]
+ [3.2815547]
+ [3.2858593]
+ [3.282856 ]
+ [3.8504303]
+ [3.2109582]
+ [3.3300202]
+ [3.082482 ]
+ [3.4727142]], shape=(10, 1), dtype=float32)
+tf.Tensor(
+[[3.3715768]
+ [3.4050221]
+ [3.024203 ]
+ [3.4642036]
+ [3.368773 ]
+ [3.3371296]
+ [3.2125602]
+ [3.3024824]
+ [3.1611898]
+ [3.0795784]], shape=(10, 1), dtype=float32)</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
@@ -2138,7 +2281,7 @@ until_out_of_range({
 <p>Here is the complete example.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShrZXJhcylcbnVzZV9pbXBsZW1lbnRhdGlvbihcInRlbnNvcmZsb3dcIilcblxubGlicmFyeSh0ZW5zb3JmbG93KVxudGZlX2VuYWJsZV9lYWdlcl9leGVjdXRpb24oZGV2aWNlX3BvbGljeSA9IFwic2lsZW50XCIpXG5cbmxpYnJhcnkodGZkYXRhc2V0cylcblxuXG4jIFByZXBhcmUgdHJhaW5pbmcgYW5kIHRlc3Qgc2V0cyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cblxueF90cmFpbiA8LVxuICBpcmlzWzE6MTIwLCBjKFwiUGV0YWwuTGVuZ3RoXCIsIFwiU2VwYWwuTGVuZ3RoXCIsIFwiUGV0YWwuV2lkdGhcIildICU+JSBhcy5tYXRyaXgoKVxueF90cmFpbiA8LSBrX2NvbnN0YW50KHhfdHJhaW4pXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjpbImxpYnJhcnkoa2VyYXMpIiwidXNlX2ltcGxlbWVudGF0aW9uKFwidGVuc29yZmxvd1wiKSIsIiIsImxpYnJhcnkodGVuc29yZmxvdykiLCJ0ZmVfZW5hYmxlX2VhZ2VyX2V4ZWN1dGlvbihkZXZpY2VfcG9saWN5ID0gXCJzaWxlbnRcIikiLCIiLCJsaWJyYXJ5KHRmZGF0YXNldHMpIiwiIiwiIiwiIyBQcmVwYXJlIHRyYWluaW5nIGFuZCB0ZXN0IHNldHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIiwiIiwieF90cmFpbiA8LSIsIiAgaXJpc1sxOjEyMCwgYyhcIlBldGFsLkxlbmd0aFwiLCBcIlNlcGFsLkxlbmd0aFwiLCBcIlBldGFsLldpZHRoXCIpXSAlPiUgYXMubWF0cml4KCkiLCJ4X3RyYWluIDwtIGtfY29uc3RhbnQoeF90cmFpbikiLCJ5X3RyYWluIDwtIiwiICBpcmlzWzE6MTIwLCBjKFwiU2VwYWwuV2lkdGhcIildICU+JSBhcy5tYXRyaXgoKSIsInlfdHJhaW4gPC0ga19jb25zdGFudCh5X3RyYWluKSIsIiIsInhfdGVzdCA8LSIsIiAgaXJpc1sxMjE6MTUwLCBjKFwiUGV0YWwuTGVuZ3RoXCIsIFwiU2VwYWwuTGVuZ3RoXCIsIFwiUGV0YWwuV2lkdGhcIildICU+JSBhcy5tYXRyaXgoKSIsInhfdGVzdCA8LSBrX2NvbnN0YW50KHhfdGVzdCkiLCJ5X3Rlc3QgPC0iLCIgIGlyaXNbMTIxOjE1MCwgYyhcIlNlcGFsLldpZHRoXCIpXSAlPiUgYXMubWF0cml4KCkiLCJ5X3Rlc3QgPC0ga19jb25zdGFudCh5X3Rlc3QpIiwiIiwiIiwiIiwiIyBDcmVhdGUgZGF0YXNldHMgZm9yIHRyYWluaW5nIGFuZCB0ZXN0aW5nIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIiwiIiwidHJhaW5fZGF0YXNldCA8LSB0ZW5zb3Jfc2xpY2VzX2RhdGFzZXQobGlzdCAoeF90cmFpbiwgeV90cmFpbikpICU+JSIsIiAgZGF0YXNldF9iYXRjaCgxMCkiLCJ0ZXN0X2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdGVzdCwgeV90ZXN0KSkgJT4lIiwiICBkYXRhc2V0X2JhdGNoKDEwKSIsIiIsIiIsIiMgQ3JlYXRlIG1vZGVsIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIsIiIsImlyaXNfcmVncmVzc2lvbl9tb2RlbCA8LSBmdW5jdGlvbihuYW1lID0gTlVMTCkgeyIsIiAga2VyYXNfbW9kZWxfY3VzdG9tKG5hbWUgPSBuYW1lLCBmdW5jdGlvbihzZWxmKSB7IiwiICAgIHNlbGYkZGVuc2UxIDwtIGxheWVyX2RlbnNlKHVuaXRzID0gMzIsIGlucHV0X3NoYXBlID0gMykiLCIgICAgc2VsZiRkcm9wb3V0IDwtIGxheWVyX2Ryb3BvdXQocmF0ZSA9IDAuNSkiLCIgICAgc2VsZiRkZW5zZTIgPC0gbGF5ZXJfZGVuc2UodW5pdHMgPSAxKSIsIiAgICAiLCIgICAgZnVuY3Rpb24gKHgsIG1hc2sgPSBOVUxMKSB7IiwiICAgICAgc2VsZiRkZW5zZTEoeCkgJT4lIiwiICAgICAgICBzZWxmJGRyb3BvdXQoKSAlPiUiLCIgICAgICAgIHNlbGYkZGVuc2UyKCkiLCIgICAgfSIsIiAgfSkiLCJ9IiwiIiwibW9kZWwgPC0gaXJpc19yZWdyZXNzaW9uX21vZGVsKCkiLCIiLCIiLCIjIERlZmluZSBsb3NzIGZ1bmN0aW9uIGFuZCBvcHRpbWl6ZXIgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0iLCIiLCJtc2VfbG9zcyA8LSBmdW5jdGlvbih5X3RydWUsIHlfcHJlZCkgeyIsIiAgbXNlIDwtIHRmJGxvc3NlcyRtZWFuX3NxdWFyZWRfZXJyb3IoeV90cnVlLCB5X3ByZWQpIiwiICBtc2UiLCJ9IiwiIiwib3B0aW1pemVyIDwtIHRmJHRyYWluJEFkYW1PcHRpbWl6ZXIoKSIsIiIsIiIsIiMgU2V0IHVwIGNoZWNrcG9pbnRpbmcgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIsIiIsImNoZWNrcG9pbnRfZGlyIDwtIFwiLi9jaGVja3BvaW50c1wiIiwiY2hlY2twb2ludF9wcmVmaXggPC0gZmlsZS5wYXRoKGNoZWNrcG9pbnRfZGlyLCBcImNrcHRcIikiLCJjaGVja3BvaW50IDwtIiwiICB0ZiR0cmFpbiRDaGVja3BvaW50KG9wdGltaXplciA9IG9wdGltaXplciwiLCIgICAgICAgICAgICAgICAgICAgICAgbW9kZWwgPSBtb2RlbCkiLCIiLCJuX2Vwb2NocyA8LSAxMCIsIiIsIiMgY2hhbmdlIHRvIFRSVUUgaWYgeW91IHdhbnQgdG8gcmVzdG9yZSB3ZWlnaHRzIiwicmVzdG9yZSA8LSBGQUxTRSIsIiIsImlmICghcmVzdG9yZSkgeyIsIiAgZm9yIChpIGluIHNlcV9sZW4obl9lcG9jaHMpKSB7IiwiICAgIGl0ZXIgPC0gbWFrZV9pdGVyYXRvcl9vbmVfc2hvdCh0cmFpbl9kYXRhc2V0KSIsIiAgICB0b3RhbF9sb3NzIDwtIDAiLCIgICAgIiwiICAgIHVudGlsX291dF9vZl9yYW5nZSh7IiwiICAgICAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpIiwiICAgICAgeCA8LSBiYXRjaFtbMV1dIiwiICAgICAgeSA8LSBiYXRjaFtbMl1dIiwiICAgICAgIiwiICAgICAgd2l0aCh0ZiRHcmFkaWVudFRhcGUoKSAlYXMlIHRhcGUsIHsiLCIgICAgICAgIHByZWRzIDwtIG1vZGVsKHgpIiwiICAgICAgICBsb3NzIDwtIG1zZV9sb3NzKHksIHByZWRzKSIsIiAgICAgIH0pIiwiICAgICAgIiwiICAgICAgdG90YWxfbG9zcyA8LSB0b3RhbF9sb3NzICsgbG9zcyIsIiAgICAgIGdyYWRpZW50cyA8LSB0YXBlJGdyYWRpZW50KGxvc3MsIG1vZGVsJHZhcmlhYmxlcykiLCIgICAgICAiLCIgICAgICBvcHRpbWl6ZXIkYXBwbHlfZ3JhZGllbnRzKHB1cnJyOjp0cmFuc3Bvc2UobGlzdChncmFkaWVudHMsIG1vZGVsJHZhcmlhYmxlcykpLCIsIiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ2xvYmFsX3N0ZXAgPSB0ZiR0cmFpbiRnZXRfb3JfY3JlYXRlX2dsb2JhbF9zdGVwKCkpIiwiICAgICAgIiwiICAgIH0pIiwiICAgICIsIiAgICBjYXQoXCJUb3RhbCBsb3NzIChlcG9jaCk6IFwiLCBpLCBcIjogXCIsIGFzLm51bWVyaWModG90YWxfbG9zcyksIFwiXFxuXCIpIiwiICAgICIsIiAgICBjaGVja3BvaW50JHNhdmUoZmlsZV9wcmVmaXggPSBjaGVja3BvaW50X3ByZWZpeCkiLCIgIH0iLCJ9IGVsc2UgeyIsIiAgY2hlY2twb2ludCRyZXN0b3JlKHRmJHRyYWluJGxhdGVzdF9jaGVja3BvaW50KGNoZWNrcG9pbnRfZGlyKSkiLCJ9IiwiIiwiIiwiIyBHZXQgbW9kZWwgcHJlZGljdGlvbnMgb24gdGVzdCBzZXQgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tIiwiIiwibW9kZWwoeF90ZXN0KSIsIiIsIml0ZXIgPC0gbWFrZV9pdGVyYXRvcl9vbmVfc2hvdCh0ZXN0X2RhdGFzZXQpIiwidW50aWxfb3V0X29mX3JhbmdlKHsiLCIgIGJhdGNoIDwtICBpdGVyYXRvcl9nZXRfbmV4dChpdGVyKSIsIiAgcHJlZHMgPC0gbW9kZWwoYmF0Y2hbWzFdXSkiLCIgIHByaW50KHByZWRzKSIsIn0pIl19 -->
 <pre class="r"><code>library(keras)
 use_implementation(&quot;tensorflow&quot;)
 
@@ -2152,13 +2295,8 @@ library(tfdatasets)
 
 x_train &lt;-
   iris[1:120, c(&quot;Petal.Length&quot;, &quot;Sepal.Length&quot;, &quot;Petal.Width&quot;)] %&gt;% as.matrix()
-x_train &lt;- k_constant(x_train)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiMjAxOC0xMS0xNiAxNjozMDowOS4yODYzMzE6IEkgdGVuc29yZmxvdy9jb3JlL3BsYXRmb3JtL2NwdV9mZWF0dXJlX2d1YXJkLmNjOjE0MV0gWW91ciBDUFUgc3VwcG9ydHMgaW5zdHJ1Y3Rpb25zIHRoYXQgdGhpcyBUZW5zb3JGbG93IGJpbmFyeSB3YXMgbm90IGNvbXBpbGVkIHRvIHVzZTogQVZYMiBGTUFcbiJ9 -->
-<pre><code>2018-11-16 16:30:09.286331: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxueV90cmFpbiA8LVxuICBpcmlzWzE6MTIwLCBjKFwiU2VwYWwuV2lkdGhcIildICU+JSBhcy5tYXRyaXgoKVxueV90cmFpbiA8LSBrX2NvbnN0YW50KHlfdHJhaW4pXG5cbnhfdGVzdCA8LVxuICBpcmlzWzEyMToxNTAsIGMoXCJQZXRhbC5MZW5ndGhcIiwgXCJTZXBhbC5MZW5ndGhcIiwgXCJQZXRhbC5XaWR0aFwiKV0gJT4lIGFzLm1hdHJpeCgpXG54X3Rlc3QgPC0ga19jb25zdGFudCh4X3Rlc3QpXG55X3Rlc3QgPC1cbiAgaXJpc1sxMjE6MTUwLCBjKFwiU2VwYWwuV2lkdGhcIildICU+JSBhcy5tYXRyaXgoKVxueV90ZXN0IDwtIGtfY29uc3RhbnQoeV90ZXN0KVxuXG5cblxuIyBDcmVhdGUgZGF0YXNldHMgZm9yIHRyYWluaW5nIGFuZCB0ZXN0aW5nIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5cbnRyYWluX2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdHJhaW4sIHlfdHJhaW4pKSAlPiVcbiAgZGF0YXNldF9iYXRjaCgxMClcbnRlc3RfZGF0YXNldCA8LSB0ZW5zb3Jfc2xpY2VzX2RhdGFzZXQobGlzdCAoeF90ZXN0LCB5X3Rlc3QpKSAlPiVcbiAgZGF0YXNldF9iYXRjaCgxMClcblxuXG4jIENyZWF0ZSBtb2RlbCAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cblxuaXJpc19yZWdyZXNzaW9uX21vZGVsIDwtIGZ1bmN0aW9uKG5hbWUgPSBOVUxMKSB7XG4gIGtlcmFzX21vZGVsX2N1c3RvbShuYW1lID0gbmFtZSwgZnVuY3Rpb24oc2VsZikge1xuICAgIHNlbGYkZGVuc2UxIDwtIGxheWVyX2RlbnNlKHVuaXRzID0gMzIsIGlucHV0X3NoYXBlID0gMylcbiAgICBzZWxmJGRyb3BvdXQgPC0gbGF5ZXJfZHJvcG91dChyYXRlID0gMC41KVxuICAgIHNlbGYkZGVuc2UyIDwtIGxheWVyX2RlbnNlKHVuaXRzID0gMSlcbiAgICBcbiAgICBmdW5jdGlvbiAoeCwgbWFzayA9IE5VTEwpIHtcbiAgICAgIHNlbGYkZGVuc2UxKHgpICU+JVxuICAgICAgICBzZWxmJGRyb3BvdXQoKSAlPiVcbiAgICAgICAgc2VsZiRkZW5zZTIoKVxuICAgIH1cbiAgfSlcbn1cblxubW9kZWwgPC0gaXJpc19yZWdyZXNzaW9uX21vZGVsKClcblxuXG4jIERlZmluZSBsb3NzIGZ1bmN0aW9uIGFuZCBvcHRpbWl6ZXIgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cblxubXNlX2xvc3MgPC0gZnVuY3Rpb24oeV90cnVlLCB5X3ByZWQpIHtcbiAgbXNlIDwtIHRmJGxvc3NlcyRtZWFuX3NxdWFyZWRfZXJyb3IoeV90cnVlLCB5X3ByZWQpXG4gIG1zZVxufVxuXG5vcHRpbWl6ZXIgPC0gdGYkdHJhaW4kQWRhbU9wdGltaXplcigpXG5cblxuIyBTZXQgdXAgY2hlY2twb2ludGluZyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5cbmNoZWNrcG9pbnRfZGlyIDwtIFwiLi9jaGVja3BvaW50c1wiXG5jaGVja3BvaW50X3ByZWZpeCA8LSBmaWxlLnBhdGgoY2hlY2twb2ludF9kaXIsIFwiY2twdFwiKVxuY2hlY2twb2ludCA8LVxuICB0ZiR0cmFpbiRDaGVja3BvaW50KG9wdGltaXplciA9IG9wdGltaXplcixcbiAgICAgICAgICAgICAgICAgICAgICBtb2RlbCA9IG1vZGVsKVxuXG5uX2Vwb2NocyA8LSAxMFxuXG4jIGNoYW5nZSB0byBUUlVFIGlmIHlvdSB3YW50IHRvIHJlc3RvcmUgd2VpZ2h0c1xucmVzdG9yZSA8LSBGQUxTRVxuXG5pZiAoIXJlc3RvcmUpIHtcbiAgZm9yIChpIGluIHNlcV9sZW4obl9lcG9jaHMpKSB7XG4gICAgaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRyYWluX2RhdGFzZXQpXG4gICAgdG90YWxfbG9zcyA8LSAwXG4gICAgXG4gICAgdW50aWxfb3V0X29mX3JhbmdlKHtcbiAgICAgIGJhdGNoIDwtICBpdGVyYXRvcl9nZXRfbmV4dChpdGVyKVxuICAgICAgeCA8LSBiYXRjaFtbMV1dXG4gICAgICB5IDwtIGJhdGNoW1syXV1cbiAgICAgIFxuICAgICAgd2l0aCh0ZiRHcmFkaWVudFRhcGUoKSAlYXMlIHRhcGUsIHtcbiAgICAgICAgcHJlZHMgPC0gbW9kZWwoeClcbiAgICAgICAgbG9zcyA8LSBtc2VfbG9zcyh5LCBwcmVkcylcbiAgICAgIH0pXG4gICAgICBcbiAgICAgIHRvdGFsX2xvc3MgPC0gdG90YWxfbG9zcyArIGxvc3NcbiAgICAgIGdyYWRpZW50cyA8LSB0YXBlJGdyYWRpZW50KGxvc3MsIG1vZGVsJHZhcmlhYmxlcylcbiAgICAgIFxuICAgICAgb3B0aW1pemVyJGFwcGx5X2dyYWRpZW50cyhwdXJycjo6dHJhbnNwb3NlKGxpc3QoZ3JhZGllbnRzLCBtb2RlbCR2YXJpYWJsZXMpKSxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ2xvYmFsX3N0ZXAgPSB0ZiR0cmFpbiRnZXRfb3JfY3JlYXRlX2dsb2JhbF9zdGVwKCkpXG4gICAgICBcbiAgICB9KVxuICAgIFxuICAgIGNhdChcIlRvdGFsIGxvc3MgKGVwb2NoKTogXCIsIGksIFwiOiBcIiwgYXMubnVtZXJpYyh0b3RhbF9sb3NzKSwgXCJcXG5cIilcbiAgICBcbiAgICBjaGVja3BvaW50JHNhdmUoZmlsZV9wcmVmaXggPSBjaGVja3BvaW50X3ByZWZpeClcbiAgfVxufSBlbHNlIHtcbiAgY2hlY2twb2ludCRyZXN0b3JlKHRmJHRyYWluJGxhdGVzdF9jaGVja3BvaW50KGNoZWNrcG9pbnRfZGlyKSlcbn1cbmBgYCJ9 -->
-<pre class="r"><code>y_train &lt;-
+x_train &lt;- k_constant(x_train)
+y_train &lt;-
   iris[1:120, c(&quot;Sepal.Width&quot;)] %&gt;% as.matrix()
 y_train &lt;- k_constant(y_train)
 
@@ -2250,107 +2388,26 @@ if (!restore) {
   }
 } else {
   checkpoint$restore(tf$train$latest_checkpoint(checkpoint_dir))
-}</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiVG90YWwgbG9zcyAoZXBvY2gpOiAgMSA6ICAxODUuNzM1MyBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDIgOiAgODMuNTAwODEgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICAzIDogIDMxLjQ0NjIxIFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgNCA6ICAxMi45NTM2OSBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDUgOiAgOC44MTM2NDkgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICA2IDogIDcuNTY1MTM4IFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgNyA6ICA2LjY0NDc4NyBcblRvdGFsIGxvc3MgKGVwb2NoKTogIDggOiAgNi4xMzg4ODEgXG5Ub3RhbCBsb3NzIChlcG9jaCk6ICA5IDogIDUuODUyMTY0IFxuVG90YWwgbG9zcyAoZXBvY2gpOiAgMTAgOiAgNS41NDUxMiBcbiJ9 -->
-<pre><code>Total loss (epoch):  1 :  185.7353 
-Total loss (epoch):  2 :  83.50081 
-Total loss (epoch):  3 :  31.44621 
-Total loss (epoch):  4 :  12.95369 
-Total loss (epoch):  5 :  8.813649 
-Total loss (epoch):  6 :  7.565138 
-Total loss (epoch):  7 :  6.644787 
-Total loss (epoch):  8 :  6.138881 
-Total loss (epoch):  9 :  5.852164 
-Total loss (epoch):  10 :  5.54512 </code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBHZXQgbW9kZWwgcHJlZGljdGlvbnMgb24gdGVzdCBzZXQgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5cbm1vZGVsKHhfdGVzdClcbmBgYCJ9 -->
-<pre class="r"><code># Get model predictions on test set ---------------------------------------
+}
 
-model(x_test)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidGYuVGVuc29yKFxuW1szLjU3MDc2MjJdXG4gWzIuOTczMzA0N11cbiBbMy43NjY4NDYgXVxuIFszLjI0NTA3MDVdXG4gWzMuNDI4MDQ4NF1cbiBbMy41NTM0NzQ0XVxuIFszLjIwODY2MDFdXG4gWzMuMTUyOTYzNl1cbiBbMy4yOTk1MzI0XVxuIFszLjUyMjE1MzZdXG4gWzMuNjYxMjQxNV1cbiBbMy44ODc4ODE4XVxuIFszLjMyNDgzNjNdXG4gWzMuMTQ5ODczM11cbiBbMi45ODQyNDc3XVxuIFszLjkwMDYxNSBdXG4gWzMuMzI5MzkgIF1cbiBbMy4yMzMyNjUgXVxuIFszLjExNjU1NDNdXG4gWzMuNTQ5MDg0N11cbiBbMy41MTM2MDIzXVxuIFszLjYyODYyMSBdXG4gWzMuMDIwODIxOF1cbiBbMy41MDU0MjI4XVxuIFszLjUyOTI2MjVdXG4gWzMuNTI2ODcxIF1cbiBbMy4yNjA3MzEgXVxuIFszLjM1ODg1NDVdXG4gWzMuMjc3MzE5IF1cbiBbMy4wNDE1NzEgXV0sIHNoYXBlPSgzMCwgMSksIGR0eXBlPWZsb2F0MzIpXG4ifQ== -->
-<pre><code>tf.Tensor(
-[[3.5707622]
- [2.9733047]
- [3.766846 ]
- [3.2450705]
- [3.4280484]
- [3.5534744]
- [3.2086601]
- [3.1529636]
- [3.2995324]
- [3.5221536]
- [3.6612415]
- [3.8878818]
- [3.3248363]
- [3.1498733]
- [2.9842477]
- [3.900615 ]
- [3.32939  ]
- [3.233265 ]
- [3.1165543]
- [3.5490847]
- [3.5136023]
- [3.628621 ]
- [3.0208218]
- [3.5054228]
- [3.5292625]
- [3.526871 ]
- [3.260731 ]
- [3.3588545]
- [3.277319 ]
- [3.041571 ]], shape=(30, 1), dtype=float32)</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRlc3RfZGF0YXNldClcbnVudGlsX291dF9vZl9yYW5nZSh7XG4gIGJhdGNoIDwtICBpdGVyYXRvcl9nZXRfbmV4dChpdGVyKVxuICBwcmVkcyA8LSBtb2RlbChiYXRjaFtbMV1dKVxuICBwcmludChwcmVkcylcbn0pXG5gYGAifQ== -->
-<pre class="r"><code>iter &lt;- make_iterator_one_shot(test_dataset)
+
+# Get model predictions on test set ---------------------------------------
+
+model(x_test)
+
+iter &lt;- make_iterator_one_shot(test_dataset)
 until_out_of_range({
   batch &lt;-  iterator_get_next(iter)
   preds &lt;- model(batch[[1]])
   print(preds)
 })</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoidGYuVGVuc29yKFxuW1szLjU3MDc2MjJdXG4gWzIuOTczMzA0N11cbiBbMy43NjY4NDYgXVxuIFszLjI0NTA3MDVdXG4gWzMuNDI4MDQ4NF1cbiBbMy41NTM0NzQ0XVxuIFszLjIwODY2MDFdXG4gWzMuMTUyOTYzNl1cbiBbMy4yOTk1MzI0XVxuIFszLjUyMjE1MzZdXSwgc2hhcGU9KDEwLCAxKSwgZHR5cGU9ZmxvYXQzMilcbnRmLlRlbnNvcihcbltbMy42NjEyNDE1XVxuIFszLjg4Nzg4MThdXG4gWzMuMzI0ODM2M11cbiBbMy4xNDk4NzMzXVxuIFsyLjk4NDI0NzddXG4gWzMuOTAwNjE1IF1cbiBbMy4zMjkzOSAgXVxuIFszLjIzMzI2NSBdXG4gWzMuMTE2NTU0M11cbiBbMy41NDkwODQ3XV0sIHNoYXBlPSgxMCwgMSksIGR0eXBlPWZsb2F0MzIpXG50Zi5UZW5zb3IoXG5bWzMuNTEzNjAyM11cbiBbMy42Mjg2MjEgXVxuIFszLjAyMDgyMThdXG4gWzMuNTA1NDIyOF1cbiBbMy41MjkyNjI1XVxuIFszLjUyNjg3MSBdXG4gWzMuMjYwNzMxIF1cbiBbMy4zNTg4NTQ1XVxuIFszLjI3NzMxOSBdXG4gWzMuMDQxNTcxIF1dLCBzaGFwZT0oMTAsIDEpLCBkdHlwZT1mbG9hdDMyKVxuIn0= -->
-<pre><code>tf.Tensor(
-[[3.5707622]
- [2.9733047]
- [3.766846 ]
- [3.2450705]
- [3.4280484]
- [3.5534744]
- [3.2086601]
- [3.1529636]
- [3.2995324]
- [3.5221536]], shape=(10, 1), dtype=float32)
-tf.Tensor(
-[[3.6612415]
- [3.8878818]
- [3.3248363]
- [3.1498733]
- [2.9842477]
- [3.900615 ]
- [3.32939  ]
- [3.233265 ]
- [3.1165543]
- [3.5490847]], shape=(10, 1), dtype=float32)
-tf.Tensor(
-[[3.5136023]
- [3.628621 ]
- [3.0208218]
- [3.5054228]
- [3.5292625]
- [3.526871 ]
- [3.260731 ]
- [3.3588545]
- [3.277319 ]
- [3.041571 ]], shape=(10, 1), dtype=float32)</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRWFnZXIgZXhlY3V0aW9uIGludHJvIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpFYWdlciBleGVjdXRpb24gaXMgYSB3YXkgdG8gdHJhaW4gYSBLZXJhcyBtb2RlbCB3aXRob3V0IGJ1aWxkaW5nIGEgZ3JhcGguIE9wZXJhdGlvbnMgcmV0dXJuIHZhbHVlcywgbm90IHRlbnNvcnMuCkNvbnNlcXVlbnRseSwgeW91IGNhbiBpbnNwZWN0IHdoYXQgZ29lcyBpbiBhbmQgY29tZXMgb3V0IG9mIGFuIG9wZXJhdGlvbiBzaW1wbHkgYnkgcHJpbnRpbmcgYSB2YXJpYWJsZSdzIGNvbnRlbnRzLgpUaGlzIGlzIGFuIGltcG9ydGFudCBhZHZhbnRhZ2UgaW4gbW9kZWwgZGV2ZWxvcG1lbnQgYW5kIGRlYnVnZ2luZy4KCllvdSBjYW4gdXNlIGVhZ2VyIGV4ZWN1dGlvbiB3aXRoIEtlcmFzIGFzIGxvbmcgYXMgeW91IHVzZSB0aGUgVGVuc29yRmxvdyBpbXBsZW1lbnRhdGlvbi4gVGhpcyBndWlkZSBnaXZlcyBhbiBvdXRsaW5lIG9mIHRoZSB3b3JrZmxvdyBieSB3YXkgb2YgYSBzaW1wbGUgcmVncmVzc2lvbiBleGFtcGxlLiBTcGVjaWZpY2FsbHksIHlvdSB3aWxsIHNlZSBob3cgdG86CgotIFNldCB1cCB5b3VyIGVudmlyb25tZW50IGZvciBlYWdlciBleGVjdXRpb24KLSBEZWZpbmUgdGhlIG1haW4gaW5ncmVkaWVudHM6IGEgS2VyYXMgbW9kZWwsIGFuIG9wdGltaXplciBhbmQgYSBsb3NzIGZ1bmN0aW9uCi0gRmVlZCBkYXRhIHRvIHRoZSB0cmFpbmluZyByb3V0aW5lCi0gV3JpdGUgYSBzaW1wbGUgdHJhaW5pbmcgbG9vcCB0aGF0IGRvZXMgYmFja3Byb3Agb24gdGhlIG1vZGVsJ3Mgd2VpZ2h0cwotIE1ha2UgcHJlZGljdGlvbnMgb24gdGhlIHRlc3Qgc2V0Ci0gU2F2ZSB0aGUgbW9kZWwncyB3ZWlnaHRzCgojIyBSZXF1aXJlbWVudHMKClRvIHVzZSBlYWdlciBleGVjdXRpb24gd2l0aCBLZXJhcywgeW91IG5lZWQgYSBjdXJyZW50IHZlcnNpb24gb2YgdGhlIFIgcGFja2FnZSBga2VyYXNgIHdpdGggYSBUZW5zb3JGbG93IGJhY2tlbmQgb2YgdmVyc2lvbiBhdCBsZWFzdCAxLjkuCgpUaGUgZm9sbG93aW5nIHByZWFtYmxlIGlzIHJlcXVpcmVkIHdoZW4gdXNpbmcgZWFnZXIgZXhlY3V0aW9uOgoKYGBge3J9CmxpYnJhcnkoa2VyYXMpCiMgbWFrZSBzdXJlIHdlIHVzZSB0aGUgdGVuc29yZmxvdyBpbXBsZW1lbnRhdGlvbiBvZiBLZXJhcwojIHRoaXMgbGluZSBoYXMgdG8gYmUgZXhlY3V0ZWQgaW1tZWRpYXRlbHkgYWZ0ZXIgbG9hZGluZyB0aGUgbGlicmFyeQp1c2VfaW1wbGVtZW50YXRpb24oInRlbnNvcmZsb3ciKQoKbGlicmFyeSh0ZW5zb3JmbG93KQojIGVuYWJsZSBlYWdlciBleGVjdXRpb24KIyB0aGUgYXJndW1lbnQgZGV2aWNlX3BvbGljeSBpcyBuZWVkZWQgb25seSB3aGVuIHVzaW5nIGEgR1BVCnRmZV9lbmFibGVfZWFnZXJfZXhlY3V0aW9uKGRldmljZV9wb2xpY3kgPSAic2lsZW50IikKYGBgCgpXaGVuIGluIGRvdWJ0LCBjaGVjayBpZiB5b3UgYXJlIGluIGZhY3QgdXNpbmcgZWFnZXIgZXhlY3V0aW9uOgoKYGBge3J9CnRmJGV4ZWN1dGluZ19lYWdlcmx5KCkKYGBgCgoKIyMgRGVmaW5lIGEgbW9kZWwKCk1vZGVscyBmb3IgdXNlIHdpdGggZWFnZXIgZXhlY3V0aW9uIGFyZSBkZWZpbmVkIGFzIEtlcmFzIFtjdXN0b20gbW9kZWxzXShodHRwczovL3RlbnNvcmZsb3cucnN0dWRpby5jb20va2VyYXMvYXJ0aWNsZXMvY3VzdG9tX21vZGVscy5odG1sKS4KCkN1c3RvbSBtb2RlbHMgYXJlIHVzdWFsbHkgbWFkZSB1cCBvZiBub3JtYWwgS2VyYXMgbGF5ZXJzLCB3aGljaCB5b3UgY29uZmlndXJlIGFzIHVzdWFsLiBIb3dldmVyLCB5b3UgYXJlIGZyZWUgdG8gaW1wbGVtZW50IGN1c3RvbSBsb2dpYyBpbiB0aGUgbW9kZWwncyAoaW1wbGljaXQpIF9jYWxsXyBmdW5jdGlvbi4KCk91ciBzaW1wbGUgcmVncmVzc2lvbiBleGFtcGxlIHdpbGwgdXNlIGBpcmlzYCB0byBwcmVkaWN0IGBTZXBhbC5XaWR0aGAgZnJvbSBgUGV0YWwuTGVuZ3RoYCwgYFNlcGFsLkxlbmd0aGAgYW5kIGBQZXRhbC5XaWR0aGAuCgpIZXJlIGlzIGEgbW9kZWwgdGhhdCBjYW4gYmUgdXNlZCBmb3IgdGhhdCBwdXJwb3NlOgoKYGBge3J9CiMgbW9kZWwgaW5zdGFudGlhdG9yIAppcmlzX3JlZ3Jlc3Npb25fbW9kZWwgPC0gZnVuY3Rpb24obmFtZSA9IE5VTEwpIHsKICAKICBrZXJhc19tb2RlbF9jdXN0b20obmFtZSA9IG5hbWUsIGZ1bmN0aW9uKHNlbGYpIHsKICAgIAogICAgIyBkZWZpbmUgYW55IG51bWJlciBvZiBsYXllcnMgaGVyZQogICAgc2VsZiRkZW5zZTEgPC0gbGF5ZXJfZGVuc2UodW5pdHMgPSAzMikKICAgIHNlbGYkZHJvcG91dCA8LSBsYXllcl9kcm9wb3V0KHJhdGUgPSAwLjUpCiAgICBzZWxmJGRlbnNlMiA8LSBsYXllcl9kZW5zZSh1bml0cyA9IDEpCiAgICAKICAgICMgdGhpcyBpcyB0aGUgImNhbGwiIGZ1bmN0aW9uIHRoYXQgZGVmaW5lcyB3aGF0IGhhcHBlbnMgd2hlbiB0aGUgbW9kZWwgaXMgY2FsbGVkCiAgICBmdW5jdGlvbiAoeCwgbWFzayA9IE5VTEwpIHsKICAgICAgeCAlPiUgCiAgICAgICAgc2VsZiRkZW5zZTEoKSAlPiUKICAgICAgICBzZWxmJGRyb3BvdXQoKSAlPiUKICAgICAgICBzZWxmJGRlbnNlMigpCiAgICB9CiAgfSkKfQpgYGAKCgpUaGUgbW9kZWwgaXMgY3JlYXRlZCBzaW1wbHkgYnkgaW5zdGFudGlhdGluZyBpdCB2aWEgaXRzIHdyYXBwZXI6CgpgYGB7cn0KbW9kZWwgPC0gaXJpc19yZWdyZXNzaW9uX21vZGVsKCkKYGBgCgpBdCB0aGlzIHBvaW50LCB0aGUgc2hhcGVzIG9mIHRoZSBtb2RlbCdzIHdlaWdodHMgYXJlIHN0aWxsIHVua25vd24gKG5vdGUgaG93IG5vIGBpbnB1dF9zaGFwZWAgaGFzIGJlZW4gZGVmaW5lZCBmb3IgaXRzIGZpcnN0IGxheWVyKS4KWW91IGNhbiwgaG93ZXZlciwgYWxyZWFkeSBjYWxsIHRoZSBtb2RlbCBvbiBzb21lIGR1bW15IGRhdGE6CgpgYGB7cn0KbW9kZWwoa19jb25zdGFudChtYXRyaXgoMTo2LCBucm93ID0gMiwgbmNvbCA9IDMpKSkKYGBgCgpgYGAKdGYuVGVuc29yKApbWy0xLjE0NzQ2MzldCiBbLTEuMDQ3MjEzNF1dLCBzaGFwZT0oMiwgMSksIGR0eXBlPWZsb2F0MzIpCiBgYGAKCkFmdGVyIHRoYXQgY2FsbCwgeW91IGNhbiBpbnNwZWN0IHRoZSBtb2RlbCdzIHdlaWdodHMgdXNpbmcgCgpgYGB7cn0KbW9kZWwkd2VpZ2h0cwpgYGAKClRoaXMgd2lsbCBub3QganVzdCBkaXNwbGF5IHRoZSB0ZW5zb3Igc2hhcGVzLCBidXQgdGhlIGFjdHVhbCB3ZWlnaHQgdmFsdWVzLgoKIyMgTG9zc2VzIGFuZCBvcHRpbWl6ZXJzCgpBbiBhcHByb3ByaWF0ZSBsb3NzIGZ1bmN0aW9uIGZvciBhIHJlZ3Jlc3Npb24gdGFzayBsaWtlIHRoaXMgaXMgbWVhbiBzcXVhcmVkIGVycm9yOgoKYGBge3J9Cm1zZV9sb3NzIDwtIGZ1bmN0aW9uKHlfdHJ1ZSwgeV9wcmVkKSB7CiAgIyBpdCdzIHJlcXVpcmVkIHRvIHVzZSBhIFRlbnNvckZsb3cgZnVuY3Rpb24gaGVyZSwgbm90IGxvc3NfbWVhbl9zcXVhcmVkX2Vycm9yKCkgZnJvbSBLZXJhcwogIG1zZSA8LSB0ZiRsb3NzZXMkbWVhbl9zcXVhcmVkX2Vycm9yKHlfdHJ1ZSwgeV9wcmVkKQogICMgaGVyZSB5b3UgY291bGQgY29tcHV0ZSBhbmQgYWRkIG90aGVyIGxvc3NlcyAKICBtc2UKfQpgYGAKCk5vdGUgaG93IHdlIGhhdmUgdG8gdXNlIGxvc3MgZnVuY3Rpb25zIGZyb20gVGVuc29yRmxvdywgbm90IHRoZSBLZXJhcyBlcXVpdmFsZW50cy4gSW4gdGhlIHNhbWUgdmVpbiwgd2UgbmVlZCB0byB1c2UgYW4gb3B0aW1pemVyIGZyb20gdGhlIGB0ZiR0cmFpbmAgbW9kdWxlLgoKYGBge3J9CiMgaGF2ZSB0byB1c2UgYW4gb3B0aW1pemVyIGZyb20gdGYkdHJhaW4sIG5vdCBLZXJhcwpvcHRpbWl6ZXIgPC0gdGYkdHJhaW4kQWRhbU9wdGltaXplcigpCmBgYAoKIyMgVXNlIHRmZGF0YXNldHMgdG8gZmVlZCB0aGUgZGF0YQoKSW4gZWFnZXIgZXhlY3V0aW9uLCB5b3UgdXNlIFt0ZmRhdGFzZXRzXShodHRwczovL3RlbnNvcmZsb3cucnN0dWRpby5jb20vdG9vbHMvdGZkYXRhc2V0cykgdG8gc3RyZWFtIGlucHV0IGFuZCB0YXJnZXQgZGF0YSB0byB0aGUgbW9kZWwuCkluIG91ciBzaW1wbGUgYGlyaXNgIGV4YW1wbGUsIHdlIHVzZSBbdGVuc29yX3NsaWNlc19kYXRhc2V0XShodHRwczovL3RlbnNvcmZsb3cucnN0dWRpby5jb20vdG9vbHMvdGZkYXRhc2V0cy9yZWZlcmVuY2UvdGVuc29yX3NsaWNlc19kYXRhc2V0Lmh0bWwpIHRvIGRpcmVjdGx5IGNyZWF0ZSBhIGRhdGFzZXQgZnJvbSB0aGUgdW5kZXJseWluZyBSIG1hdHJpY2VzIGB4X3RyYWluYCBhbmQgYHlfdHJhaW5gLgoKSG93ZXZlciwgYSB3aWRlIHZhcmlldHkgb2Ygb3RoZXIgW2RhdGFzZXQgY3JlYXRpb25dKGh0dHBzOi8vdGVuc29yZmxvdy5yc3R1ZGlvLmNvbS90b29scy90ZmRhdGFzZXRzL3JlZmVyZW5jZS8jc2VjdGlvbi1jcmVhdGluZy1kYXRhc2V0cykgZnVuY3Rpb25zIGlzIGF2YWlsYWJsZS4KRGF0YXNldHMgYWxzbyBhbGxvdyBmb3IgYSB2YXJpZXR5IG9mIHByZS1wcm9jZXNzaW5nIFt0cmFuc2Zvcm1hdGlvbnNdKGh0dHBzOi8vdGVuc29yZmxvdy5yc3R1ZGlvLmNvbS90b29scy90ZmRhdGFzZXRzL3JlZmVyZW5jZS8jc2VjdGlvbi10cmFuc2Zvcm1pbmctZGF0YXNldHMpLgoKYGBge3J9CnhfdHJhaW4gPC0KICBpcmlzWzE6MTIwLCBjKCJQZXRhbC5MZW5ndGgiLCAiU2VwYWwuTGVuZ3RoIiwgIlBldGFsLldpZHRoIildICU+JSBhcy5tYXRyaXgoKQp5X3RyYWluIDwtCiAgaXJpc1sxOjEyMCwgYygiU2VwYWwuV2lkdGgiKV0gJT4lIGFzLm1hdHJpeCgpCgojIENvbnZlcnQgdG8gYXBwcm9yaWF0ZSB0ZW5zb3IgZmxvYXRpbmcgcG9pbnQgdHlwZSBmb3IgYmFja2VuZAp4X3RyYWluIDwtIGtfY29uc3RhbnQoeF90cmFpbikKeV90cmFpbiA8LSBrX2NvbnN0YW50KHlfdHJhaW4pCgojIHNhbWUgZm9yIHRlc3Qgc2V0CnhfdGVzdCA8LQogIGlyaXNbMTIxOjE1MCwgYygiUGV0YWwuTGVuZ3RoIiwgIlNlcGFsLkxlbmd0aCIsICJQZXRhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeV90ZXN0IDwtCiAgaXJpc1sxMjE6MTUwLCBjKCJTZXBhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeF90ZXN0IDwtIGtfY29uc3RhbnQoeF90ZXN0KQp5X3Rlc3QgPC0ga19jb25zdGFudCh5X3Rlc3QpCgpsaWJyYXJ5KHRmZGF0YXNldHMpCnRyYWluX2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdHJhaW4sIHlfdHJhaW4pKSAlPiUgCiAgZGF0YXNldF9iYXRjaCgxMCkKdGVzdF9kYXRhc2V0IDwtIHRlbnNvcl9zbGljZXNfZGF0YXNldChsaXN0ICh4X3Rlc3QsIHlfdGVzdCkpICU+JQogIGRhdGFzZXRfYmF0Y2goMTApCmBgYAoKRGF0YSBpcyBhY2Nlc3NlZCBmcm9tIGEgZGF0YXNldCB2aWEgYG1ha2VfaXRlcmF0b3Jfb25lX3Nob3RgICh0byBjcmVhdGUgYW4gaXRlcmF0b3IpIGFuZCBgaXRlcmF0b3JfZ2V0X25leHRgICh0byBvYnRhaW4gdGhlIG5leHQgYmF0Y2gpLgoKCmBgYHtyfQppdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodHJhaW5fZGF0YXNldCkKYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCmBgYAoKRGF0YXNldHMgYXJlIGF2YWlsYWJsZSBpbiBub24tZWFnZXIgKGdyYXBoKSBleGVjdXRpb24gYXMgd2VsbC4gSG93ZXZlciwgaW4gZWFnZXIgbW9kZSwgd2UgY2FuIGV4YW1pbmUgdGhlIGFjdHVhbCB2YWx1ZXMgcmV0dXJuZWQgZnJvbSB0aGUgaXRlcmF0b3I6CgpgYGB7cn0KYmF0Y2gKYGBgCgpgYGAKW1sxXV0KdGYuVGVuc29yKApbWzEuNCA1LjEgMC4yXQogWzEuNCA0LjkgMC4yXQogWzEuMyA0LjcgMC4yXQogWzEuNSA0LjYgMC4yXQogWzEuNCA1LiAgMC4yXQogWzEuNyA1LjQgMC40XQogWzEuNCA0LjYgMC4zXQogWzEuNSA1LiAgMC4yXQogWzEuNCA0LjQgMC4yXQogWzEuNSA0LjkgMC4xXV0sIHNoYXBlPSgxMCwgMyksIGR0eXBlPWZsb2F0MzIpCgpbWzJdXQp0Zi5UZW5zb3IoCltbMy41XQogWzMuIF0KIFszLjJdCiBbMy4xXQogWzMuNl0KIFszLjldCiBbMy40XQogWzMuNF0KIFsyLjldCiBbMy4xXV0sIHNoYXBlPSgxMCwgMSksIGR0eXBlPWZsb2F0MzIpCmBgYAoKIyMgVHJhaW5pbmcgbG9vcAoKV2l0aCBlYWdlciBleGVjdXRpb24sIHlvdSB0YWtlIGZ1bGwgY29udHJvbCBvdmVyIHRoZSB0cmFpbmluZyBwcm9jZXNzLgoKSW4gZ2VuZXJhbCwgeW91IHdpbGwgaGF2ZSBhdCBsZWFzdCB0d28gbG9vcHM6IGFuIG91dGVyIGxvb3Agb3ZlciBlcG9jaHMsIGFuZCBhbiBpbm5lciBsb29wIG92ZXIgYmF0Y2hlcyBvZiBkYXRhIHJldHVybmVkIGJ5IHRoZSBpdGVyYXRvciAoaW1wbGVtZW50ZWQgaW1wbGljaXRseSBieSBgdW50aWxfb3V0X29mX3JhbmdlYCkuClRoZSBpdGVyYXRvciBpcyByZWNyZWF0ZWQgYXQgdGhlIHN0YXJ0IG9mIGVhY2ggbmV3IGVwb2NoLgoKYGBge3J9Cm5fZXBvY2hzIDwtIDEwCgpmb3IgKGkgaW4gc2VxX2xlbihuX2Vwb2NocykpIHsKICAKICBpdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodHJhaW5fZGF0YXNldCkKICB0b3RhbF9sb3NzIDwtIDAKICAKICB1bnRpbF9vdXRfb2ZfcmFuZ2UoewogICAgCiAgICAjIGdldCBhIG5ldyBiYXRjaCBhbmQgcnVuIGZvcndhcmQgcGFzcyBvbiBpdCAKICAgIAogICAgIyBjYWxjdWxhdGUgbG9zcyAKICAgIAogICAgIyBjYWxjdWxhdGUgZ3JhZGllbnRzIG9mIGxvc3Mgdy5yLnQuIG1vZGVsIHdlaWdodHMKICAgIAogICAgIyB1cGRhdGUgbW9kZWwgd2VpZ2h0cwogICAgCiAgfSkKICAKICBjYXQoIlRvdGFsIGxvc3MgKGVwb2NoKTogIiwgaSwgIjogIiwgYXMubnVtZXJpYyh0b3RhbF9sb3NzKSwgIlxuIikKfQpgYGAKCgpGaWxsaW5nIGluIHRoZSBtaXNzaW5nIHBpZWNlcyBpbiB0aGUgYWJvdmUgb3V0bGluZSwgd2Ugd2lsbCBzZWUgdGhhdAoKLSBGb3J3YXJkIHByb3BhZ2F0aW9uIGlzIHNpbXBseSBhIGNhbGwgdG8gYG1vZGVsKClgLgotIFRoaXMgY2FsbCBoYXMgdG8gaGFwcGVuIGluc2lkZSB0aGUgY29udGV4dCBvZiBhIGBHcmFkaWVudFRhcGVgIHRoYXQgcmVjb3JkcyBhbGwgb3BlcmF0aW9ucy4KLSBMb3NzIGlzIGNhbGN1bGF0ZWQgdXNpbmcgdGhlIGxvc3MgZnVuY3Rpb24gZGVmaW5lZCBiZWZvcmUuCi0gRnJvbSB0aGUgbG9zcyBvbiB0aGUgb25lIGhhbmQgYW5kIHRoZSBtb2RlbCdzIGN1cnJlbnQgd2VpZ2h0cyBvbiB0aGUgb3RoZXIgaGFuZCwgYEdyYWRpZW50VGFwZWAgdGhlbiBkZXRlcm1pbmVzIHRoZSBncmFkaWVudHMuCi0gRmluYWxseSwgdGhlIG9wdGltaXplciBhcHBsaWVzIHRoZSBncmFkaWVudHMgdG8gdGhlIHdlaWdodHMgaW4gaXRzIGFsZ29yaXRobS1zcGVjaWZpYyB3YXkuCgpIZXJlIGlzIHRoZSBjb21wbGV0ZSBjb2RlIGZvciB0aGUgdHJhaW5pbmcgbG9vcDoKCmBgYHtyfQpuX2Vwb2NocyA8LSAxMAoKIyBsb29wIG92ZXIgZXBvY2hzCmZvciAoaSBpbiBzZXFfbGVuKG5fZXBvY2hzKSkgewogIAogICMgY3JlYXRlIGZyZXNoIGl0ZXJhdG9yIGZyb20gZGF0YXNldAogIGl0ZXIgPC0gbWFrZV9pdGVyYXRvcl9vbmVfc2hvdCh0cmFpbl9kYXRhc2V0KQogIAogICMgYWNjdW11bGF0ZSBjdXJyZW50IGVwb2NoJ3MgbG9zcyAoZm9yIGRpc3BsYXkgcHVycG9zZXMgb25seSkKICB0b3RhbF9sb3NzIDwtIDAKICAKICAjIGxvb3Agb25jZSB0aHJvdWdoIHRoZSBkYXRhc2V0CiAgdW50aWxfb3V0X29mX3JhbmdlKHsKICAgIAogICAgIyBnZXQgbmV4dCBiYXRjaAogICAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCiAgICB4IDwtIGJhdGNoW1sxXV0KICAgIHkgPC0gYmF0Y2hbWzJdXQogICAgCiAgICAjIGZvcndhcmQgcGFzcyBpcyByZWNvcmRlZCBieSB0ZiRHcmFkaWVudFRhcGUKICAgIHdpdGgodGYkR3JhZGllbnRUYXBlKCkgJWFzJSB0YXBlLCB7CiAgICAgCiAgICAgICMgcnVuIG1vZGVsIG9uIGN1cnJlbnQgYmF0Y2gKICAgICAgcHJlZHMgPC0gbW9kZWwoeCkKICAgICAKICAgICAgIyBjb21wdXRlIHRoZSBsb3NzCiAgICAgIGxvc3MgPC0gbXNlX2xvc3MoeSwgcHJlZHMpCiAgICB9KQogICAgCiAgICAjIHVwZGF0ZSB0b3RhbCBsb3NzCiAgICB0b3RhbF9sb3NzIDwtIHRvdGFsX2xvc3MgKyBsb3NzCiAgICAKICAgICMgZ2V0IGdyYWRpZW50cyBvZiBsb3NzIHcuci50LiBtb2RlbCB3ZWlnaHRzCiAgICBncmFkaWVudHMgPC0gdGFwZSRncmFkaWVudChsb3NzLCBtb2RlbCR2YXJpYWJsZXMpCiAgICAKICAgICMgdXBkYXRlIG1vZGVsIHdlaWdodHMKICAgIG9wdGltaXplciRhcHBseV9ncmFkaWVudHMoCiAgICAgIHB1cnJyOjp0cmFuc3Bvc2UobGlzdChncmFkaWVudHMsIG1vZGVsJHZhcmlhYmxlcykpLAogICAgICBnbG9iYWxfc3RlcCA9IHRmJHRyYWluJGdldF9vcl9jcmVhdGVfZ2xvYmFsX3N0ZXAoKQogICAgKQoKICB9KQogIAogIGNhdCgiVG90YWwgbG9zcyAoZXBvY2gpOiAiLCBpLCAiOiAiLCBhcy5udW1lcmljKHRvdGFsX2xvc3MpLCAiXG4iKQp9CgpgYGAKCiMjIFByZWRpY3Rpb25zIG9uIHRoZSB0ZXN0IHNldAoKR2V0dGluZyBwcmVkaWN0aW9ucyBvbiB0aGUgdGVzdCBzZXQgaXMganVzdCBhIGNhbGwgdG8gYG1vZGVsYCwganVzdCBsaWtlIHRyYWluaW5nIGhhcyBiZWVuLgoKYGBge3J9Cm1vZGVsKHhfdGVzdCkKYGBgCgoKIyMgU2F2aW5nIGFuZCByZXN0b3JpbmcgbW9kZWwgd2VpZ2h0cwoKClRvIHNhdmUgbW9kZWwgd2VpZ2h0cywgY3JlYXRlIGFuIGluc3RhbmNlIG9mIGB0ZiRDaGVja3BvaW50YCBhbmQgcGFzcyBpdCB0aGUgb2JqZWN0cyB0byBiZSBzYXZlZDogaW4gb3VyIGNhc2UsIHRoZSBgbW9kZWxgIGFuZCB0aGUgYG9wdGltaXplcmAuClRoaXMgaGFzIHRvIGhhcHBlbiBhZnRlciB0aGUgcmVzcGVjdGl2ZSBvYmplY3RzIGhhdmUgYmVlbiBjcmVhdGVkLCBidXQgYmVmb3JlIHRoZSB0cmFpbmluZyBsb29wLgoKYGBge3J9CmNoZWNrcG9pbnRfZGlyIDwtICIuL2NoZWNrcG9pbnRzIgpjaGVja3BvaW50X3ByZWZpeCA8LSBmaWxlLnBhdGgoY2hlY2twb2ludF9kaXIsICJja3B0IikKY2hlY2twb2ludCA8LQogIHRmJHRyYWluJENoZWNrcG9pbnQoCiAgICBvcHRpbWl6ZXIgPSBvcHRpbWl6ZXIsCiAgICBtb2RlbCA9IG1vZGVsCiAgKQpgYGAKCgpUaGVuIGF0IHRoZSBlbmQgb2YgZWFjaCBlcG9jaCwgeW91IHNhdmUgdGhlIG1vZGVsJ3MgY3VycmVudCB3ZWlnaHRzLCBsaWtlIHNvOgoKYGBge3J9CmNoZWNrcG9pbnQkc2F2ZShmaWxlX3ByZWZpeCA9IGNoZWNrcG9pbnRfcHJlZml4KQpgYGAKClRoaXMgY2FsbCBzYXZlcyBtb2RlbCB3ZWlnaHRzIG9ubHksIG5vdCB0aGUgY29tcGxldGUgZ3JhcGguIFRodXMgb24gcmVzdG9yZSwgeW91IHJlLWNyZWF0ZSBhbGwgY29tcG9uZW50cyBpbiB0aGUgc2FtZSB3YXkgYXMgYWJvdmUsIGFuZCB0aGVuIGxvYWQgc2F2ZWQgdGhlIG1vZGVsIHdlaWdodHMgdXNpbmcgZS5nLgoKYGBge3J9CiMgcmVzdG9yZSBmcm9tIHJlY2VudCBjaGVja3BvaW50LCB5b3UgY2FuIGFsc28gdXNlIGEgZGlmZmVyZW50IG9uZQpjaGVja3BvaW50JHJlc3RvcmUodGYkdHJhaW4kbGF0ZXN0X2NoZWNrcG9pbnQoY2hlY2twb2ludF9kaXIpKQpgYGAKCllvdSBjYW4gdGhlbiBvYnRhaW4gcHJlZGljdGlvbnMgZnJvbSB0aGUgcmVzdG9yZWQgbW9kZWwsIG9uIHRoZSB0ZXN0IHNldCBhcyBhIHdob2xlIG9yIGJhdGNoLXdpc2UsIHVzaW5nIGFuIGl0ZXJhdG9yLgoKYGBge3J9Cm1vZGVsKHhfdGVzdCkKCml0ZXIgPC0gbWFrZV9pdGVyYXRvcl9vbmVfc2hvdCh0ZXN0X2RhdGFzZXQpCnVudGlsX291dF9vZl9yYW5nZSh7CiAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCiAgcHJlZHMgPC0gbW9kZWwoYmF0Y2hbWzFdXSkKICBwcmludChwcmVkcykKfSkKYGBgCgoKIyMgQ29tcGxldGUgZXhhbXBsZQoKSGVyZSBpcyB0aGUgY29tcGxldGUgZXhhbXBsZS4KCmBgYHtyfQpsaWJyYXJ5KGtlcmFzKQp1c2VfaW1wbGVtZW50YXRpb24oInRlbnNvcmZsb3ciKQoKbGlicmFyeSh0ZW5zb3JmbG93KQp0ZmVfZW5hYmxlX2VhZ2VyX2V4ZWN1dGlvbihkZXZpY2VfcG9saWN5ID0gInNpbGVudCIpCgpsaWJyYXJ5KHRmZGF0YXNldHMpCgoKIyBQcmVwYXJlIHRyYWluaW5nIGFuZCB0ZXN0IHNldHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgp4X3RyYWluIDwtCiAgaXJpc1sxOjEyMCwgYygiUGV0YWwuTGVuZ3RoIiwgIlNlcGFsLkxlbmd0aCIsICJQZXRhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeF90cmFpbiA8LSBrX2NvbnN0YW50KHhfdHJhaW4pCnlfdHJhaW4gPC0KICBpcmlzWzE6MTIwLCBjKCJTZXBhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeV90cmFpbiA8LSBrX2NvbnN0YW50KHlfdHJhaW4pCgp4X3Rlc3QgPC0KICBpcmlzWzEyMToxNTAsIGMoIlBldGFsLkxlbmd0aCIsICJTZXBhbC5MZW5ndGgiLCAiUGV0YWwuV2lkdGgiKV0gJT4lIGFzLm1hdHJpeCgpCnhfdGVzdCA8LSBrX2NvbnN0YW50KHhfdGVzdCkKeV90ZXN0IDwtCiAgaXJpc1sxMjE6MTUwLCBjKCJTZXBhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeV90ZXN0IDwtIGtfY29uc3RhbnQoeV90ZXN0KQoKCgojIENyZWF0ZSBkYXRhc2V0cyBmb3IgdHJhaW5pbmcgYW5kIHRlc3RpbmcgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCnRyYWluX2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdHJhaW4sIHlfdHJhaW4pKSAlPiUKICBkYXRhc2V0X2JhdGNoKDEwKQp0ZXN0X2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdGVzdCwgeV90ZXN0KSkgJT4lCiAgZGF0YXNldF9iYXRjaCgxMCkKCgojIENyZWF0ZSBtb2RlbCAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCmlyaXNfcmVncmVzc2lvbl9tb2RlbCA8LSBmdW5jdGlvbihuYW1lID0gTlVMTCkgewogIGtlcmFzX21vZGVsX2N1c3RvbShuYW1lID0gbmFtZSwgZnVuY3Rpb24oc2VsZikgewogICAgc2VsZiRkZW5zZTEgPC0gbGF5ZXJfZGVuc2UodW5pdHMgPSAzMiwgaW5wdXRfc2hhcGUgPSAzKQogICAgc2VsZiRkcm9wb3V0IDwtIGxheWVyX2Ryb3BvdXQocmF0ZSA9IDAuNSkKICAgIHNlbGYkZGVuc2UyIDwtIGxheWVyX2RlbnNlKHVuaXRzID0gMSkKICAgIAogICAgZnVuY3Rpb24gKHgsIG1hc2sgPSBOVUxMKSB7CiAgICAgIHNlbGYkZGVuc2UxKHgpICU+JQogICAgICAgIHNlbGYkZHJvcG91dCgpICU+JQogICAgICAgIHNlbGYkZGVuc2UyKCkKICAgIH0KICB9KQp9Cgptb2RlbCA8LSBpcmlzX3JlZ3Jlc3Npb25fbW9kZWwoKQoKCiMgRGVmaW5lIGxvc3MgZnVuY3Rpb24gYW5kIG9wdGltaXplciAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKbXNlX2xvc3MgPC0gZnVuY3Rpb24oeV90cnVlLCB5X3ByZWQpIHsKICBtc2UgPC0gdGYkbG9zc2VzJG1lYW5fc3F1YXJlZF9lcnJvcih5X3RydWUsIHlfcHJlZCkKICBtc2UKfQoKb3B0aW1pemVyIDwtIHRmJHRyYWluJEFkYW1PcHRpbWl6ZXIoKQoKCiMgU2V0IHVwIGNoZWNrcG9pbnRpbmcgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKY2hlY2twb2ludF9kaXIgPC0gIi4vY2hlY2twb2ludHMiCmNoZWNrcG9pbnRfcHJlZml4IDwtIGZpbGUucGF0aChjaGVja3BvaW50X2RpciwgImNrcHQiKQpjaGVja3BvaW50IDwtCiAgdGYkdHJhaW4kQ2hlY2twb2ludChvcHRpbWl6ZXIgPSBvcHRpbWl6ZXIsCiAgICAgICAgICAgICAgICAgICAgICBtb2RlbCA9IG1vZGVsKQoKbl9lcG9jaHMgPC0gMTAKCiMgY2hhbmdlIHRvIFRSVUUgaWYgeW91IHdhbnQgdG8gcmVzdG9yZSB3ZWlnaHRzCnJlc3RvcmUgPC0gRkFMU0UKCmlmICghcmVzdG9yZSkgewogIGZvciAoaSBpbiBzZXFfbGVuKG5fZXBvY2hzKSkgewogICAgaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRyYWluX2RhdGFzZXQpCiAgICB0b3RhbF9sb3NzIDwtIDAKICAgIAogICAgdW50aWxfb3V0X29mX3JhbmdlKHsKICAgICAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCiAgICAgIHggPC0gYmF0Y2hbWzFdXQogICAgICB5IDwtIGJhdGNoW1syXV0KICAgICAgCiAgICAgIHdpdGgodGYkR3JhZGllbnRUYXBlKCkgJWFzJSB0YXBlLCB7CiAgICAgICAgcHJlZHMgPC0gbW9kZWwoeCkKICAgICAgICBsb3NzIDwtIG1zZV9sb3NzKHksIHByZWRzKQogICAgICB9KQogICAgICAKICAgICAgdG90YWxfbG9zcyA8LSB0b3RhbF9sb3NzICsgbG9zcwogICAgICBncmFkaWVudHMgPC0gdGFwZSRncmFkaWVudChsb3NzLCBtb2RlbCR2YXJpYWJsZXMpCiAgICAgIAogICAgICBvcHRpbWl6ZXIkYXBwbHlfZ3JhZGllbnRzKHB1cnJyOjp0cmFuc3Bvc2UobGlzdChncmFkaWVudHMsIG1vZGVsJHZhcmlhYmxlcykpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdsb2JhbF9zdGVwID0gdGYkdHJhaW4kZ2V0X29yX2NyZWF0ZV9nbG9iYWxfc3RlcCgpKQogICAgICAKICAgIH0pCiAgICAKICAgIGNhdCgiVG90YWwgbG9zcyAoZXBvY2gpOiAiLCBpLCAiOiAiLCBhcy5udW1lcmljKHRvdGFsX2xvc3MpLCAiXG4iKQogICAgCiAgICBjaGVja3BvaW50JHNhdmUoZmlsZV9wcmVmaXggPSBjaGVja3BvaW50X3ByZWZpeCkKICB9Cn0gZWxzZSB7CiAgY2hlY2twb2ludCRyZXN0b3JlKHRmJHRyYWluJGxhdGVzdF9jaGVja3BvaW50KGNoZWNrcG9pbnRfZGlyKSkKfQoKCiMgR2V0IG1vZGVsIHByZWRpY3Rpb25zIG9uIHRlc3Qgc2V0IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKbW9kZWwoeF90ZXN0KQoKaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRlc3RfZGF0YXNldCkKdW50aWxfb3V0X29mX3JhbmdlKHsKICBiYXRjaCA8LSAgaXRlcmF0b3JfZ2V0X25leHQoaXRlcikKICBwcmVkcyA8LSBtb2RlbChiYXRjaFtbMV1dKQogIHByaW50KHByZWRzKQp9KQoKYGBgCgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRWFnZXIgZXhlY3V0aW9uIGludHJvIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpFYWdlciBleGVjdXRpb24gaXMgYSB3YXkgdG8gdHJhaW4gYSBLZXJhcyBtb2RlbCB3aXRob3V0IGJ1aWxkaW5nIGEgZ3JhcGguIE9wZXJhdGlvbnMgcmV0dXJuIHZhbHVlcywgbm90IHRlbnNvcnMuCkNvbnNlcXVlbnRseSwgeW91IGNhbiBpbnNwZWN0IHdoYXQgZ29lcyBpbiBhbmQgY29tZXMgb3V0IG9mIGFuIG9wZXJhdGlvbiBzaW1wbHkgYnkgcHJpbnRpbmcgYSB2YXJpYWJsZSdzIGNvbnRlbnRzLgpUaGlzIGlzIGFuIGltcG9ydGFudCBhZHZhbnRhZ2UgaW4gbW9kZWwgZGV2ZWxvcG1lbnQgYW5kIGRlYnVnZ2luZy4KCllvdSBjYW4gdXNlIGVhZ2VyIGV4ZWN1dGlvbiB3aXRoIEtlcmFzIGFzIGxvbmcgYXMgeW91IHVzZSB0aGUgVGVuc29yRmxvdyBpbXBsZW1lbnRhdGlvbi4gVGhpcyBndWlkZSBnaXZlcyBhbiBvdXRsaW5lIG9mIHRoZSB3b3JrZmxvdyBieSB3YXkgb2YgYSBzaW1wbGUgcmVncmVzc2lvbiBleGFtcGxlLiBTcGVjaWZpY2FsbHksIHlvdSB3aWxsIHNlZSBob3cgdG86CgotIFNldCB1cCB5b3VyIGVudmlyb25tZW50IGZvciBlYWdlciBleGVjdXRpb24KLSBEZWZpbmUgdGhlIG1haW4gaW5ncmVkaWVudHM6IGEgS2VyYXMgbW9kZWwsIGFuIG9wdGltaXplciBhbmQgYSBsb3NzIGZ1bmN0aW9uCi0gRmVlZCBkYXRhIHRvIHRoZSB0cmFpbmluZyByb3V0aW5lCi0gV3JpdGUgYSBzaW1wbGUgdHJhaW5pbmcgbG9vcCB0aGF0IGRvZXMgYmFja3Byb3Agb24gdGhlIG1vZGVsJ3Mgd2VpZ2h0cwotIE1ha2UgcHJlZGljdGlvbnMgb24gdGhlIHRlc3Qgc2V0Ci0gU2F2ZSB0aGUgbW9kZWwncyB3ZWlnaHRzCgojIyBSZXF1aXJlbWVudHMKClRvIHVzZSBlYWdlciBleGVjdXRpb24gd2l0aCBLZXJhcywgeW91IG5lZWQgYSBjdXJyZW50IHZlcnNpb24gb2YgdGhlIFIgcGFja2FnZSBga2VyYXNgIHdpdGggYSBUZW5zb3JGbG93IGJhY2tlbmQgb2YgdmVyc2lvbiBhdCBsZWFzdCAxLjkuCgpUaGUgZm9sbG93aW5nIHByZWFtYmxlIGlzIHJlcXVpcmVkIHdoZW4gdXNpbmcgZWFnZXIgZXhlY3V0aW9uOgoKYGBge3J9CmxpYnJhcnkoa2VyYXMpCiMgbWFrZSBzdXJlIHdlIHVzZSB0aGUgdGVuc29yZmxvdyBpbXBsZW1lbnRhdGlvbiBvZiBLZXJhcwojIHRoaXMgbGluZSBoYXMgdG8gYmUgZXhlY3V0ZWQgaW1tZWRpYXRlbHkgYWZ0ZXIgbG9hZGluZyB0aGUgbGlicmFyeQp1c2VfaW1wbGVtZW50YXRpb24oInRlbnNvcmZsb3ciKQoKbGlicmFyeSh0ZW5zb3JmbG93KQojIGVuYWJsZSBlYWdlciBleGVjdXRpb24KIyB0aGUgYXJndW1lbnQgZGV2aWNlX3BvbGljeSBpcyBuZWVkZWQgb25seSB3aGVuIHVzaW5nIGEgR1BVCnRmZV9lbmFibGVfZWFnZXJfZXhlY3V0aW9uKGRldmljZV9wb2xpY3kgPSAic2lsZW50IikKYGBgCgpXaGVuIGluIGRvdWJ0LCBjaGVjayBpZiB5b3UgYXJlIGluIGZhY3QgdXNpbmcgZWFnZXIgZXhlY3V0aW9uOgoKYGBge3J9CnRmJGV4ZWN1dGluZ19lYWdlcmx5KCkKYGBgCgoKIyMgRGVmaW5lIGEgbW9kZWwKCk1vZGVscyBmb3IgdXNlIHdpdGggZWFnZXIgZXhlY3V0aW9uIGFyZSBkZWZpbmVkIGFzIEtlcmFzIFtjdXN0b20gbW9kZWxzXShodHRwczovL3RlbnNvcmZsb3cucnN0dWRpby5jb20va2VyYXMvYXJ0aWNsZXMvY3VzdG9tX21vZGVscy5odG1sKS4KCkN1c3RvbSBtb2RlbHMgYXJlIHVzdWFsbHkgbWFkZSB1cCBvZiBub3JtYWwgS2VyYXMgbGF5ZXJzLCB3aGljaCB5b3UgY29uZmlndXJlIGFzIHVzdWFsLiBIb3dldmVyLCB5b3UgYXJlIGZyZWUgdG8gaW1wbGVtZW50IGN1c3RvbSBsb2dpYyBpbiB0aGUgbW9kZWwncyAoaW1wbGljaXQpIF9jYWxsXyBmdW5jdGlvbi4KCk91ciBzaW1wbGUgcmVncmVzc2lvbiBleGFtcGxlIHdpbGwgdXNlIGBpcmlzYCB0byBwcmVkaWN0IGBTZXBhbC5XaWR0aGAgZnJvbSBgUGV0YWwuTGVuZ3RoYCwgYFNlcGFsLkxlbmd0aGAgYW5kIGBQZXRhbC5XaWR0aGAuCgpIZXJlIGlzIGEgbW9kZWwgdGhhdCBjYW4gYmUgdXNlZCBmb3IgdGhhdCBwdXJwb3NlOgoKYGBge3J9CiMgbW9kZWwgaW5zdGFudGlhdG9yIAppcmlzX3JlZ3Jlc3Npb25fbW9kZWwgPC0gZnVuY3Rpb24obmFtZSA9IE5VTEwpIHsKICAKICBrZXJhc19tb2RlbF9jdXN0b20obmFtZSA9IG5hbWUsIGZ1bmN0aW9uKHNlbGYpIHsKICAgIAogICAgIyBkZWZpbmUgYW55IG51bWJlciBvZiBsYXllcnMgaGVyZQogICAgc2VsZiRkZW5zZTEgPC0gbGF5ZXJfZGVuc2UodW5pdHMgPSAzMikKICAgIHNlbGYkZHJvcG91dCA8LSBsYXllcl9kcm9wb3V0KHJhdGUgPSAwLjUpCiAgICBzZWxmJGRlbnNlMiA8LSBsYXllcl9kZW5zZSh1bml0cyA9IDEpCiAgICAKICAgICMgdGhpcyBpcyB0aGUgImNhbGwiIGZ1bmN0aW9uIHRoYXQgZGVmaW5lcyB3aGF0IGhhcHBlbnMgd2hlbiB0aGUgbW9kZWwgaXMgY2FsbGVkCiAgICBmdW5jdGlvbiAoeCwgbWFzayA9IE5VTEwpIHsKICAgICAgeCAlPiUgCiAgICAgICAgc2VsZiRkZW5zZTEoKSAlPiUKICAgICAgICBzZWxmJGRyb3BvdXQoKSAlPiUKICAgICAgICBzZWxmJGRlbnNlMigpCiAgICB9CiAgfSkKfQpgYGAKCgpUaGUgbW9kZWwgaXMgY3JlYXRlZCBzaW1wbHkgYnkgaW5zdGFudGlhdGluZyBpdCB2aWEgaXRzIHdyYXBwZXI6CgpgYGB7cn0KbW9kZWwgPC0gaXJpc19yZWdyZXNzaW9uX21vZGVsKCkKYGBgCgpBdCB0aGlzIHBvaW50LCB0aGUgc2hhcGVzIG9mIHRoZSBtb2RlbCdzIHdlaWdodHMgYXJlIHN0aWxsIHVua25vd24gKG5vdGUgaG93IG5vIGBpbnB1dF9zaGFwZWAgaGFzIGJlZW4gZGVmaW5lZCBmb3IgaXRzIGZpcnN0IGxheWVyKS4KWW91IGNhbiwgaG93ZXZlciwgYWxyZWFkeSBjYWxsIHRoZSBtb2RlbCBvbiBzb21lIGR1bW15IGRhdGE6CgpgYGB7cn0KbW9kZWwoa19jb25zdGFudChtYXRyaXgoMTo2LCBucm93ID0gMiwgbmNvbCA9IDMpKSkKYGBgCgpgYGAKdGYuVGVuc29yKApbWy0xLjE0NzQ2MzldCiBbLTEuMDQ3MjEzNF1dLCBzaGFwZT0oMiwgMSksIGR0eXBlPWZsb2F0MzIpCiBgYGAKCkFmdGVyIHRoYXQgY2FsbCwgeW91IGNhbiBpbnNwZWN0IHRoZSBtb2RlbCdzIHdlaWdodHMgdXNpbmcgCgpgYGB7cn0KbW9kZWwkd2VpZ2h0cwpgYGAKClRoaXMgd2lsbCBub3QganVzdCBkaXNwbGF5IHRoZSB0ZW5zb3Igc2hhcGVzLCBidXQgdGhlIGFjdHVhbCB3ZWlnaHQgdmFsdWVzLgoKIyMgTG9zc2VzIGFuZCBvcHRpbWl6ZXJzCgpBbiBhcHByb3ByaWF0ZSBsb3NzIGZ1bmN0aW9uIGZvciBhIHJlZ3Jlc3Npb24gdGFzayBsaWtlIHRoaXMgaXMgbWVhbiBzcXVhcmVkIGVycm9yOgoKYGBge3J9Cm1zZV9sb3NzIDwtIGZ1bmN0aW9uKHlfdHJ1ZSwgeV9wcmVkKSB7CiAgIyBpdCdzIHJlcXVpcmVkIHRvIHVzZSBhIFRlbnNvckZsb3cgZnVuY3Rpb24gaGVyZSwgbm90IGxvc3NfbWVhbl9zcXVhcmVkX2Vycm9yKCkgZnJvbSBLZXJhcwogIG1zZSA8LSB0ZiRsb3NzZXMkbWVhbl9zcXVhcmVkX2Vycm9yKHlfdHJ1ZSwgeV9wcmVkKQogICMgaGVyZSB5b3UgY291bGQgY29tcHV0ZSBhbmQgYWRkIG90aGVyIGxvc3NlcyAKICBtc2UKfQpgYGAKCk5vdGUgaG93IHdlIGhhdmUgdG8gdXNlIGxvc3MgZnVuY3Rpb25zIGZyb20gVGVuc29yRmxvdywgbm90IHRoZSBLZXJhcyBlcXVpdmFsZW50cy4gSW4gdGhlIHNhbWUgdmVpbiwgd2UgbmVlZCB0byB1c2UgYW4gb3B0aW1pemVyIGZyb20gdGhlIGB0ZiR0cmFpbmAgbW9kdWxlLgoKYGBge3J9CiMgaGF2ZSB0byB1c2UgYW4gb3B0aW1pemVyIGZyb20gdGYkdHJhaW4sIG5vdCBLZXJhcwpvcHRpbWl6ZXIgPC0gdGYkdHJhaW4kQWRhbU9wdGltaXplcigpCmBgYAoKIyMgVXNlIHRmZGF0YXNldHMgdG8gZmVlZCB0aGUgZGF0YQoKSW4gZWFnZXIgZXhlY3V0aW9uLCB5b3UgdXNlIFt0ZmRhdGFzZXRzXShodHRwczovL3RlbnNvcmZsb3cucnN0dWRpby5jb20vdG9vbHMvdGZkYXRhc2V0cykgdG8gc3RyZWFtIGlucHV0IGFuZCB0YXJnZXQgZGF0YSB0byB0aGUgbW9kZWwuCkluIG91ciBzaW1wbGUgYGlyaXNgIGV4YW1wbGUsIHdlIHVzZSBbdGVuc29yX3NsaWNlc19kYXRhc2V0XShodHRwczovL3RlbnNvcmZsb3cucnN0dWRpby5jb20vdG9vbHMvdGZkYXRhc2V0cy9yZWZlcmVuY2UvdGVuc29yX3NsaWNlc19kYXRhc2V0Lmh0bWwpIHRvIGRpcmVjdGx5IGNyZWF0ZSBhIGRhdGFzZXQgZnJvbSB0aGUgdW5kZXJseWluZyBSIG1hdHJpY2VzIGB4X3RyYWluYCBhbmQgYHlfdHJhaW5gLgoKSG93ZXZlciwgYSB3aWRlIHZhcmlldHkgb2Ygb3RoZXIgW2RhdGFzZXQgY3JlYXRpb25dKGh0dHBzOi8vdGVuc29yZmxvdy5yc3R1ZGlvLmNvbS90b29scy90ZmRhdGFzZXRzL3JlZmVyZW5jZS8jc2VjdGlvbi1jcmVhdGluZy1kYXRhc2V0cykgZnVuY3Rpb25zIGlzIGF2YWlsYWJsZS4KRGF0YXNldHMgYWxzbyBhbGxvdyBmb3IgYSB2YXJpZXR5IG9mIHByZS1wcm9jZXNzaW5nIFt0cmFuc2Zvcm1hdGlvbnNdKGh0dHBzOi8vdGVuc29yZmxvdy5yc3R1ZGlvLmNvbS90b29scy90ZmRhdGFzZXRzL3JlZmVyZW5jZS8jc2VjdGlvbi10cmFuc2Zvcm1pbmctZGF0YXNldHMpLgoKYGBge3J9CnhfdHJhaW4gPC0KICBpcmlzWzE6MTIwLCBjKCJQZXRhbC5MZW5ndGgiLCAiU2VwYWwuTGVuZ3RoIiwgIlBldGFsLldpZHRoIildICU+JSBhcy5tYXRyaXgoKQp5X3RyYWluIDwtCiAgaXJpc1sxOjEyMCwgYygiU2VwYWwuV2lkdGgiKV0gJT4lIGFzLm1hdHJpeCgpCgojIENvbnZlcnQgdG8gYXBwcm9yaWF0ZSB0ZW5zb3IgZmxvYXRpbmcgcG9pbnQgdHlwZSBmb3IgYmFja2VuZAp4X3RyYWluIDwtIGtfY29uc3RhbnQoeF90cmFpbikKeV90cmFpbiA8LSBrX2NvbnN0YW50KHlfdHJhaW4pCgojIHNhbWUgZm9yIHRlc3Qgc2V0CnhfdGVzdCA8LQogIGlyaXNbMTIxOjE1MCwgYygiUGV0YWwuTGVuZ3RoIiwgIlNlcGFsLkxlbmd0aCIsICJQZXRhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeV90ZXN0IDwtCiAgaXJpc1sxMjE6MTUwLCBjKCJTZXBhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeF90ZXN0IDwtIGtfY29uc3RhbnQoeF90ZXN0KQp5X3Rlc3QgPC0ga19jb25zdGFudCh5X3Rlc3QpCgpsaWJyYXJ5KHRmZGF0YXNldHMpCnRyYWluX2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdHJhaW4sIHlfdHJhaW4pKSAlPiUgCiAgZGF0YXNldF9iYXRjaCgxMCkKdGVzdF9kYXRhc2V0IDwtIHRlbnNvcl9zbGljZXNfZGF0YXNldChsaXN0ICh4X3Rlc3QsIHlfdGVzdCkpICU+JQogIGRhdGFzZXRfYmF0Y2goMTApCmBgYAoKRGF0YSBpcyBhY2Nlc3NlZCBmcm9tIGEgZGF0YXNldCB2aWEgYG1ha2VfaXRlcmF0b3Jfb25lX3Nob3RgICh0byBjcmVhdGUgYW4gaXRlcmF0b3IpIGFuZCBgaXRlcmF0b3JfZ2V0X25leHRgICh0byBvYnRhaW4gdGhlIG5leHQgYmF0Y2gpLgoKCmBgYHtyfQppdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodHJhaW5fZGF0YXNldCkKYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCmBgYAoKRGF0YXNldHMgYXJlIGF2YWlsYWJsZSBpbiBub24tZWFnZXIgKGdyYXBoKSBleGVjdXRpb24gYXMgd2VsbC4gSG93ZXZlciwgaW4gZWFnZXIgbW9kZSwgd2UgY2FuIGV4YW1pbmUgdGhlIGFjdHVhbCB2YWx1ZXMgcmV0dXJuZWQgZnJvbSB0aGUgaXRlcmF0b3I6CgpgYGB7cn0KYmF0Y2gKYGBgCgpgYGAKW1sxXV0KdGYuVGVuc29yKApbWzEuNCA1LjEgMC4yXQogWzEuNCA0LjkgMC4yXQogWzEuMyA0LjcgMC4yXQogWzEuNSA0LjYgMC4yXQogWzEuNCA1LiAgMC4yXQogWzEuNyA1LjQgMC40XQogWzEuNCA0LjYgMC4zXQogWzEuNSA1LiAgMC4yXQogWzEuNCA0LjQgMC4yXQogWzEuNSA0LjkgMC4xXV0sIHNoYXBlPSgxMCwgMyksIGR0eXBlPWZsb2F0MzIpCgpbWzJdXQp0Zi5UZW5zb3IoCltbMy41XQogWzMuIF0KIFszLjJdCiBbMy4xXQogWzMuNl0KIFszLjldCiBbMy40XQogWzMuNF0KIFsyLjldCiBbMy4xXV0sIHNoYXBlPSgxMCwgMSksIGR0eXBlPWZsb2F0MzIpCmBgYAoKIyMgVHJhaW5pbmcgbG9vcAoKV2l0aCBlYWdlciBleGVjdXRpb24sIHlvdSB0YWtlIGZ1bGwgY29udHJvbCBvdmVyIHRoZSB0cmFpbmluZyBwcm9jZXNzLgoKSW4gZ2VuZXJhbCwgeW91IHdpbGwgaGF2ZSBhdCBsZWFzdCB0d28gbG9vcHM6IGFuIG91dGVyIGxvb3Agb3ZlciBlcG9jaHMsIGFuZCBhbiBpbm5lciBsb29wIG92ZXIgYmF0Y2hlcyBvZiBkYXRhIHJldHVybmVkIGJ5IHRoZSBpdGVyYXRvciAoaW1wbGVtZW50ZWQgaW1wbGljaXRseSBieSBgdW50aWxfb3V0X29mX3JhbmdlYCkuClRoZSBpdGVyYXRvciBpcyByZWNyZWF0ZWQgYXQgdGhlIHN0YXJ0IG9mIGVhY2ggbmV3IGVwb2NoLgoKYGBge3IsIGV2YWw9RkFMU0V9Cm5fZXBvY2hzIDwtIDEwCgpmb3IgKGkgaW4gc2VxX2xlbihuX2Vwb2NocykpIHsKICAKICBpdGVyIDwtIG1ha2VfaXRlcmF0b3Jfb25lX3Nob3QodHJhaW5fZGF0YXNldCkKICB0b3RhbF9sb3NzIDwtIDAKICAKICB1bnRpbF9vdXRfb2ZfcmFuZ2UoewogICAgCiAgICAjIGdldCBhIG5ldyBiYXRjaCBhbmQgcnVuIGZvcndhcmQgcGFzcyBvbiBpdCAKICAgIAogICAgIyBjYWxjdWxhdGUgbG9zcyAKICAgIAogICAgIyBjYWxjdWxhdGUgZ3JhZGllbnRzIG9mIGxvc3Mgdy5yLnQuIG1vZGVsIHdlaWdodHMKICAgIAogICAgIyB1cGRhdGUgbW9kZWwgd2VpZ2h0cwogICAgCiAgfSkKICAKICBjYXQoIlRvdGFsIGxvc3MgKGVwb2NoKTogIiwgaSwgIjogIiwgYXMubnVtZXJpYyh0b3RhbF9sb3NzKSwgIlxuIikKfQpgYGAKCgpGaWxsaW5nIGluIHRoZSBtaXNzaW5nIHBpZWNlcyBpbiB0aGUgYWJvdmUgb3V0bGluZSwgd2Ugd2lsbCBzZWUgdGhhdAoKLSBGb3J3YXJkIHByb3BhZ2F0aW9uIGlzIHNpbXBseSBhIGNhbGwgdG8gYG1vZGVsKClgLgotIFRoaXMgY2FsbCBoYXMgdG8gaGFwcGVuIGluc2lkZSB0aGUgY29udGV4dCBvZiBhIGBHcmFkaWVudFRhcGVgIHRoYXQgcmVjb3JkcyBhbGwgb3BlcmF0aW9ucy4KLSBMb3NzIGlzIGNhbGN1bGF0ZWQgdXNpbmcgdGhlIGxvc3MgZnVuY3Rpb24gZGVmaW5lZCBiZWZvcmUuCi0gRnJvbSB0aGUgbG9zcyBvbiB0aGUgb25lIGhhbmQgYW5kIHRoZSBtb2RlbCdzIGN1cnJlbnQgd2VpZ2h0cyBvbiB0aGUgb3RoZXIgaGFuZCwgYEdyYWRpZW50VGFwZWAgdGhlbiBkZXRlcm1pbmVzIHRoZSBncmFkaWVudHMuCi0gRmluYWxseSwgdGhlIG9wdGltaXplciBhcHBsaWVzIHRoZSBncmFkaWVudHMgdG8gdGhlIHdlaWdodHMgaW4gaXRzIGFsZ29yaXRobS1zcGVjaWZpYyB3YXkuCgpIZXJlIGlzIHRoZSBjb21wbGV0ZSBjb2RlIGZvciB0aGUgdHJhaW5pbmcgbG9vcDoKCmBgYHtyfQpuX2Vwb2NocyA8LSAxMAoKIyBsb29wIG92ZXIgZXBvY2hzCmZvciAoaSBpbiBzZXFfbGVuKG5fZXBvY2hzKSkgewogIAogICMgY3JlYXRlIGZyZXNoIGl0ZXJhdG9yIGZyb20gZGF0YXNldAogIGl0ZXIgPC0gbWFrZV9pdGVyYXRvcl9vbmVfc2hvdCh0cmFpbl9kYXRhc2V0KQogIAogICMgYWNjdW11bGF0ZSBjdXJyZW50IGVwb2NoJ3MgbG9zcyAoZm9yIGRpc3BsYXkgcHVycG9zZXMgb25seSkKICB0b3RhbF9sb3NzIDwtIDAKICAKICAjIGxvb3Agb25jZSB0aHJvdWdoIHRoZSBkYXRhc2V0CiAgdW50aWxfb3V0X29mX3JhbmdlKHsKICAgIAogICAgIyBnZXQgbmV4dCBiYXRjaAogICAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCiAgICB4IDwtIGJhdGNoW1sxXV0KICAgIHkgPC0gYmF0Y2hbWzJdXQogICAgCiAgICAjIGZvcndhcmQgcGFzcyBpcyByZWNvcmRlZCBieSB0ZiRHcmFkaWVudFRhcGUKICAgIHdpdGgodGYkR3JhZGllbnRUYXBlKCkgJWFzJSB0YXBlLCB7CiAgICAgCiAgICAgICMgcnVuIG1vZGVsIG9uIGN1cnJlbnQgYmF0Y2gKICAgICAgcHJlZHMgPC0gbW9kZWwoeCkKICAgICAKICAgICAgIyBjb21wdXRlIHRoZSBsb3NzCiAgICAgIGxvc3MgPC0gbXNlX2xvc3MoeSwgcHJlZHMpCiAgICB9KQogICAgCiAgICAjIHVwZGF0ZSB0b3RhbCBsb3NzCiAgICB0b3RhbF9sb3NzIDwtIHRvdGFsX2xvc3MgKyBsb3NzCiAgICAKICAgICMgZ2V0IGdyYWRpZW50cyBvZiBsb3NzIHcuci50LiBtb2RlbCB3ZWlnaHRzCiAgICBncmFkaWVudHMgPC0gdGFwZSRncmFkaWVudChsb3NzLCBtb2RlbCR2YXJpYWJsZXMpCiAgICAKICAgICMgdXBkYXRlIG1vZGVsIHdlaWdodHMKICAgIG9wdGltaXplciRhcHBseV9ncmFkaWVudHMoCiAgICAgIHB1cnJyOjp0cmFuc3Bvc2UobGlzdChncmFkaWVudHMsIG1vZGVsJHZhcmlhYmxlcykpLAogICAgICBnbG9iYWxfc3RlcCA9IHRmJHRyYWluJGdldF9vcl9jcmVhdGVfZ2xvYmFsX3N0ZXAoKQogICAgKQoKICB9KQogIAogIGNhdCgiVG90YWwgbG9zcyAoZXBvY2gpOiAiLCBpLCAiOiAiLCBhcy5udW1lcmljKHRvdGFsX2xvc3MpLCAiXG4iKQp9CgpgYGAKCiMjIFByZWRpY3Rpb25zIG9uIHRoZSB0ZXN0IHNldAoKR2V0dGluZyBwcmVkaWN0aW9ucyBvbiB0aGUgdGVzdCBzZXQgaXMganVzdCBhIGNhbGwgdG8gYG1vZGVsYCwganVzdCBsaWtlIHRyYWluaW5nIGhhcyBiZWVuLgoKYGBge3J9Cm1vZGVsKHhfdGVzdCkKYGBgCgoKIyMgU2F2aW5nIGFuZCByZXN0b3JpbmcgbW9kZWwgd2VpZ2h0cwoKClRvIHNhdmUgbW9kZWwgd2VpZ2h0cywgY3JlYXRlIGFuIGluc3RhbmNlIG9mIGB0ZiRDaGVja3BvaW50YCBhbmQgcGFzcyBpdCB0aGUgb2JqZWN0cyB0byBiZSBzYXZlZDogaW4gb3VyIGNhc2UsIHRoZSBgbW9kZWxgIGFuZCB0aGUgYG9wdGltaXplcmAuClRoaXMgaGFzIHRvIGhhcHBlbiBhZnRlciB0aGUgcmVzcGVjdGl2ZSBvYmplY3RzIGhhdmUgYmVlbiBjcmVhdGVkLCBidXQgYmVmb3JlIHRoZSB0cmFpbmluZyBsb29wLgoKYGBge3J9CmNoZWNrcG9pbnRfZGlyIDwtICIuL2NoZWNrcG9pbnRzIgpjaGVja3BvaW50X3ByZWZpeCA8LSBmaWxlLnBhdGgoY2hlY2twb2ludF9kaXIsICJja3B0IikKY2hlY2twb2ludCA8LQogIHRmJHRyYWluJENoZWNrcG9pbnQoCiAgICBvcHRpbWl6ZXIgPSBvcHRpbWl6ZXIsCiAgICBtb2RlbCA9IG1vZGVsCiAgKQpgYGAKCgpUaGVuIGF0IHRoZSBlbmQgb2YgZWFjaCBlcG9jaCwgeW91IHNhdmUgdGhlIG1vZGVsJ3MgY3VycmVudCB3ZWlnaHRzLCBsaWtlIHNvOgoKYGBge3J9CmNoZWNrcG9pbnQkc2F2ZShmaWxlX3ByZWZpeCA9IGNoZWNrcG9pbnRfcHJlZml4KQpgYGAKClRoaXMgY2FsbCBzYXZlcyBtb2RlbCB3ZWlnaHRzIG9ubHksIG5vdCB0aGUgY29tcGxldGUgZ3JhcGguIFRodXMgb24gcmVzdG9yZSwgeW91IHJlLWNyZWF0ZSBhbGwgY29tcG9uZW50cyBpbiB0aGUgc2FtZSB3YXkgYXMgYWJvdmUsIGFuZCB0aGVuIGxvYWQgc2F2ZWQgdGhlIG1vZGVsIHdlaWdodHMgdXNpbmcgZS5nLgoKYGBge3J9CiMgcmVzdG9yZSBmcm9tIHJlY2VudCBjaGVja3BvaW50LCB5b3UgY2FuIGFsc28gdXNlIGEgZGlmZmVyZW50IG9uZQpjaGVja3BvaW50JHJlc3RvcmUodGYkdHJhaW4kbGF0ZXN0X2NoZWNrcG9pbnQoY2hlY2twb2ludF9kaXIpKQpgYGAKCllvdSBjYW4gdGhlbiBvYnRhaW4gcHJlZGljdGlvbnMgZnJvbSB0aGUgcmVzdG9yZWQgbW9kZWwsIG9uIHRoZSB0ZXN0IHNldCBhcyBhIHdob2xlIG9yIGJhdGNoLXdpc2UsIHVzaW5nIGFuIGl0ZXJhdG9yLgoKYGBge3J9Cm1vZGVsKHhfdGVzdCkKCml0ZXIgPC0gbWFrZV9pdGVyYXRvcl9vbmVfc2hvdCh0ZXN0X2RhdGFzZXQpCnVudGlsX291dF9vZl9yYW5nZSh7CiAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCiAgcHJlZHMgPC0gbW9kZWwoYmF0Y2hbWzFdXSkKICBwcmludChwcmVkcykKfSkKYGBgCgoKIyMgQ29tcGxldGUgZXhhbXBsZQoKSGVyZSBpcyB0aGUgY29tcGxldGUgZXhhbXBsZS4KCmBgYHtyLCBldmFsPUZBTFNFfQpsaWJyYXJ5KGtlcmFzKQp1c2VfaW1wbGVtZW50YXRpb24oInRlbnNvcmZsb3ciKQoKbGlicmFyeSh0ZW5zb3JmbG93KQp0ZmVfZW5hYmxlX2VhZ2VyX2V4ZWN1dGlvbihkZXZpY2VfcG9saWN5ID0gInNpbGVudCIpCgpsaWJyYXJ5KHRmZGF0YXNldHMpCgoKIyBQcmVwYXJlIHRyYWluaW5nIGFuZCB0ZXN0IHNldHMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgp4X3RyYWluIDwtCiAgaXJpc1sxOjEyMCwgYygiUGV0YWwuTGVuZ3RoIiwgIlNlcGFsLkxlbmd0aCIsICJQZXRhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeF90cmFpbiA8LSBrX2NvbnN0YW50KHhfdHJhaW4pCnlfdHJhaW4gPC0KICBpcmlzWzE6MTIwLCBjKCJTZXBhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeV90cmFpbiA8LSBrX2NvbnN0YW50KHlfdHJhaW4pCgp4X3Rlc3QgPC0KICBpcmlzWzEyMToxNTAsIGMoIlBldGFsLkxlbmd0aCIsICJTZXBhbC5MZW5ndGgiLCAiUGV0YWwuV2lkdGgiKV0gJT4lIGFzLm1hdHJpeCgpCnhfdGVzdCA8LSBrX2NvbnN0YW50KHhfdGVzdCkKeV90ZXN0IDwtCiAgaXJpc1sxMjE6MTUwLCBjKCJTZXBhbC5XaWR0aCIpXSAlPiUgYXMubWF0cml4KCkKeV90ZXN0IDwtIGtfY29uc3RhbnQoeV90ZXN0KQoKCgojIENyZWF0ZSBkYXRhc2V0cyBmb3IgdHJhaW5pbmcgYW5kIHRlc3RpbmcgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCnRyYWluX2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdHJhaW4sIHlfdHJhaW4pKSAlPiUKICBkYXRhc2V0X2JhdGNoKDEwKQp0ZXN0X2RhdGFzZXQgPC0gdGVuc29yX3NsaWNlc19kYXRhc2V0KGxpc3QgKHhfdGVzdCwgeV90ZXN0KSkgJT4lCiAgZGF0YXNldF9iYXRjaCgxMCkKCgojIENyZWF0ZSBtb2RlbCAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCmlyaXNfcmVncmVzc2lvbl9tb2RlbCA8LSBmdW5jdGlvbihuYW1lID0gTlVMTCkgewogIGtlcmFzX21vZGVsX2N1c3RvbShuYW1lID0gbmFtZSwgZnVuY3Rpb24oc2VsZikgewogICAgc2VsZiRkZW5zZTEgPC0gbGF5ZXJfZGVuc2UodW5pdHMgPSAzMiwgaW5wdXRfc2hhcGUgPSAzKQogICAgc2VsZiRkcm9wb3V0IDwtIGxheWVyX2Ryb3BvdXQocmF0ZSA9IDAuNSkKICAgIHNlbGYkZGVuc2UyIDwtIGxheWVyX2RlbnNlKHVuaXRzID0gMSkKICAgIAogICAgZnVuY3Rpb24gKHgsIG1hc2sgPSBOVUxMKSB7CiAgICAgIHNlbGYkZGVuc2UxKHgpICU+JQogICAgICAgIHNlbGYkZHJvcG91dCgpICU+JQogICAgICAgIHNlbGYkZGVuc2UyKCkKICAgIH0KICB9KQp9Cgptb2RlbCA8LSBpcmlzX3JlZ3Jlc3Npb25fbW9kZWwoKQoKCiMgRGVmaW5lIGxvc3MgZnVuY3Rpb24gYW5kIG9wdGltaXplciAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKbXNlX2xvc3MgPC0gZnVuY3Rpb24oeV90cnVlLCB5X3ByZWQpIHsKICBtc2UgPC0gdGYkbG9zc2VzJG1lYW5fc3F1YXJlZF9lcnJvcih5X3RydWUsIHlfcHJlZCkKICBtc2UKfQoKb3B0aW1pemVyIDwtIHRmJHRyYWluJEFkYW1PcHRpbWl6ZXIoKQoKCiMgU2V0IHVwIGNoZWNrcG9pbnRpbmcgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKY2hlY2twb2ludF9kaXIgPC0gIi4vY2hlY2twb2ludHMiCmNoZWNrcG9pbnRfcHJlZml4IDwtIGZpbGUucGF0aChjaGVja3BvaW50X2RpciwgImNrcHQiKQpjaGVja3BvaW50IDwtCiAgdGYkdHJhaW4kQ2hlY2twb2ludChvcHRpbWl6ZXIgPSBvcHRpbWl6ZXIsCiAgICAgICAgICAgICAgICAgICAgICBtb2RlbCA9IG1vZGVsKQoKbl9lcG9jaHMgPC0gMTAKCiMgY2hhbmdlIHRvIFRSVUUgaWYgeW91IHdhbnQgdG8gcmVzdG9yZSB3ZWlnaHRzCnJlc3RvcmUgPC0gRkFMU0UKCmlmICghcmVzdG9yZSkgewogIGZvciAoaSBpbiBzZXFfbGVuKG5fZXBvY2hzKSkgewogICAgaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRyYWluX2RhdGFzZXQpCiAgICB0b3RhbF9sb3NzIDwtIDAKICAgIAogICAgdW50aWxfb3V0X29mX3JhbmdlKHsKICAgICAgYmF0Y2ggPC0gIGl0ZXJhdG9yX2dldF9uZXh0KGl0ZXIpCiAgICAgIHggPC0gYmF0Y2hbWzFdXQogICAgICB5IDwtIGJhdGNoW1syXV0KICAgICAgCiAgICAgIHdpdGgodGYkR3JhZGllbnRUYXBlKCkgJWFzJSB0YXBlLCB7CiAgICAgICAgcHJlZHMgPC0gbW9kZWwoeCkKICAgICAgICBsb3NzIDwtIG1zZV9sb3NzKHksIHByZWRzKQogICAgICB9KQogICAgICAKICAgICAgdG90YWxfbG9zcyA8LSB0b3RhbF9sb3NzICsgbG9zcwogICAgICBncmFkaWVudHMgPC0gdGFwZSRncmFkaWVudChsb3NzLCBtb2RlbCR2YXJpYWJsZXMpCiAgICAgIAogICAgICBvcHRpbWl6ZXIkYXBwbHlfZ3JhZGllbnRzKHB1cnJyOjp0cmFuc3Bvc2UobGlzdChncmFkaWVudHMsIG1vZGVsJHZhcmlhYmxlcykpLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGdsb2JhbF9zdGVwID0gdGYkdHJhaW4kZ2V0X29yX2NyZWF0ZV9nbG9iYWxfc3RlcCgpKQogICAgICAKICAgIH0pCiAgICAKICAgIGNhdCgiVG90YWwgbG9zcyAoZXBvY2gpOiAiLCBpLCAiOiAiLCBhcy5udW1lcmljKHRvdGFsX2xvc3MpLCAiXG4iKQogICAgCiAgICBjaGVja3BvaW50JHNhdmUoZmlsZV9wcmVmaXggPSBjaGVja3BvaW50X3ByZWZpeCkKICB9Cn0gZWxzZSB7CiAgY2hlY2twb2ludCRyZXN0b3JlKHRmJHRyYWluJGxhdGVzdF9jaGVja3BvaW50KGNoZWNrcG9pbnRfZGlyKSkKfQoKCiMgR2V0IG1vZGVsIHByZWRpY3Rpb25zIG9uIHRlc3Qgc2V0IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKbW9kZWwoeF90ZXN0KQoKaXRlciA8LSBtYWtlX2l0ZXJhdG9yX29uZV9zaG90KHRlc3RfZGF0YXNldCkKdW50aWxfb3V0X29mX3JhbmdlKHsKICBiYXRjaCA8LSAgaXRlcmF0b3JfZ2V0X25leHQoaXRlcikKICBwcmVkcyA8LSBtb2RlbChiYXRjaFtbMV1dKQogIHByaW50KHByZWRzKQp9KQoKYGBgCgoKCg==</div>
 
 
 

@@ -1,36 +1,11 @@
 
 ---
 title: "Obtaining uncertainty estimates from neural networks using dropout"
-output:
-  html_document:
-    df_print: paged
-editor_options:
-  chunk_output_type: console
-bibliography: bibliography.bib
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
   
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
-```
-
-
-## Usefulness of uncertainty estimates
-
-- Relation to accuracy:
-
-![Figure from Leibig et al. [-@Leibig084210]. Green: uncertainty estimates for wrong predictions. Blue: uncertainty estimates for correct predictions.](images/retinopathy.png)
-
-- epistemic vs. aleatoric uncertainty
-
-- application to semantic segmentation
-
-![Figure from Kendall & Gal [-@NIPS2017_7141]. Epistemic vs. aleatoric uncertainty in semantic segmentation](images/segmentation_uncertainty.png)
-
-## Uncertainty estimates through Bayesian deep learning
-
-- test time dropout (Gal & Gharahmani [-@GalG16])
-- have the network learn the dropout rate (Gal et al. [-@2017arXiv170507832G], Kendall & Gal [-@NIPS2017_7141])
-
 ## Learning dropout and uncertainty
 
 #### Wrapper class
