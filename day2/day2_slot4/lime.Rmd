@@ -121,7 +121,7 @@ explanation <- explain(
   n_features = 200,
   n_superpixels = 200,
   weight = 10, 
-  n_permutations = 10,
+  n_permutations = 1000,
   feature_select = "lasso_path")
 ```
 
