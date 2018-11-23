@@ -25,136 +25,21 @@ class: center, middle, inverse, title-slide
 
 # Topics
 
-- Intro/Recap: Keras Functional API
-
-- Dealing with mixed (continuous + categorical) datasets in deep learning
+- Using the Keras Functional API
 
 - _Entity embeddings_ 1: Extracting relationships
 
 - _Entity embeddings_ 2: Improving accuracy
 
+- Extended exercise: Predict salary on the "Census Income" dataset
 
 
 ---
 class: inverse, middle, center
 
-# Intro/Recap: Keras Functional API
+# Using the Keras functional API
 
 
----
-class: inverse, middle, center
-
-# Dealing with mixed (continuous + categorical) datasets in deep learning
-
----
-
-# Dataset
-
-- "Census Income" (a.k.a. "Adult") dataset available at [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income)
-
-- Task is to predict predict binarized salary (&lt; resp. &gt; 50k)
-
-- The dataset has continuous as well as categorical variables
-
-- We will explore 2 ways to combine them
-
-- Notebook to follow along: [heterogeneous_data.Rmd](../notebooks/heterogeneous_data.Rmd)
-
-
----
-# A glimpse at the data
-
-```
-Observations: 32,561
-Variables: 15
-$ age            &lt;int&gt; 39, 50, 38, 53, 28, 37, 49, 52, 31, 42, 37, 30,...
-$ workclass      &lt;chr&gt; "State-gov", "Self-emp-not-inc", "Private", "Pr...
-$ fnlwgt         &lt;int&gt; 77516, 83311, 215646, 234721, 338409, 284582, 1...
-$ education      &lt;chr&gt; "Bachelors", "Bachelors", "HS-grad", "11th", "B...
-$ education_num  &lt;int&gt; 13, 13, 9, 7, 13, 14, 5, 9, 14, 13, 10, 13, 13,...
-$ marital_status &lt;chr&gt; "Never-married", "Married-civ-spouse", "Divorce...
-$ occupation     &lt;chr&gt; "Adm-clerical", "Exec-managerial", "Handlers-cl...
-$ relationship   &lt;chr&gt; "Not-in-family", "Husband", "Not-in-family", "H...
-$ race           &lt;chr&gt; "White", "White", "White", "Black", "Black", "W...
-$ sex            &lt;chr&gt; "Male", "Male", "Male", "Male", "Female", "Fema...
-$ capital_gain   &lt;int&gt; 2174, 0, 0, 0, 0, 0, 0, 0, 14084, 5178, 0, 0, 0...
-$ capital_loss   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
-$ hours_per_week &lt;int&gt; 40, 13, 40, 40, 40, 40, 16, 45, 50, 40, 80, 40,...
-$ native_country &lt;chr&gt; "United-States", "United-States", "United-State...
-$ salary         &lt;chr&gt; "&lt;=50K", "&lt;=50K", "&lt;=50K", "&lt;=50K", "&lt;=50K", "&lt;...
-```
-
----
-# Common actions for all 2 approaches 
-
-
-
-```r
-# convert target variable to values 0 resp. 1
-y_train &lt;- train_data$salary %&gt;% factor() %&gt;% as.numeric() - 1
-```
-
-
-```r
-# convert character columns to factors
-train_data &lt;- train_data %&gt;%
-  select(-salary) %&gt;%
-  mutate_if(is.character, factor)
-```
-
-
-```r
-# Isolate the continuous variables into a new dataset
-x_train_continuous &lt;- train_data %&gt;% select_if(is.numeric)
-```
-
-
-```r
-# Scale all continuous data and convert to matrix
-x_train_continuous &lt;- x_train_continuous %&gt;%
-  mutate_all(scale) %&gt;% as.matrix()
-```
-
-
-
-```r
-# Also isolate categorical data
-x_train_categorical &lt;- train_data %&gt;% select_if(is.factor)  
-```
-
-
----
-# Approach 1: One-hot-encode all categorical variables
-
-In this approach, every categorical variable gets one-hot encoded separately, using `to_categorical`.
-
-
-```r
-c(workclass, education, marital_status, occupation,
-  relationship, race, sex, native_country) %&lt;-%
-  map(x_train_categorical, compose(to_categorical, as.numeric))
-```
-
-Now we can bind all columns (continuous and one-hot-encoded categorical ones) together into a train matrix `x_train_all`.
-
-
-```r
-x_train_all &lt;- cbind(
-  x_train_continuous, workclass, education, marital_status,
-  occupation, relationship, race, sex, native_country)
-```
-
-
----
-# Approach 1: Model training
-
-Please go ahead and run the model for approach 1.
-Note the resulting accuracy on the validation set.
-
----
-# Approach 2: Use embeddings on categorical data
-
-Time for a little excursion...
 
 ---
 class: inverse, middle, center
@@ -187,17 +72,31 @@ class: inverse, middle, center
 
 
 
+---
+class: inverse, middle, center
+
+# Extended exercise: Predict salary on the "Census Income" dataset
+
 
 ---
 
-# Why representation learning?
+# Dataset
 
-- Representation matters&lt;sup&gt;1&lt;/sup&gt;
-- Good representations make subsequent prediction task easier 
-- Make use of abundant unlabeled data (unsupervised pretraining)
-- Transfer learning / domain adaptation
-- Density estimation
-- Object generation
+- "Census Income" (a.k.a. "Adult") dataset available at [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income)
+
+- Task is to predict predict binarized salary (&lt; resp. &gt; 50k)
+
+- The dataset has continuous as well as categorical variables
+
+- Notebook to follow along: [heterogeneous_data.Rmd](../notebooks/heterogeneous_data.Rmd)
+
+
+
+---
+
+# bla
+
+- bla
 
 
 
@@ -211,16 +110,6 @@ class: inverse, middle, center
 
 ---
 # References
-
-
-```
-## You haven't cited any references in this bibliography yet.
-```
-
-NULL
-
----
-# References (cont.)
 
 
 ```
