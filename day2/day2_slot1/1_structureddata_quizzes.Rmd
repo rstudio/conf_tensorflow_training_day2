@@ -1,5 +1,5 @@
 ---
-title: "Representation learning, interpretability, and uncertainty"
+title: "Deep learning for structured data"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
@@ -10,75 +10,69 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
-## Eager execution 
+## Embeddings for uncovering relationships 
 
-All quizzes in this section start from the eager execution notebook.
+All quizzes in this section start from the `embeddings_so.Rmd` notebook.
 
 ### Quiz 1
 
-Modify the example ("complete example" at the bottom) to use the `mpg` dataset (available from ggplot2) and predict `cty` from `displ`. Use a random split of 20% for the validation set. Change the model to use the RMSProp optimizer instead of Adam.
+We just ran the embeddings model in `embeddings_so.Rmd`. 
 
+Find the cosine similarity between the embedded representation of `R` and
+
+- `Python`
+- `Julia`
+
+To answer this question, you will need to 
+
+- extract the weight matrix for the "programming languages" embeddings layer,
+- identify the rows for the two languages, respectively, and
+- calculate cosine similarity
 
 ```{r quiz1}
 quiz(
-  question("Which learning rate worked best for you?",
-    answer("0.3"),
-    answer("0.001"),
-    answer("0.02", correct = TRUE)
+  question("In which region are the cosine similarities?",
+    answer("between -0.2 and 0"),
+    answer("between 0 and 0.2", correct = TRUE),
+    answer("between 0.2 and 0.4")
   )
 )
 ```
+
 
 ### Quiz 2
 
-What's the shape of the `gradients` we obtain using `gradients <- tape$gradient(loss, model$variables)`?
-`gradients` itself is a list of 4 tensors, what are their respective shapes?
+When showing the embeddings obtained for job values, we pointed out that the target variable chosen could have a significant effect.
 
-Hint: use any "quick and dirty" way that could give you the information. Would your way work with graph execution, too? In eager, could you get the actual values, too (not just the shapes)?
+Compare the `OperatingSystem` embeddings learned from predicting `JobSatisfaction` to those learned from predicting `EthicsChoice`. How different are they, looking at the 2d PCA reduction?
 
 ```{r quiz2}
 quiz(
-  question("Which are the shapes of the gradient tensors?",
-    answer("1 32 , 32 , 32 1 , 1", correct = TRUE),
-    answer("1 32 , 32 , 32 1 , 32"),
-    answer("32 1, 32, 32, 1")
+  question("The 2d reductions of OperatingSystem embeddings, when computed with targets EthicsChoice and JobSatisfaction, respectively, are",
+    answer("very different"),
+    answer("not too different", correct = TRUE)
   )
 )
 ```
 
 
-## Variational autoencoders
+## Embeddings for improving accuracy
 
-In small groups of 3-4 people, talk about what could be interesting applications of a technique like this.
+### Quiz 1
 
-- Applications that mean to generate "something" are fine, but you would perhaps go for a GAN (Generative Adversarial Network) there instead. Anything where the latent space matters?
+Try to further improve accuracy, starting from the embeddings model.
 
-- Perhaps go beyond generation - anything where it'd help to have such a latent space at your disposal?
+Things you could try:
 
-## LIME and CAM (Class activation maps)
+- adding further specialized layers to the `prod_embed` branch and the `cont_dense` branches before concatenating them
+- adding more capacity to the network in various ways
+- changing activation functions
+- preprocessing the data differently / feature engineering
 
-Here you see LIME (200 superpixels, display threshold = of 0.02) as well as CAM explanations for 3 other images. The heatmaps are for the most probable and the second most probable class, respectively (thus, they match those indicated on the LIME plots).
+Some concrete ideas:
 
-In small groups of 3-4 people, talk about what makes sense or not to you. What could you vary or explore regarding the techniques used?
+- instead of scaling or normalizing the continuous data (`Quant` and `Val`), try binning them
+- try including more than just the top 500 products
+- try including salesperson ID
 
-### Road cycling race
-
-![](images/explanations_bicycle.png)
-
-![](images/cam_1.png){width=80%}
-
-
-### Notre Dame
-
-![](images/explanations_bellcote.png)
-
-![](images/cam_2.png){width=80%}
-
-
-### Kayak
-
-![](images/explanations_paddle.png)
-
-![](images/cam_3.png){width=80%}
-
-
+Feel free to try whatever you like best / comes to mind!

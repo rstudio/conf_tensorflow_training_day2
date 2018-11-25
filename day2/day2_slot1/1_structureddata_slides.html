@@ -40,6 +40,103 @@ class: inverse, middle, center
 # Using the Keras functional API
 
 
+---
+# When the Keras Sequential API is not enough
+
+
+Let's look at some typical code observing the Sequential API:
+
+
+```r
+model &lt;- keras_model_sequential() %&gt;%
+layer_dense(units = 32, activation = "relu", input_shape = c(64)) %&gt;%
+layer_dense(units = 10, activation = "softmax")
+```
+
+Or:
+
+
+```r
+feature_extractor &lt;-
+  application_xception(include_top = FALSE, input_shape = c(224, 224, 3))
+model &lt;- keras_model_sequential() %&gt;%
+  feature_extractor %&gt;%
+  layer_dense(units = 512, activation = "relu") %&gt;%
+  layer_batch_normalization() %&gt;%
+  layer_dropout(rate = 0.5) %&gt;%
+  layer_dense(units = 20, activation = "softmax")
+```
+
+&lt;br /&gt;
+
+What can you __not__ do with this kind of architecture?
+
+---
+# Multiple inputs
+
+Example tasks:
+
+- Predict the price of an item from metadata (size, color ...), a verbal description, and an image
+
+- Question answering: The NN is given a source text (sentence, paragraph) and a question, and should answer that question
+
+
+.pull-left[![](images/fapi_multiple_inputs.png)]
+.pull-right[![](images/fapi_multiple_inputs_2_scaled.png)]
+
+---
+# Multiple outputs
+
+Example tasks:
+
+- For a short story, predict genre and date written
+
+- Predict age, income and gender from a series of tweets of a person
+
+
+&lt;br /&gt;
+
+.pull-left[![](images/fapi_multiple_outputs.png)]
+.pull-right[![](images/fapi_multiple_outputs_2.png)]
+
+---
+# Internal branching/submodules
+
+Two famous architectures encountered in computer vision:
+
+- InceptionV[n] family: inception module
+
+- ResNet family: residual connections
+
+.pull-left[![](images/fapi_inception.png)]
+.pull-right[![](images/fapi_residual.png)]
+
+---
+# Functional API - Overall structure
+
+
+
+---
+# Multiple inputs - Question answering example
+
+
+```r
+text_input &lt;- layer_input(shape = list(NULL), dtype = "int32", name = "text")
+encoded_text &lt;- text_input %&gt;%
+  layer_embedding(input_dim = 5000, output_dim = 256) %&gt;%
+  layer_lstm(units = 128)
+
+question_input &lt;- layer_input(shape = list(NULL), dtype = "int32", name = "question")
+encoded_question &lt;- question_input %&gt;%
+  layer_embedding(input_dim = 5000, output_dim = 256) %&gt;%
+  layer_lstm(units = 128)
+
+concatenated &lt;- layer_concatenate(list(encoded_text, encoded_question))
+answer &lt;- concatenated %&gt;%
+  layer_dense(units = 5000, activation = "softmax")
+```
+
+
 
 ---
 class: inverse, middle, center
@@ -60,10 +157,53 @@ class: inverse, middle, center
 - relations of all kinds (e.g., in knowledge bases)
 - 
 
+
+
+tbd mention collaborative filtering
+
+
+---
+# Extracting embeddings from a trained model
+
+- _The embeddings_, that's the weight matrix of an embedding layer
+
+- We obtain the weights from the model and then, can perform dimensionality reduction on it
+
+ - PCA
+ - t-SNE
+ - ...
+ 
+- Can also calculate similarity between points
+- For example, using _cosine similarity_:
+
+`$$cos(\theta) = \frac{\mathbf{x^ t}\mathbf{y}}{\mathbf{||x||}\space\mathbf{||y||}}$$`
+
+Let's see this in action!
+
+
 ---
 class: inverse, middle, center
 
 # Entity embeddings 1: Extracting relationships
+
+
+---
+# Use entity embeddings on the StackOverflow Developer Survey
+
+- The [StackOverflow developer survey](https://insights.stackoverflow.com/survey/2018) has lots of categorical variables that can be used as predictors and/or as targets
+
+- Notebook: [embeddings_so.Rmd](embeddings_so.Rmd)
+
+- Data: [survey_results_public.csv](data/survey_results_public.csv)
+
+- Variable explanations: [survey_results_schema.csv](data/survey_results_schema.csv)
+
+&lt;br /&gt;
+
+We'll go through the notebook together and then, you'll pick some variables you're interested in and experiment with them.
+
+
+---
 
 ---
 class: inverse, middle, center
@@ -71,16 +211,11 @@ class: inverse, middle, center
 # Entity embeddings 2: Improving accuracy
 
 
-
 ---
 class: inverse, middle, center
 
 # Extended exercise: Predict salary on the "Census Income" dataset
 
-
----
-
-# Dataset
 
 - "Census Income" (a.k.a. "Adult") dataset available at [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income)
 
@@ -101,7 +236,7 @@ class: inverse, middle, center
 
 
 
-.footnote[[1] cf. , chap. 15, and .]
+.footnote[[1] cf. , chap. 15, ]
 
 ---
 # Wrapup/feedback
