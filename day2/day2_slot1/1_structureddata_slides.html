@@ -31,8 +31,6 @@ class: center, middle, inverse, title-slide
 
 - _Entity embeddings_ 2: Improving accuracy
 
-- Extended exercise: Predict salary on the "Census Income" dataset
-
 
 ---
 class: inverse, middle, center
@@ -111,9 +109,37 @@ Two famous architectures encountered in computer vision:
 .pull-left[![](images/fapi_inception.png)]
 .pull-right[![](images/fapi_residual.png)]
 
----
-# Functional API - Overall structure
 
+---
+# Functional API - Generic example code
+
+
+```r
+input1 &lt;- layer_input(shape  = 1)
+input2 &lt;- layer_input(shape = 1)
+
+dense1 &lt;- input1 %&gt;% layer_dense(units = 32, activation = "relu")
+dense2 &lt;- input2 %&gt;% layer_dense(units = 32, activation = "relu")
+concat &lt;- layer_concatenate(list(dense1, dense2))
+output1 &lt;- concat %&gt;%
+  layer_dense(units = 1, activation = "sigmoid", name = "class_output")
+output2 &lt;- concat %&gt;%
+  layer_dense(units = 1, name = "regression_output")
+
+model &lt;- keras_model(inputs = list(input1, input2), outputs = list(output1, output2))
+
+model %&gt;% compile(
+  loss = list(class_output = "binary_crossentropy",
+              regression_output = "mse"),
+  optimizer = "adam",
+  metrics = list(class_output = "binary_crossentropy",
+                 regression_output = "mse"))
+model %&gt;% fit(
+  x = list(x1, x2),
+  y = list(y1, y2),
+  epochs = 20
+)
+```
 
 
 ---
@@ -121,22 +147,119 @@ Two famous architectures encountered in computer vision:
 
 
 ```r
-text_input &lt;- layer_input(shape = list(NULL), dtype = "int32", name = "text")
+text_input &lt;- layer_input(shape = list(NULL), name = "text")
 encoded_text &lt;- text_input %&gt;%
   layer_embedding(input_dim = 5000, output_dim = 256) %&gt;%
   layer_lstm(units = 128)
 
-question_input &lt;- layer_input(shape = list(NULL), dtype = "int32", name = "question")
+question_input &lt;- layer_input(shape = list(NULL), name = "question")
 encoded_question &lt;- question_input %&gt;%
   layer_embedding(input_dim = 5000, output_dim = 256) %&gt;%
   layer_lstm(units = 128)
 
 concatenated &lt;- layer_concatenate(list(encoded_text, encoded_question))
+
 answer &lt;- concatenated %&gt;%
   layer_dense(units = 5000, activation = "softmax")
 ```
 
 
+---
+# Multiple outputs - Multiple feature prediction from tweets
+
+
+```r
+posts_input &lt;- layer_input(shape = list(NULL))
+embedded_posts &lt;- posts_input %&gt;%
+  layer_embedding(input_dim = 10000, output_dim = 256)
+
+base_model &lt;- embedded_posts %&gt;%
+  layer_conv_1d(filters = 128, kernel_size = 5, activation = "relu") %&gt;%
+  layer_max_pooling_1d(pool_size = 5) %&gt;%
+  ## [more conv and pooling layers]
+  layer_global_max_pooling_1d() %&gt;%
+  layer_dense(units = 128, activation = "relu")
+
+age_prediction &lt;- base_model %&gt;% layer_dense(units = 1, name = "age")
+income_prediction &lt;- base_model %&gt;% 
+  layer_dense(num_income_groups, activation = "softmax", name = "income")
+gender_prediction &lt;- base_model %&gt;%
+  layer_dense(units = 1, activation = "sigmoid", name = "gender")
+
+model &lt;- keras_model(
+  posts_input,
+  list(age_prediction, income_prediction, gender_prediction)
+)
+```
+
+
+---
+# Inception Module
+
+
+```r
+branch_a &lt;- input %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu",
+                strides = 2)
+
+branch_b &lt;- input %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu") %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu",
+                strides = 2)
+
+branch_c &lt;- input %&gt;%
+  layer_average_pooling_2d(pool_size = 3, strides = 2) %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu")
+
+branch_d &lt;- input %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu") %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu") %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu",
+                strides = 2)
+
+output &lt;- layer_concatenate(list(branch_a, branch_b, branch_c, branch_d))
+```
+
+---
+# Residual connections
+
+
+```r
+output &lt;- input %&gt;%
+  layer_conv_2d(filters = 128, 
+                kernel_size = 3,
+                activation = "relu",
+                padding = "same") %&gt;%
+  layer_conv_2d(filters = 128,
+                kernel_size = 3,
+                activation = "relu",
+                padding = "same") %&gt;%
+  layer_max_pooling_2d(pool_size = 2, strides = 2)
+
+# we need to do some downsampling on the residual
+# so we can add it to output
+residual &lt;- input %&gt;%
+  layer_conv_2d(filters = 128,
+                kernel_size = 1,
+                strides = 2,
+                padding = "same")
+
+output &lt;- layer_add(list(output, residual))
+```
+
+---
+# Exercise: Predict salary on the "Census Income" dataset (Part 1)
+
+
+- "Census Income" (a.k.a. "Adult") dataset available at [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income)
+
+- Task is to predict predict binarized salary (&lt; resp. &gt; 50k)
+
+- The dataset has continuous as well as categorical variables
+
+- Notebook to follow along: [heterogeneous_data_1.Rmd](../notebooks/heterogeneous_data_1.Rmd)
+
+- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
 
 ---
 class: inverse, middle, center
@@ -144,23 +267,35 @@ class: inverse, middle, center
 # Entity embeddings are all the hype
 
 ---
-# Most people know embeddings for this
+# Most people know embeddings for this&lt;sup&gt;1&lt;/sup&gt;
 
-(or something like this)
+![](images/mikolov_resized.png)
 
-![](images/mikolov.png)
+
+
+.footnote[[1] cf. Mikolov, T, I. Sutskever, K. Chen, et al. (2013). "Distributed Representations of Words and Phrases and their Compositionality". ]
+
+#### But not just words or sentences can be embedded... we can embed relations/concepts/__entities__ of all kinds
+
+---
+### So why would we do that?
+
+- Improve accuracy on downstream task
+
+- Extract relationships between entities (not visible in one-hot-encoded form)
+
+- Everything in-between
+
+&lt;br /&gt; 
+For an application to e.g. collaborative filtering, see
+
+[Collaborative filtering with embeddings](https://blogs.rstudio.com/tensorflow/posts/2018-09-26-embeddings-recommender/)
 
 
 ---
-# But not just words or sentences can be embedded...
+class: inverse, middle, center
 
-- relations of all kinds (e.g., in knowledge bases)
-- 
-
-
-
-tbd mention collaborative filtering
-
+# Entity embeddings 1: Extracting relationships
 
 ---
 # Extracting embeddings from a trained model
@@ -181,11 +316,6 @@ tbd mention collaborative filtering
 Let's see this in action!
 
 
----
-class: inverse, middle, center
-
-# Entity embeddings 1: Extracting relationships
-
 
 ---
 # Use entity embeddings on the StackOverflow Developer Survey
@@ -198,12 +328,12 @@ class: inverse, middle, center
 
 - Variable explanations: [survey_results_schema.csv](data/survey_results_schema.csv)
 
+- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+
 &lt;br /&gt;
 
 We'll go through the notebook together and then, you'll pick some variables you're interested in and experiment with them.
 
-
----
 
 ---
 class: inverse, middle, center
@@ -212,31 +342,45 @@ class: inverse, middle, center
 
 
 ---
-class: inverse, middle, center
+# Using entity embeddings to improve accuracy
 
-# Extended exercise: Predict salary on the "Census Income" dataset
+- Used by the winning team on the Kaggle Rossmann Sales prediction challenge&lt;sup&gt;1&lt;/sup&gt;
+
+- Better accuracy compared to one-hot-encoding is not guaranteed
+
+- Probably most effective with _high-dimensional_ data that have a _significant relationship_ to the target variable
 
 
-- "Census Income" (a.k.a. "Adult") dataset available at [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income)
 
-- Task is to predict predict binarized salary (&lt; resp. &gt; 50k)
 
-- The dataset has continuous as well as categorical variables
 
-- Notebook to follow along: [heterogeneous_data.Rmd](../notebooks/heterogeneous_data.Rmd)
-
+.footnote[[1] cf. Guo, C. and F. Berkhahn (2016). "Entity Embeddings of Categorical Variables". ]
 
 
 ---
+# Using entity embeddings for fraud detection
 
-# bla
+- `sales` dataset from the `DMwR2` package
 
-- bla
+- Notebook: [embeddings_fraud.Rmd](embeddings_so.Rmd)
+
+- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+
+&lt;br /&gt;
+
+Again, we'll go through the notebook together and then, you'll try to further improve accuracy.
+
+---
+# Exercise: Predict salary on the "Census Income" dataset (Part 2) (Optional)
 
 
+- On the now familiar "Census Income" dataset, see if you can improve accuracy using embeddints.
 
+- Before we start: How probable do you think it is you can improve accuracy there?
 
-.footnote[[1] cf. , chap. 15, ]
+- Notebook to follow along: [heterogeneous_data_2.Rmd](../notebooks/heterogeneous_data_1.Rmd)
+
+- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
 
 ---
 # Wrapup/feedback
@@ -246,12 +390,14 @@ class: inverse, middle, center
 ---
 # References
 
+Guo, C. and F. Berkhahn (2016). "Entity Embeddings of Categorical
+Variables". In: _CoRR_ abs/1604.06737. eprint: 1604.06737. URL:
+[http://arxiv.org/abs/1604.06737](http://arxiv.org/abs/1604.06737).
 
-```
-## You haven't cited any references in this bibliography yet.
-```
-
-NULL
+Mikolov, T, I. Sutskever, K. Chen, et al. (2013). "Distributed
+Representations of Words and Phrases and their Compositionality".
+In: _CoRR_ abs/1310.4546. eprint: 1310.4546. URL:
+[http://arxiv.org/abs/1310.4546](http://arxiv.org/abs/1310.4546).
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

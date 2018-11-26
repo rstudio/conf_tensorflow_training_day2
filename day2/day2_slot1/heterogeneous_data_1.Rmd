@@ -1,0 +1,284 @@
+---
+title: "Working with a heterogeneous dataset (census income dataset)"
+output:
+  html_notebook:
+editor_options: 
+  chunk_output_type: inline
+---
+  
+  
+```{r}
+library(keras)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+
+use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
+```
+
+
+## The dataset
+
+Here, we're using the "Census Income" (a.k.a. "Adult") dataset available at the [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income).
+
+We are going to predict binarized salary (< resp. > 50k).
+
+In this and a subsequent exercise, we are going to explore different ways of handling the presence of continuous as well as categorical variables.
+
+## Prepare the data
+
+The data is available in the file `data/adult.data`.
+Short descriptions are contained in `data/adult.names`.
+
+
+```{r}
+train_data <- read_csv("data/adult.data",
+                       col_names = c("age",
+                                     "workclass",
+                                     "fnlwgt",
+                                     "education",
+                                     "education_num",
+                                     "marital_status",
+                                     "occupation",
+                                     "relationship",
+                                     "race",
+                                     "sex",
+                                     "capital_gain",
+                                     "capital_loss",
+                                     "hours_per_week",
+                                     "native_country",
+                                     "salary"),
+                       col_types = "iciciccccciiicc",
+                       na = "?")
+```
+
+```{r}
+train_data %>% glimpse()
+```
+
+```{r}
+nrow(train_data)
+```
+
+The dataset contains missing values. For our current purpose it's okay to just remove all incomplete rows.
+
+```{r}
+train_data <- na.omit(train_data)
+nrow(train_data)
+```
+
+### Target variable
+
+We transform the values to 0s resp. 1s.
+
+```{r}
+y_train <- train_data$salary %>% factor() %>% as.numeric() - 1
+y_train[1:10]
+```
+
+Check that the reported class imbalance (~ 1:3) really is present in the dataset.
+
+```{r}
+table(y_train)
+```
+
+### Predictor variables
+
+First we remove the target variable from the dataset and convert the character variables into factors.
+
+```{r}
+x_train <- train_data %>%
+  select(-salary) %>%
+  mutate_if(is.character, factor)
+```
+
+
+# Sequential model
+
+We first show a way to work with this dataset using the Sequential API. Your task will then be to transform the code to use the Functional API (and make some other changes).
+
+### Isolate the continuous variables into a new dataset, e.g. `x_train_continuous`.
+
+```{r}
+x_train_continuous <- x_train %>% select_if(is.numeric)
+x_train_continuous[1:10, ]
+```
+
+### Scale the variables to a common scale so the NN can handle them well.
+
+As `x_train_continuous` will be passed in to `fit` later, it should finally be converted to a matrix.
+
+```{r}
+x_train_continuous <- x_train_continuous %>% mutate_all(scale) %>% as.matrix()
+x_train_continuous[1:10, ]
+```
+
+### isolate the categorical variables into a subset, e.g., `x_train_categorical`. 
+
+```{r}
+x_train_categorical <- x_train %>% select_if(is.factor) 
+x_train_categorical
+```
+
+
+
+# One-hot-encode all categorical variables
+
+You can use keras `to_categorical` for that. Encode every variable separately.
+
+```{r}
+c(workclass, education, marital_status, occupation, relationship, race, sex, native_country) %<-%
+  map(x_train_categorical, compose(to_categorical, as.numeric))
+```
+
+```{r}
+workclass[1:5, ]
+```
+
+### Bind all columns (continuous and one-hot-encoded categorical ones) together
+
+```{r}
+x_train_all <- cbind(x_train_continuous, workclass, education, marital_status, occupation, relationship, race, sex, native_country)
+```
+
+```{r}
+dim(x_train_all)
+```
+
+```{r}
+x_train_all[1:10, ]
+```
+
+
+### Create sequential model
+
+```{r}
+model <- keras_model_sequential() %>%
+  layer_dense(units = 64, activation = "relu", input_shape = 112) %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 64, activation = "relu") %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 64, activation = "relu") %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 1, activation = "sigmoid") 
+```
+
+
+
+```{r}
+model %>% compile(loss = "binary_crossentropy", optimizer = "adam", metrics = "accuracy")
+```
+
+
+```{r}
+model %>% fit(
+  x = x_train_all,
+  y = y_train,
+  epochs = 20,
+  validation_split = 0.2
+)
+```
+
+Note the final accuracy we got on the validation set: 0.8535.
+
+Now go to `1_structureddata_quizzes.rmd` where you will be asked to use the Functional API with these data.
+
+
+# Quiz 1
+
+On the same prediction task, use the Keras Functional API such that:
+
+- each categorical variable has its own input
+- while the continuous inputs share one single input
+
+We've copied some common code for you from above so you don't have to copy-paste the individual chunks.
+
+```{r}
+library(keras)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+
+use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
+
+train_data <- read_csv("data/adult.data",
+                       col_names = c("age",
+                                     "workclass",
+                                     "fnlwgt",
+                                     "education",
+                                     "education_num",
+                                     "marital_status",
+                                     "occupation",
+                                     "relationship",
+                                     "race",
+                                     "sex",
+                                     "capital_gain",
+                                     "capital_loss",
+                                     "hours_per_week",
+                                     "native_country",
+                                     "salary"),
+                       col_types = "iciciccccciiicc",
+                       na = "?")
+
+train_data <- na.omit(train_data)
+
+y_train <- train_data$salary %>% factor() %>% as.numeric() - 1
+
+x_train <- train_data %>%
+  select(-salary) %>%
+  mutate_if(is.character, factor)
+
+x_train_continuous <- x_train %>% select_if(is.numeric)
+x_train_continuous <- x_train_continuous %>% mutate_all(scale) %>% as.matrix()
+
+x_train_categorical <- x_train %>% select_if(is.factor) 
+c(workclass, education, marital_status, occupation, relationship, race, sex, native_country) %<-%
+  map(x_train_categorical, compose(to_categorical, as.numeric))
+```
+
+Now please continue from here.
+
+
+
+# Quiz 2
+
+Modify your model to also predict `age`.
+That is, remove `age` from the predictors and use it as a second target, together with `salary`.
+
+We've copied some reusable code for you from above so you don't have to copy-paste the individual chunks.
+
+```{r}
+library(keras)
+library(readr)
+library(dplyr)
+library(ggplot2)
+library(purrr)
+
+use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
+
+train_data <- read_csv("data/adult.data",
+                       col_names = c("age",
+                                     "workclass",
+                                     "fnlwgt",
+                                     "education",
+                                     "education_num",
+                                     "marital_status",
+                                     "occupation",
+                                     "relationship",
+                                     "race",
+                                     "sex",
+                                     "capital_gain",
+                                     "capital_loss",
+                                     "hours_per_week",
+                                     "native_country",
+                                     "salary"),
+                       col_types = "iciciccccciiicc",
+                       na = "?")
+
+train_data <- na.omit(train_data)
+```
+
+Now please continue from here.
+
