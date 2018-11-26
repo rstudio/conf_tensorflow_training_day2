@@ -1,0 +1,43 @@
+---
+title: 'Meta: Representation learning, interpretation, and uncertainty'
+author: "Sigrid Keydana"
+date: "10/16/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Representation learning
+
+- Unsupervised learning 
+- Autoencoders
+- Variational autoencoders
+
+##### Demo: Variational autoencoders
+
+- If this is the first time eager execution is used, short intro to eager
+- The standard way: Maximize ELBO
+- improving on the loss: MMD-VAE
+
+
+## Interpretability
+
+- Short intro, hinting that all this isn't so uncontroversial
+- Interpreting a model vs. explaining model predictions
+- Approaches to explanation (permutations, gradient, obfuscation ...)
+
+
+##### Do it yourself: LIME
+
+##### Do it yourself: Heatmap
+
+
+## Uncertainty
+
+- Short intro
+
+##### Demo: Dropout uncertainty
+
+

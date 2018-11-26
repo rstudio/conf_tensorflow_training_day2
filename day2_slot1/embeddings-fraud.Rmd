@@ -1,0 +1,225 @@
+---
+title: "Entity embeddings 2: Improving accuracy"
+output:
+  html_notebook:
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+library(keras)
+library(dplyr)
+library(purrr)
+library(abind)
+
+use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
+```
+
+
+Our second task here is about fraud detection. The dataset is contained in the `DMwR2` package and is called `sales`:
+
+```{r}
+data(sales, package = "DMwR2")
+sales
+```
+
+
+Each row indicates a transaction reported by a salesperson:
+
+- `ID` is the salesperson ID
+- `Prod` is a product ID
+- `Quant` is quantity sold
+- `Val` is transaction value
+
+`Insp` indicates one of three possibilities: 
+
+- (1) the transaction was examined and found fraudulent 
+- (2) it was examined and found okay
+- (3) it has not been examined (the vast majority of cases).
+
+__While this dataset "cries" for semi-supervised techniques (to make use of the overwhelming amount of unlabeled data), we want to see if using embeddings can help us improve accuracy on a supervised task.__
+
+We thus recklessly throw away incomplete data as well as all unlabeled entries
+
+```{r}
+sales <- filter(sales, !(is.na(Quant)))
+sales <- filter(sales, !(is.na(Val)))
+
+sales <- droplevels(sales %>% filter(Insp != "unkn"))
+nrow(sales)
+```
+
+which leaves us with 15546 transactions.
+
+### One-hot model
+ 
+Now we prepare the data for the one-hot model we want to compare against:
+
+- With 2821 levels, salesperson `ID` is far too high-dimensional to work well with one-hot encoding, so we completely drop that column.
+- Product id (`Prod`) has "just" 797 levels, but with one-hot-encoding, that still results in significant memory demand. We thus zoom in on the 500 top-sellers.
+- The continuous variables `Quant` and `Val` are normalized to values between 0 and 1 so they fit with the one-hot-encoded `Prod`.
+ 
+```{r}
+sales_1hot <- sales
+
+normalize <- function(x) {
+  (x - min(x)) / (max(x) - min(x))
+}
+
+top_n <- 500
+top_prods <- sales_1hot %>% 
+  group_by(Prod) %>% 
+  summarise(cnt = n()) %>% 
+  arrange(desc(cnt)) %>%
+  head(top_n) %>%
+  select(Prod) %>%
+  pull()
+
+sales_1hot <- droplevels(sales_1hot %>% filter(Prod %in% top_prods))
+
+sales_1hot <- sales_1hot %>%
+  select(-ID) %>%
+  map_if(is.factor, ~ as.integer(.x) - 1) %>%
+  map_at("Prod", ~ to_categorical(.x) %>% array_reshape(c(length(.x), top_n))) %>%
+  map_at("Quant", ~ normalize(.x) %>% array_reshape(c(length(.x), 1))) %>%
+  map_at("Val", ~ normalize(.x) %>% array_reshape(c(length(.x), 1))) %>%
+  abind(along = 2)
+```
+ 
+ 
+We then perform the usual train-test split.
+ 
+```{r}
+train_indices <- sample(1:nrow(sales_1hot), 0.7 * nrow(sales_1hot))
+
+X_train <- sales_1hot[train_indices, 1:502] 
+y_train <-  sales_1hot[train_indices, 503] %>% as.matrix()
+
+X_valid <- sales_1hot[-train_indices, 1:502] 
+y_valid <-  sales_1hot[-train_indices, 503] %>% as.matrix()
+```
+
+__We need to be very careful with class imbalance here.__
+
+For classification on this dataset, which will be the baseline to beat?  
+ 
+```{r}
+xtab_train  <- y_train %>% table()
+xtab_valid  <- y_valid %>% table()
+list(xtab_train[1]/(xtab_train[1] + xtab_train[2]), xtab_valid[1]/(xtab_valid[1] + xtab_valid[2]))
+```
+
+
+So if we don't get beyond 94% accuracy on both training and validation sets, we may just as well predict "okay" for every transaction.
+
+Here then is the model, plus the training routine and evaluation:
+
+```{r}
+dropout_rate <- 0.2 # optimal rate for this model
+
+model <- keras_model_sequential() %>%
+  layer_dense(units = 256, activation = "selu") %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 256, activation = "selu") %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 256, activation = "selu") %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 256, activation = "selu") %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 1, activation = "sigmoid")
+
+model %>% compile(loss = "binary_crossentropy", optimizer = "adam", metrics = c("accuracy"))
+
+model %>% fit(
+  X_train,
+  y_train,
+  validation_data = list(X_valid, y_valid),
+  class_weights = list("0" = 0.1, "1" = 0.9),
+  batch_size = 128,
+  epochs = 200
+)
+
+model %>% evaluate(X_train, y_train, batch_size = 100) 
+model %>% evaluate(X_valid, y_valid, batch_size = 100) 
+```
+
+This model achieved optimal validation accuracy at a dropout rate of 0.2. At that rate, training accuracy was `0.9787`, and validation accuracy was `0.9477`. At all dropout rates lower than 0.7, validation accuracy did indeed surpass the majority vote baseline.
+
+Can we further improve performance by embedding the product id?
+
+### Embeddings model
+
+For better comparability, we again discard salesperson information and cap the number of different products at 500.
+Otherwise, data preparation goes as expected for this model:
+
+```{r}
+sales_embed <- sales
+
+top_prods <- sales_embed %>% 
+  group_by(Prod) %>% 
+  summarise(cnt = n()) %>% 
+  arrange(desc(cnt)) %>% 
+  head(top_n) %>% 
+  select(Prod) %>% 
+  pull()
+
+sales_embed <- droplevels(sales_embed %>% filter(Prod %in% top_prods))
+
+sales_embed <- sales_embed %>%
+  select(-ID) %>%
+  mutate_if(is.factor, ~ as.integer(.x) - 1) %>%
+  mutate(Quant = scale(Quant)) %>%
+  mutate(Val = scale(Val))
+
+X_train <- sales_embed[train_indices, 1:3] %>% as.matrix()
+y_train <-  sales_embed[train_indices, 4] %>% as.matrix()
+
+X_valid <- sales_embed[-train_indices, 1:3] %>% as.matrix()
+y_valid <-  sales_embed[-train_indices, 4] %>% as.matrix()
+```
+
+
+The model we define is as similar as possible to the one-hot alternative:
+
+```{r}
+prod_input <- layer_input(shape = 1)
+cont_input <- layer_input(shape = 2)
+
+prod_embed <- prod_input %>% 
+  layer_embedding(input_dim = sales_embed$Prod %>% max() + 1,
+                  output_dim = 256
+                  ) %>%
+  layer_flatten()
+cont_dense <- cont_input %>% layer_dense(units = 256, activation = "selu")
+
+output <- layer_concatenate(
+  list(prod_embed, cont_dense)) %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 256, activation = "selu") %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 256, activation = "selu") %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 256, activation = "selu") %>%
+  layer_dropout(dropout_rate) %>% 
+  layer_dense(units = 1, activation = "sigmoid")
+  
+model <- keras_model(inputs = list(prod_input, cont_input), outputs = output)
+
+model %>% compile(loss = "binary_crossentropy", optimizer = "adam", metrics = "accuracy")
+
+model %>% fit(
+  list(X_train[ , 1], X_train[ , 2:3]),
+  y_train,
+  validation_data = list(list(X_valid[ , 1], X_valid[ , 2:3]), y_valid),
+  class_weights = list("0" = 0.1, "1" = 0.9),
+  batch_size = 128,
+  epochs = 200
+)
+
+model %>% evaluate(list(X_train[ , 1], X_train[ , 2:3]), y_train) 
+model %>% evaluate(list(X_valid[ , 1], X_valid[ , 2:3]), y_valid)        
+```
+
+
+This time, accuracies are in fact higher: At the optimal dropout rate (0.3 in this case), training resp. validation accuracy are at `0.9916` and `0.9656`, respectively. Quite a difference!
+

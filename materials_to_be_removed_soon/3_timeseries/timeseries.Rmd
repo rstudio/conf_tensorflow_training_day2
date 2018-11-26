@@ -1,0 +1,12 @@
+---
+title: 'Time series and sequence-to-sequence learning'
+author: "Kevin kuo"
+date: "10/16/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Representation learning

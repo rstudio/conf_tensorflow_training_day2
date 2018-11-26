@@ -1,0 +1,186 @@
+---
+title: "Class activation maps"
+output: html_notebook
+---
+  
+  
+```{r}
+library(keras)
+library(magick)
+```
+
+
+Now we'll use a different method - but with the same goal, find out which parts of a picture mattered to the network when making its "decision".
+
+## In a nutshell
+
+For a given input image, class activation maps take the output feature maps of a convolution layer and weigh every channel in that feature map by the gradient of the most probable class with respect to the channel.
+
+
+## Input images
+
+Here are 4 images for you to play with.
+
+```{r}
+# By mattbuck (category) - Own work by mattbuck., CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=20151244
+img_path <- "images/Bristol_Balloon_Fiesta_2009_MMB_06.jpg"
+
+# By GT1976 - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=70893756
+# img_path <- "images/wachauer_radtage.jpg"
+
+# By Thomas Bresson - Own work, CC BY 4.0, https://commons.wikimedia.org/w/index.php?curid=47191548
+# img_path <- "images/2016-02-23_16-01-09_paris.jpg"
+
+# Isiwal/Wikimedia Commons/CC BY-SA 4.0 [CC BY-SA 4.0  (https://creativecommons.org/licenses/by-sa/4.0)], from Wikimedia Commons
+# img_path <- "images/21160528_Lofer_Khne_Yan-Lorenz-5943.jpg"
+```
+
+
+## Get predictions
+
+We will use VGG16 here:
+
+```{r}
+model <- application_vgg16()
+```
+
+Now, create a function to load the image.
+
+VGG will expect an input size of 224x224 pixels, and `imagenet_preprocess_input` should be used to get the image statistics right for the pretrained model (that we'll use as-is).
+
+```{r}
+img <- image_load(img_path, target_size = c(224, 224)) %>% 
+  image_to_array() %>% 
+  array_reshape(dim = c(1, 224, 224, 3)) %>% 
+  imagenet_preprocess_input()
+```
+
+What does the model predict? You can get a nicely formatted summary using `imagenet_decode_predictions` on the raw predictions.
+
+```{r}
+preds <- model %>% predict(img)
+imagenet_decode_predictions(preds, top = 3)[[1]]
+```
+
+
+## Get a heatmap
+
+We are now going to set up a graph of nodes we'll need to obtain the heatmap; later, we'll run the graph.
+Before we actually run it, all we're working with are tensors.
+Let's create them now.
+
+Firstly, we need a reference to the output tensor at the position that was found most probable in the prediction run. 
+
+```{r}
+max_pred <- which.max(preds[1, ])
+max_pred
+
+image_output <- model$output[, max_pred]
+image_output$shape # should be (?,)
+```
+
+
+Further, we need the output feature map of the `block5_conv3` layer, the last convolutional layer in VGG16.
+Here we get the layer...
+
+```{r}
+last_conv_layer <- model %>% get_layer("block5_conv3")
+```
+
+... and this is the layer's output tensor.
+
+```{r}
+last_conv_layer_output <- last_conv_layer$output
+last_conv_layer_output$shape # should be (?, 14, 14, 512)
+```
+
+
+Now we set up to get the gradients of the most probable class (`image_output`, above) with respect to the last conv layer's output (`last_conv_layer_output`).
+
+```{r}
+grads <- k_gradients(image_output, last_conv_layer_output)[[1]]
+```
+
+We average the gradients over the batch dimension as well as the width and height dimensions, so we end up with one value per channel.
+
+```{r}
+pooled_grads <- k_mean(grads, axis = c(1, 2, 3))
+pooled_grads$shape # should be (512,)
+```
+
+Now we create a function that will run this graph.
+Its parameters are the input tensor to be fed to the model, and it shall return the averaged gradients as well as the output from the last conv layer for this image.
+
+```{r}
+iterate <- k_function(
+  list(model$input),
+  list(pooled_grads, last_conv_layer_output[1, , , ])
+)
+```
+
+Now we actually run the graph! We feed the image to the `iterate` function in a list.
+After this call, you can actually inspect values (not just tensors).
+
+```{r}
+c(pooled_grads_value, conv_layer_output_value) %<-% iterate(list(img))
+```
+
+Now comes the basic step of the algorithm. We multiply each channel in the feature map array
+by "how important this channel is" with regard to the most probable class.
+
+```{r}
+for (i in 1:512) {
+  conv_layer_output_value[ , , i] <- 
+    conv_layer_output_value[ , , i] * pooled_grads_value[i] 
+}
+```
+
+Then, we average over the channels dimension to obtain our heatmap:
+
+```{r}
+heatmap <- apply(conv_layer_output_value, c(1,2), mean)
+```
+
+
+Now we can save the heatmap...
+
+```{r}
+minval <- min(heatmap)
+maxval <- max(heatmap)
+heatmap <- pmax(heatmap, 0) 
+heatmap <- heatmap / max(heatmap)
+
+write_heatmap <- function(heatmap, filename, width = 224, height = 224,
+                          bg = "white", col = terrain.colors(12)) {
+  png(filename, width = width, height = height, bg = bg)
+  op = par(mar = c(0,0,0,0))
+  on.exit({par(op); dev.off()}, add = TRUE)
+  rotate <- function(x) t(apply(x, 2, rev))
+  image(rotate(heatmap), axes = FALSE, asp = 1, col = col)
+}
+write_heatmap(heatmap, "/tmp/heatmap.png") 
+```
+
+
+... and blend it with the original image:
+
+```{r}
+library(magick) 
+library(viridis) 
+# Read the original elephant image and it's geometry
+image <- image_read(img_path)
+info <- image_info(image) 
+geometry <- sprintf("%dx%d!", info$width, info$height) 
+# Create a blended / transparent version of the heatmap image
+pal <- col2rgb(viridis(20), alpha = TRUE) 
+alpha <- floor(seq(0, 255, length = ncol(pal))) 
+pal_col <- rgb(t(pal), alpha = alpha, maxColorValue = 255)
+write_heatmap(heatmap, "/tmp/overlay.png", 
+              width = 14, height = 14, bg = NA, col = pal_col) 
+# Overlay the heatmap
+image_read("/tmp/overlay.png") %>% 
+  image_resize(geometry, filter = "quadratic") %>% 
+  image_composite(image, operator = "blend", compose_args = "20") %>%
+  plot() 
+```
+
