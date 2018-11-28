@@ -9,8 +9,10 @@ output:
       highlightStyle: solarized
       highlightLines: true
       countIncrementalSlides: false
-    css: theme/rstudio.css
-    ratio: "16:9"
+      ratio: '16:9'
+    css: 
+    - theme/rstudio.css
+    - theme/custom.css
 
 
 

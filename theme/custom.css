@@ -28,7 +28,7 @@
 }
 
 .rstudio-slide {
-  background-image: url('images/background-white-4x3.png');
+  background-image: url('images/background-white.png');
   background-size: contain;
   padding-left: 200px;
   padding-top: 0;
@@ -36,12 +36,12 @@
 }
 
 .title-slide {
-  background-image: url('images/title-4x3.png');
+  background-image: url('images/title.png');
   background-size: contain;
 }
 
 .rstudio-fill-slide {
-  background-image: url('images/background-blue-4x3.png');
+  background-image: url('images/background-blue.png');
   background-size: contain;
   padding-left: 0;
   padding-top: 0;
@@ -74,8 +74,6 @@
 
 .white-slide {
   background-color: #fff;
-  padding-left: 5%;
-  padding-left: 5%;
 }
 
 
