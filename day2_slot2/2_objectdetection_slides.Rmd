@@ -1,0 +1,187 @@
+---
+title: "Object detection"
+author: "Sigrid Keydana"
+date: "rstudio::conf 2019"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: solarized
+      highlightLines: true
+      countIncrementalSlides: false
+    css: xaringan-themer.css
+
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+```{r xaringan-themer, include = FALSE}
+library(xaringanthemer)
+mono_accent(
+  base_color = "#006d6f"
+)
+```
+
+```{r, load_refs, echo=FALSE, cache=FALSE}
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear", 
+           cite.style = 'alphabetic', 
+           style = "markdown",
+           hyperlink = FALSE, 
+           dashed = FALSE)
+bib <- ReadBib("./bibliography.bib", check = FALSE)
+```
+
+# Topics
+
+- Road to object detection: Single-object classification and localization
+
+- Introduction to multiple-object detection
+
+- Basic object detection techniques, as used in SSD (__Single-Shot Multibox Detector__)
+
+---
+class: inverse, middle, center
+
+# Road to object detection
+
+---
+# Single-object classification and localization
+
+- Mix of recap (if you've participated in yesterday's workshop) and new topics
+
+- Partly demo, partly exercise
+
+- We'll also look at the dataset and preprocessing required for this session
+
+
+---
+# PASCAL Visual Object Classes (VOC) challenges and datasets
+
+- Challenges (2005-2012) included
+ - classification (presence/absence for each object class)
+ - object detection (same as above, plus localization)
+ - class segmentation
+ - "person layout"
+ 
+- We'll use the training set from the [2007 challenge](http://host.robots.ox.ac.uk/pascal/VOC/voc2007/index.html)
+
+- Number of object classes in 2007: 20
+
+- Number of training images:
+
+- We focus on concepts and the how-to, not accuracy
+
+---
+# Object detection examples
+
+![](images/birds_scaled.png)
+
+![](images/bicycles_scaled.png)
+
+
+---
+# How do you learn bounding boxes?
+
+- Can be framed as __regression problem__
+
+ - often trained with mean absolute error
+
+- Predict pixel coordinates of box corners (`x_left`, `y_top`, `x_right`, `y_bottom`)
+
+- Relevant metric is __Intersection over Union__ (__IOU__), also known as Jaccard index<sup>1</sup>
+
+
+.footnote[[1] Image source: Wikipedia.]
+
+![](images/iou.png)
+
+---
+# Demo/exercise: Single-object classification and localization
+
+- Notebook: classification_localization.png
+
+- Quiz: 2_objectdetection_quizzes.Rmd
+
+
+
+---
+# Using entity embeddings to improve accuracy
+
+- Used by the winning team on the Kaggle Rossmann Sales prediction challenge<sup>1</sup>
+
+- Better accuracy compared to one-hot-encoding is not guaranteed
+
+- Probably most effective with _high-dimensional_ data that have a _significant relationship_ to the target variable
+
+
+
+
+
+---
+class: inverse, middle, center
+
+# Introduction to multiple-object detection
+
+
+---
+# How do we extend this to detect multiple objects?
+
+- Sliding windows approaches
+ - Train network, run sequentially on image patches 
+ - May actually run sliding windows synchronously (see _Overfeat_ below)
+
+- Region proposal apporaches (2-step)
+ - Step 1: Some algorithm proposes interesting regions
+ - Step 2: Another algorithm (a convnet) classifies the regions and refines localization
+
+- Single-shot detectors (YOLO, SSD)
+ - Perform detection, classification and localization in one step
+
+---
+# Sliding windows done synchronously
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "SermanetEZMFL13", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[[1] cf. Sermanet, P, D. Eigen, X. Zhang, et al. (2013). "OverFeat: Integrated Recognition, Localization and Detection using Convolutional Networks". ]
+
+
+![](images/overfeat.png)
+
+---
+# Region proposal approaches
+
+- R-CNN<sup>1</sup>: Uses non-DL algorithm to select interesting regions, then applies CNN to all identified regions sequentially
+
+- Fast R-CNN<sup>2</sup>: Uses non-DL algorithm to select interesting regions, then classifies all regions in one pass
+
+- Faster R-CNN<sup>3</sup>: Uses a convnet for region proposal (_Region proposal network_), then classifies all regions in one pass
+
+
+
+---
+class: inverse, middle, center
+
+# Basic object detection techniques, as used in SSD
+
+
+
+
+
+
+---
+# Wrapup/feedback
+
+
+
+---
+# References
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib)
+```
