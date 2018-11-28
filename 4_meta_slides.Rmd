@@ -1,28 +1,37 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Representation learning, interpretability, and uncertainty</title>
-    <meta charset="utf-8">
-    <meta name="author" content="Sigrid Keydana" />
-    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
-  </head>
-  <body>
-    <textarea id="source">
-class: center, middle, inverse, title-slide
+---
+title: "Representation learning, interpretability, and uncertainty"
+author: "Sigrid Keydana"
+date: "rstudio::conf 2019"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: solarized
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+    css: 
+    - theme/rstudio.css
+  #  - theme/custom.css
 
-# Representation learning, interpretability, and uncertainty
-## A pick of ‘meta’ topics in current DL
-### Sigrid Keydana
-### rstudio::conf 2019
 
 ---
 
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
 
 
-
-
-
-
+```{r, load_refs, echo=FALSE, cache=FALSE}
+library(RefManageR)
+BibOptions(check.entries = FALSE, 
+           bib.style = "authoryear", 
+           cite.style = 'alphabetic', 
+           style = "markdown",
+           hyperlink = FALSE, 
+           dashed = FALSE)
+bib <- ReadBib("4_meta/bibliography.bib", check = FALSE)
+```
 
 # Representation learning, interpretability, and uncertainty
 
@@ -38,7 +47,7 @@ What do these topics have in common?
 
 - We just present techniques to choose from / adapt / extend ...
 
-&lt;br /&gt;
+<br />
 
 --
 
@@ -56,13 +65,15 @@ class: inverse, middle, center
 # Representation matters.
 
 
-Your task: Separate the green triangles from the blue circles.&lt;sup&gt;1&lt;/sup&gt;
+Your task: Separate the green triangles from the blue circles.<sup>1</sup>
 
 
-![](images/representationmatters.png)
+![](4_meta/images/representationmatters.png)
 
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "authoryear"))
+```
 
 .footnote[[1] Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.]
 
@@ -70,7 +81,7 @@ Your task: Separate the green triangles from the blue circles.&lt;sup&gt;1&lt;/s
 
 # What makes one representation better than another?
 
-Good representations make a subsequent prediction task easier.&lt;sup&gt;1, 2&lt;/sup&gt;
+Good representations make a subsequent prediction task easier.<sup>1, 2</sup>
 
 Examples: 
 
@@ -79,7 +90,10 @@ Examples:
 - use relations learned on one domain to infer relationships on another
 
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "authoryear"))
+c2 <- Citet(bib, key = "5538", .opts = list(cite.style = "authoryear"))
+```
 
 .footnote[[1] See chapter 15 in Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.
 
@@ -88,13 +102,15 @@ Examples:
 ---
 # Example: Zero-shot learning with DeVise
 
-- Frome et al.&lt;sup&gt;1&lt;/sup&gt; trained an image classification model to predict label embeddings (that had been learned in an unsupervised manner) instead of the labels themselves
+- Frome et al.<sup>1</sup> trained an image classification model to predict label embeddings (that had been learned in an unsupervised manner) instead of the labels themselves
 
 - This allows for meaningful classification of objects not encountered before
 
-![](images/devise.png)
+![](4_meta/images/devise.png)
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "FromeCSBDRM13", .opts = list(cite.style = "authoryear"))
+```
 
 .footnote[[1] Frome, A., G. S. Corrado, J. Shlens, et al. (2013). DeViSE: A Deep Visual-Semantic Embedding Model.]
 
@@ -117,11 +133,13 @@ Examples:
 ---
 # Example: Disentanglement
 
-- Radford et al.&lt;sup&gt;1&lt;/sup&gt; showed they could perform word-vector-like arithmetic manipulations on the space learned by a DCGAN (deep generative adversarial network):
+- Radford et al.<sup>1</sup> showed they could perform word-vector-like arithmetic manipulations on the space learned by a DCGAN (deep generative adversarial network):
 
-![](images/glasses_scaled.png)
+![](4_meta/images/glasses_scaled.png)
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "RadfordMC15", .opts = list(cite.style = "authoryear"))
+```
 
 .footnote[[1] Radford, A, L. Metz and S. Chintala (2015). Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks.]
 
@@ -138,7 +156,7 @@ Besides improving prediction, latent spaces (resp. learned distributions) also f
 
 --
 
-&lt;br /&gt;
+<br />
 
 Let's see an example!
 
@@ -147,7 +165,7 @@ Let's see an example!
 # Variational autoencoders (VAEs)
 
 
-![](images/dpkingmavae_scaled.png)
+![](4_meta/images/dpkingmavae_scaled.png)
 
 
 ---
@@ -158,17 +176,17 @@ Let's see an example!
 
 - Decoder is a network
 
-- Latent space represents mean and variance of an approximating distribution `\(q(z)\)`
+- Latent space represents mean and variance of an approximating distribution $q(z)$
 
 - Latent space is regularized by a prior, often an isotropic Gaussian
 
 - Learning objective is a tradeoff between faithful input reconstruction and conforming to that regularizing prior:
 
-&lt;br /&gt;
+<br />
 
 Minimize: Evidence lower bound (ELBO)
 
-`$$ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$`
+$$ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$
 
 ---
 # VAE variants
@@ -181,14 +199,14 @@ VAEs learning to minimize the __ELBO__ may:
 
 - tend to overfit the data
 
-__InfoVAE__ and subtypes ( `\(\beta\)` -VAE, MMD-VAE)
+__InfoVAE__ and subtypes ( $\beta$ -VAE, MMD-VAE)
 
 - are designed to learn more meaningful features
 
 - e.g. by maximizing __mutual information__ between latent space prior and posterior
 
 
--- 
+<br />
 
 We'll see a subtype (__MMD-VAE__) soon. But before, we need some background on
 
@@ -224,11 +242,11 @@ class: inverse, middle, center
 
 
 ---
-
 # Eager execution exercise
 
-- notebook: [eager_intro.Rmd](../eager_intro.Rmd)
-- exercise: [4_meta_quizzes.Rmd](../4_meta_quizzes.Rmd)
+- notebook: [eager_intro.Rmd](4_meta/eager_intro.Rmd)
+
+- exercise: [4_meta_quizzes.Rmd](4_meta/4_meta_quizzes.Rmd)
 
 
 ---
@@ -241,7 +259,7 @@ class: inverse, middle, center
 
 # Representation learning with MMD-VAE
 
-- Idea described in _InfoVAE: Information Maximizing Variational Autoencoders_&lt;sup&gt;1&lt;/sup&gt;
+- Idea described in _InfoVAE: Information Maximizing Variational Autoencoders_<sup>1</sup>
 
 - Read up later here: [Representation learning with MMD-VAE](https://blogs.rstudio.com/tensorflow/posts/2018-10-22-mmd-vae)
 
@@ -249,14 +267,16 @@ class: inverse, middle, center
 
 - We'll take a bird's view here, not going into every detail
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "ZhaoSE17b", .opts = list(cite.style = "authoryear"))
+```
 
 .footnote[[1] cf. Zhao, S, J. Song and S. Ermon (2017). InfoVAE: Information Maximizing Variational Autoencoders.]
 
 ---
 #### Task: learn a latent space on Fashion-MNIST (https://github.com/zalandoresearch/fashion-mnist)
 
-![](images/embedding.gif)
+![](4_meta/images/embedding.gif)
 
 
 
@@ -265,8 +285,7 @@ class: inverse, middle, center
 
 We use `tfdatasets` to stream the data.
 
-
-```r
+```{r, eval=FALSE}
 library(keras)
 use_implementation("tensorflow")
 library(tensorflow)
@@ -274,18 +293,18 @@ tfe_enable_eager_execution(device_policy = "silent")
 
 library(tfdatasets) 
 
-fashion &lt;- dataset_fashion_mnist()
-c(train_images, train_labels) %&lt;-% fashion$train
-c(test_images, test_labels) %&lt;-% fashion$test
+fashion <- dataset_fashion_mnist()
+c(train_images, train_labels) %<-% fashion$train
+c(test_images, test_labels) %<-% fashion$test
 
-train_x &lt;- train_images %&gt;% `/`(255) %&gt;% k_reshape(c(60000, 28, 28, 1))
-test_x &lt;- test_images %&gt;% `/`(255) %&gt;% k_reshape(c(10000, 28, 28, 1))
+train_x <- train_images %>% `/`(255) %>% k_reshape(c(60000, 28, 28, 1))
+test_x <- test_images %>% `/`(255) %>% k_reshape(c(10000, 28, 28, 1))
 
-buffer_size &lt;- 60000
-batch_size &lt;- 100
-*train_dataset &lt;- tensor_slices_dataset(train_x) %&gt;%
-*  dataset_shuffle(buffer_size) %&gt;%
-*  dataset_batch(batch_size)
+buffer_size <- 60000
+batch_size <- 100
+{{train_dataset <- tensor_slices_dataset(train_x) %>%
+  dataset_shuffle(buffer_size) %>%
+  dataset_batch(batch_size)}}
 ```
 
 ---
@@ -293,27 +312,26 @@ batch_size &lt;- 100
 
 The encoder actually is a downsampling convolutional encoder:
 
-
-```r
-encoder_model &lt;- function(name = NULL) {
-*  keras_model_custom(name = name, function(self) {
+```{r, eval=FALSE}
+encoder_model <- function(name = NULL) {
+  {{keras_model_custom(name = name, function(self) {}}
     
-*    self$conv1 &lt;- 
-*      layer_conv_2d(             
+{{    self$conv1 <- 
+      layer_conv_2d(}}             
         # [...]
       )
-     self$conv2 &lt;-
+     self$conv2 <-
       layer_conv_2d(
         # [...]
       )
-    self$flatten &lt;- layer_flatten()
-*   self$dense &lt;- layer_dense(units = latent_dim)  
+    self$flatten <- layer_flatten()
+   {{self$dense <- layer_dense(units = latent_dim)}}  
     
     function (x, mask = NULL) {
-      x %&gt;%
-        self$conv1() %&gt;%
-        self$conv2() %&gt;%
-        self$flatten() %&gt;%
+      x %>%
+        self$conv1() %>%
+        self$conv2() %>%
+        self$flatten() %>%
         self$dense()
     }})}
 ```
@@ -324,25 +342,24 @@ encoder_model &lt;- function(name = NULL) {
 
 The decoder counteracts downsampling by upsampling again, starting from randomly drawn values from latent space:
 
-
-```r
-decoder_model &lt;- function(name = NULL) {
+```{r, eval=FALSE}
+decoder_model <- function(name = NULL) {
   
   keras_model_custom(name = name, function(self) {
-    self$dense &lt;- layer_dense(units = 7 * 7 * 32, activation = "relu")
-    self$reshape &lt;- layer_reshape(target_shape = c(7, 7, 32))
-*    self$deconv1 &lt;- # first of 3 up-convolutions
+    self$dense <- layer_dense(units = 7 * 7 * 32, activation = "relu")
+    self$reshape <- layer_reshape(target_shape = c(7, 7, 32))
+{{    self$deconv1 <-}} # first of 3 up-convolutions
       layer_conv_2d_transpose(
         # [...]
       )
-*  self$deconv2 &lt;-  # [...]  another conv_2d_transpose, filters=32
-*  self$deconv3 &lt;-  # [...]  another conv_2d_transpose, filters=1
+ {{ self$deconv2 <- }} # [...]  another conv_2d_transpose, filters=32
+ {{ self$deconv3 <- }} # [...]  another conv_2d_transpose, filters=1
     function (x, mask = NULL) {
-      x %&gt;%
-        self$dense() %&gt;%
-        self$reshape() %&gt;%
-        self$deconv1() %&gt;%
-        self$deconv2() %&gt;%
+      x %>%
+        self$dense() %>%
+        self$reshape() %>%
+        self$deconv1() %>%
+        self$deconv2() %>%
         self$deconv3()
     }})}
 ```
@@ -354,33 +371,32 @@ decoder_model &lt;- function(name = NULL) {
 
 - Concretely, similarity between distributions is estimated using a _kernel_, such as the Gaussian kernel
 
-`$$k(z,z')=\frac{e^{||z-z'||}}{2\sigma^2}$$`
+$$k(z,z')=\frac{e^{||z-z'||}}{2\sigma^2}$$
 
 - The idea then is:
 
-&lt;br /&gt;
+<br />
 
 If two distributions are identical, the average __within-distribution__ similarity should be identical to the average __between-distributions__ similarity:
 
-`$$MMD(p(z)||q(z))=E_{p(z),p(z')}[k(z,z')]+E_{q(z),q(z')}[k(z,z')]−2E_{p(z),q(z')}[k(z,z')]$$`
+$$MMD(p(z)||q(z))=E_{p(z),p(z')}[k(z,z')]+E_{q(z),q(z')}[k(z,z')]−2E_{p(z),q(z')}[k(z,z')]$$
 
 ---
 # MMD-VAE, main steps (4): MMD loss (code)
 
 Implementing this loss amounts to just a few lines of code:
 
-
-```r
-compute_kernel &lt;- function(x, y) {
+```{r, eval=FALSE}
+compute_kernel <- function(x, y) {
   # here we use a Gaussian kernel
   # [...]
 }
 
-compute_mmd &lt;- function(x, y, sigma_sqr = 1) {
+compute_mmd <- function(x, y, sigma_sqr = 1) {
   
-  x_kernel &lt;- compute_kernel(x, x)
-  y_kernel &lt;- compute_kernel(y, y)
-  xy_kernel &lt;- compute_kernel(x, y)
+  x_kernel <- compute_kernel(x, x)
+  y_kernel <- compute_kernel(y, y)
+  xy_kernel <- compute_kernel(x, y)
   k_mean(x_kernel) + k_mean(y_kernel) - 2 * k_mean(xy_kernel)
   
 }
@@ -390,23 +406,22 @@ compute_mmd &lt;- function(x, y, sigma_sqr = 1) {
 ---
 # MMD-VAE, main steps (5): training loop
 
-
-```r
+```{r, eval=FALSE}
 for (epoch in seq_len(num_epochs)) {
   
-  iter &lt;- make_iterator_one_shot(train_dataset)
+  iter <- make_iterator_one_shot(train_dataset)
   until_out_of_range({
     
-    x &lt;-  iterator_get_next(iter)
+    x <-  iterator_get_next(iter)
     with(tf$GradientTape(persistent = TRUE) %as% tape, {
       
-      mean &lt;- encoder(x)
-      preds &lt;- decoder(mean)
-      true_samples &lt;- k_random_normal(
+      mean <- encoder(x)
+      preds <- decoder(mean)
+      true_samples <- k_random_normal(
         shape = c(batch_size, latent_dim), dtype = tf$float64)
-*    loss_mmd &lt;- compute_mmd(true_samples, mean)
-*    loss_nll &lt;- k_mean(k_square(x - preds))
-*    loss &lt;- loss_nll + loss_mmd
+    {{loss_mmd <- compute_mmd(true_samples, mean)
+    loss_nll <- k_mean(k_square(x - preds))
+    loss <- loss_nll + loss_mmd}}
     })
     
     #[...] here come the usual lines for gradient calculation/application
@@ -421,7 +436,7 @@ for (epoch in seq_len(num_epochs)) {
 
 Here are images generated from (unordered) random samples:
 
-![](images/mmd_clothes_epoch_50.png)
+![](4_meta/images/mmd_clothes_epoch_50.png)
 
 
 ---
@@ -429,20 +444,21 @@ Here are images generated from (unordered) random samples:
 
 And here we see how the different types of clothing cluster in latent space.
 
-![](images/mmd_latentspace_epoch_50.png)
+![](4_meta/images/mmd_latentspace_epoch_50.png)
 
 ---
 # MMD-VAE: Interpolations
 
 (Drum roll:) Here finally we see clothes "morphing into each other" when drawing samples from an evenly spaced grid in latent space.
 
-![](images/mmd_grid_epoch_50.png)
+![](4_meta/images/mmd_grid_epoch_50.png)
 
 
 ---
 # Variational autoencoders: Exercise
 
-- exercise: [4_meta_quizzes.Rmd](4_meta_quizzes.Rmd)
+
+Exercise: [4_meta_quizzes.Rmd](4_meta/4_meta_quizzes.Rmd)
 
 
 ---
@@ -461,42 +477,42 @@ You will see terminology distinguishing between
 
 - _global_ and _local_ post-hoc explanations
 
-&lt;br /&gt;
 
 __But:__
 
-- No technique is interpretable _per se_ (think lots of - possibly collinear - predictors in a linear regression)&lt;sup&gt;1&lt;/sup&gt;
+- No technique is interpretable _per se_ (think lots of - possibly collinear - predictors in a linear regression)<sup>1</sup>
 
 - model-agnostic interpretation tools are models themselves (and thus, have their model-specific assumptions)
 
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Lipton16a", .opts = list(cite.style = "authoryear"))
+```
 
 
 .footnote[[1] Lipton, Z. C. (2016). "The Mythos of Model Interpretability". ]
 
 
 ---
-# LIME&lt;sup&gt;1&lt;/sup&gt;
+# LIME<sup>1</sup>
 
 LIME provides sparse linear approximations by 
 
 - permuting _interpretable features_ of a sample,
-
 - getting predictions,
-
 - weighing them by distance to the instance being explained, and 
-
 - learning a local decision boundary.
 
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "RibeiroSG16", .opts = list(cite.style = "authoryear"))
+```
 
 .footnote[[1] cf. Ribeiro, M. T, S. Singh and C. Guestrin (2016). Why Should I Trust You?: Explaining the Predictions of Any Classifier. ]
 
 
-.pull-left[![](images/lime1.png)]
-.pull-right[![](images/lime2.png)]
+.pull-left[![](4_meta/images/lime1.png)]
+.pull-right[![](4_meta/images/lime2.png)]
 
 ---
 # LIME on images
@@ -508,8 +524,8 @@ LIME provides sparse linear approximations by
 
 - We will thus resize images before passing them to LIME (and anyway the model will work with a resolution of 224x224)
 
-.pull-left[![](images/limecat1.png)]
-.pull-right[![](images/limecat2.png)]
+.pull-left[![](4_meta/images/limecat1.png)]
+.pull-right[![](4_meta/images/limecat2.png)]
 
 
 ---
@@ -517,27 +533,25 @@ LIME provides sparse linear approximations by
 
 We first create an _explainer_ using the `lime` factory function
 
-
-```r
+```{r, eval=FALSE}
 # the first argument is the path to the image
 # the second argument should indicate to LIME the type of model
 # the third argument is a preprocessing function we need to define
 
-explainer &lt;- lime(img_path, as_classifier(model, labels), image_prep)
+explainer <- lime(img_path, as_classifier(model, labels), image_prep)
 ```
 
-&lt;br /&gt;
+<br />
 
 And here's the preprocessing function that has to be passed to `lime`
 
-
-```r
-image_prep &lt;- function(x) {
-  arrays &lt;- lapply(x, function(path) {
-    img &lt;- image_load(path, target_size = c(224,224)) %&gt;%
+```{r, eval=FALSE}
+image_prep <- function(x) {
+  arrays <- lapply(x, function(path) {
+    img <- image_load(path, target_size = c(224,224)) %>%
       image_to_array()
-    img &lt;- img %&gt;%
-      array_reshape(c(1, dim(img))) %&gt;%
+    img <- img %>%
+      array_reshape(c(1, dim(img))) %>%
       imagenet_preprocess_input()
   })
   do.call(abind::abind, c(arrays, list(along = 1)))
@@ -550,18 +564,16 @@ image_prep &lt;- function(x) {
 
 Getting a prediction also allows for testing the preprocessing function:
 
-
-```r
-preds &lt;- predict(model, image_prep(img_path))
+```{r, eval=FALSE}
+preds <- predict(model, image_prep(img_path))
 ```
 
-&lt;br /&gt;
+<br />
 
 Decode prediction:
 
-
-```r
-preds %&gt;% imagenet_decode_predictions()
+```{r, eval=FALSE}
+preds %>% imagenet_decode_predictions()
 ```
 
 ```
@@ -578,8 +590,7 @@ preds %&gt;% imagenet_decode_predictions()
 
 Try finding a good setting for the number of superpixels before actually getting an explanation:
 
-
-```r
+```{r, eval=FALSE}
 # weight parameter: How high should locality be weighted compared to colour.
 plot_superpixels(img_path, colour = "cyan",
                  n_superpixels = 50, weight = 10)
@@ -588,7 +599,7 @@ plot_superpixels(img_path, colour = "cyan",
                  n_superpixels = 200, weight = 10)
 ```
 
-![Using 50 vs. 200 superpixels](images/superpixels.png)
+![Using 50 vs. 200 superpixels](4_meta/images/superpixels.png)
 
 
 ---
@@ -596,9 +607,8 @@ plot_superpixels(img_path, colour = "cyan",
 
 Call `explain` with the path to the image, the `explainer`, and optional parameters:
 
-
-```r
-explanation &lt;- explain(
+```{r, eval=FALSE}
+explanation <- explain(
   img_path, 
   explainer,
   n_labels = 1, 
@@ -606,14 +616,13 @@ explanation &lt;- explain(
   n_superpixels = 200)
 ```
 
-
-```r
+```{r, eval=FALSE}
 plot_image_explanation(explanation, fill_alpha = 0.6)
 # display = "block" greys out unimportant areas
 plot_image_explanation(explanation, display = "block", block_col = "violet")
 ```
 
-![](images/explanations.png)
+![](4_meta/images/explanations.png)
 
 
 ---
@@ -630,7 +639,7 @@ For a given input image: Class activation maps take
 
 Meaning: How much would that __class probability__ _change_ if __that channel's activations__ were to change?
 
-&lt;br /&gt;
+<br />
 
 They then average these coefficients over the channels and obtain an _aggregate measure of importance_ __per spatial location__.
 
@@ -640,13 +649,12 @@ They then average these coefficients over the channels and obtain an _aggregate 
 
 Which is the most probable class?
 
+```{r, eval=FALSE}
+preds <- model %>% predict(img)
 
-```r
-preds &lt;- model %&gt;% predict(img)
+max_pred <- which.max(preds[1,])
 
-max_pred &lt;- which.max(preds[1,])
-
-image_output &lt;- model$output[, max_pred]
+image_output <- model$output[, max_pred]
 ```
 
 We will want to compute this class output's gradient with respect to the activations of all channels in the last conv layer.
@@ -656,11 +664,10 @@ We will want to compute this class output's gradient with respect to the activat
 
 We now get a reference to the output tensor of the last conv layer.
 
+```{r, eval=FALSE}
+last_conv_layer <- model %>% get_layer("block5_conv3")
 
-```r
-last_conv_layer &lt;- model %&gt;% get_layer("block5_conv3")
-
-last_conv_layer_output &lt;- last_conv_layer$output
+last_conv_layer_output <- last_conv_layer$output
 ```
 
 These are the activations w.r.t. which we want to compute the class probability's gradient.
@@ -671,18 +678,16 @@ These are the activations w.r.t. which we want to compute the class probability'
 
 Now we build a little graph to fetch and average the gradients: 
 
-
-```r
-grads &lt;- k_gradients(image_output, last_conv_layer_output)[[1]]
+```{r, eval=FALSE}
+grads <- k_gradients(image_output, last_conv_layer_output)[[1]]
 # average gradients over all but the channel dimension
-pooled_grads &lt;- k_mean(grads, axis = c(1, 2, 3))
+pooled_grads <- k_mean(grads, axis = c(1, 2, 3))
 ```
 
 We also need a function to run this graph...
 
-
-```r
-iterate &lt;- k_function(
+```{r, eval=FALSE}
+iterate <- k_function(
   list(model$input),
   list(pooled_grads, last_conv_layer_output[1, , , ])
 )
@@ -690,12 +695,11 @@ iterate &lt;- k_function(
 
 And now we can actually run it!
 
-
-```r
-c(pooled_grads_value, conv_layer_output_value) %&lt;-% iterate(list(img))
+```{r, eval=FALSE}
+c(pooled_grads_value, conv_layer_output_value) %<-% iterate(list(img))
 ```
 
-&lt;br /&gt;
+<br />
 [BTW: You're right that this would be easier with eager execution.]
 
 ---
@@ -703,10 +707,9 @@ c(pooled_grads_value, conv_layer_output_value) %&lt;-% iterate(list(img))
 
 This upweights the channels that have high impact on the classification.
 
-
-```r
+```{r, eval=FALSE}
 for (i in 1:512) {
-  conv_layer_output_value[ , , i] &lt;- 
+  conv_layer_output_value[ , , i] <- 
     conv_layer_output_value[ , , i] * pooled_grads_value[i] 
 }
 ```
@@ -714,15 +717,14 @@ for (i in 1:512) {
 Averaging over the channels dimension yields the heatmap:
 
 
-
-```r
-heatmap &lt;- apply(conv_layer_output_value, c(1,2), mean)
+```{r, eval=FALSE}
+heatmap <- apply(conv_layer_output_value, c(1,2), mean)
 ```
 
 ---
 # CAM (5): Heatmap (overlayed over image)
 
-![](images/cam.png)
+![](4_meta/images/cam.png)
 
 
 ---
@@ -730,23 +732,27 @@ heatmap &lt;- apply(conv_layer_output_value, c(1,2), mean)
 
 The notebooks listed are for later reference; they are not needed for this exercise.
 
-- notebook: [lime.Rmd](lime.Rmd) 
-- notebook: [class_activation_maps.Rmd](class_activation_maps.Rmd) 
-- exercise: [4_meta_quizzes.Rmd](4_meta_quizzes.Rmd)
+- notebook: [lime.Rmd](4_meta/lime.Rmd) 
+
+- notebook: [class_activation_maps.Rmd](4_meta/class_activation_maps.Rmd) 
+
+- exercise: [4_meta_quizzes.Rmd](4_meta/4_meta_quizzes.Rmd)
 
 ---
 # Interpretability, a citation to go ... 
 
 
-&lt;br /&gt;
+<br />
 
-&gt; However, it is
+> However, it is
 fair to say that most work in explainable artificial intelligence uses only the researchers’
 intuition of what constitutes a ‘good’ explanation.  
 
-&gt; There exists vast and valuable bodies of research in philosophy, psychology, and cognitive science of how people define, generate, select, evaluate, and present explanations, which argues that people employ certain cognitive  biases  and  social  expectations  towards  the  explanation  process.&lt;sup&gt;1&lt;/sup&gt;
+> There exists vast and valuable bodies of research in philosophy, psychology, and cognitive science of how people define, generate, select, evaluate, and present explanations, which argues that people employ certain cognitive  biases  and  social  expectations  towards  the  explanation  process.<sup>1</sup>
 
-
+```{r, echo=FALSE, results=FALSE}
+c2 <- Citet(bib, key = "Miller17a", .opts = list(cite.style = "authoryear"))
+```
 
 
 .footnote[[1]Miller, T. (2017). Explanation in Artificial Intelligence: Insights from the Social Sciences.]
@@ -759,14 +765,16 @@ class: inverse, middle, center
 ---
 # Why uncertainty estimates?
 
-- If we can _quantify_ network uncertainty, we can take appropriate measures (like, have humans inspect uncertain cases)&lt;sup&gt;1&lt;/sup&gt;
+- If we can _quantify_ network uncertainty, we can take appropriate measures (like, have humans inspect uncertain cases)<sup>1</sup>
 
 - If we can _qualify_ network uncertainty (as in, e.g., reducible vs. irreducible), we can take appropriate counteractions (e.g., factoring in error margins)
 
-![Figure from Leibig et al.](images/retinopathy_scaled.png)
+![Figure from Leibig et al.](4_meta/images/retinopathy_scaled.png)
 
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Leibig084210", .opts = list(cite.style = "authoryear"))
+```
 
 
 .footnote[[1] cf. Leibig, C, V. Allken, M. Seckin Ayhan, et al. (2017). Leveraging uncertainty information from deep neural networks for disease detection.]
@@ -774,13 +782,17 @@ class: inverse, middle, center
 ---
 # Uncertainty estimates through Bayesian deep learning
 
-- Apply dropout at test time (Gal &amp; Gharahmani 2016&lt;sup&gt;1&lt;/sup&gt;)
+- Apply dropout at test time (Gal & Gharahmani 2016<sup>1</sup>)
 
-- Have the network learn the dropout rate (Gal et al. 2017&lt;sup&gt;2&lt;/sup&gt;, Kendall &amp; Gal 2017&lt;sup&gt;3&lt;/sup&gt;)
+- Have the network learn the dropout rate (Gal et al. 2017<sup>2</sup>, Kendall & Gal 2017<sup>3</sup>)
 
 - We are going to look at the latter approach
 
-
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "GalG16", .opts = list(cite.style = "authoryear"))
+c2 <- Citet(bib, key = "2017arXiv170507832G", .opts = list(cite.style = "authoryear"))
+c3 <- Citet(bib, key = "NIPS2017_7141", .opts = list(cite.style = "authoryear"))
+```
 
 
 .footnote[
@@ -797,13 +809,18 @@ class: inverse, middle, center
 - Epistemic: What the model doesn't know 
 
  - reducible by gathering more data
+ 
  - should depend on how much data we've seen from a certain _range_ of the distribution
+ 
  - should help guard us in case of train-test distribution  differences
+
 
 - Aleatoric: Variations due to sampling/measurement process
 
  - irreducible
+ 
  - should help guard us against being over-confident in every single prediction
+ 
  - with e.g. image classification, could occur if ground truth class is highly obfuscated, or scene illumination is very weak
 
 
@@ -817,8 +834,11 @@ class: inverse, middle, center
 
 - Consists of 4 parts: 
  - a layer wrapper, 
+ 
  - a two-outputs model,
+ 
  - a specific loss function, and
+ 
  - Monte Carlo prediction
 
 ---
@@ -826,10 +846,9 @@ class: inverse, middle, center
 
 The wrapper's purpose is to calculate the optimal dropout rate for the layer it wraps.
 
-
-```r
+```{r, eval=FALSE}
 # R6 wrapper class, a subclass of KerasWrapper
-ConcreteDropout &lt;- R6::R6Class("ConcreteDropout",
+ConcreteDropout <- R6::R6Class("ConcreteDropout",
   
   inherit = KerasWrapper,
   
@@ -838,10 +857,10 @@ ConcreteDropout &lt;- R6::R6Class("ConcreteDropout",
     initialize = function( # [...]
     
     build = function(input_shape) {
-*    self$p_logit &lt;- super$add_weight(# [...]
+    {{self$p_logit <- super$add_weight(}}# [...]
       # [...]
-      regularizer &lt;- k_sum(kernel_regularizer + dropout_regularizer)
-*    super$add_loss(regularizer)
+      regularizer <- k_sum(kernel_regularizer + dropout_regularizer)
+    {{super$add_loss(regularizer)}}
     },
     
     concrete_dropout = function(x) { # [...]
@@ -849,6 +868,7 @@ ConcreteDropout &lt;- R6::R6Class("ConcreteDropout",
     call = function(x, mask = NULL, training = NULL) {# [...]
   )
 )
+
 ```
 
 
@@ -857,15 +877,14 @@ ConcreteDropout &lt;- R6::R6Class("ConcreteDropout",
 
 This example has 3 hidden dense layers each wrapped with `ConcreteDropout`.
 
-
-```r
-output &lt;- input %&gt;% layer_concrete_dropout(
+```{r,eval=FALSE}
+output <- input %>% layer_concrete_dropout(
   layer = layer_dense(units = hidden_dim, activation = "relu"),
   # [...]
-  ) %&gt;% layer_concrete_dropout(
+  ) %>% layer_concrete_dropout(
   layer = layer_dense(units = hidden_dim, activation = "relu"),
   # [...]
-  ) %&gt;% layer_concrete_dropout(
+  ) %>% layer_concrete_dropout(
   layer = layer_dense(units = hidden_dim, activation = "relu"),
   # [...]
 )
@@ -876,19 +895,18 @@ output &lt;- input %&gt;% layer_concrete_dropout(
 
 The model outputs not just the _predictive (conditional) mean_, but also the _predictive variance_:
 
-
-```r
-mean &lt;- output %&gt;% layer_concrete_dropout(
+```{r, eval=FALSE}
+mean <- output %>% layer_concrete_dropout(
   layer = layer_dense(units = output_dim),
   # [...]
 )
 
-log_var &lt;- output %&gt;% layer_concrete_dropout(
+log_var <- output %>% layer_concrete_dropout(
   layer_dense(units = output_dim),
   # [...]
 )
-output &lt;- layer_concatenate(list(mean, log_var))
-model &lt;- keras_model(input, output)
+output <- layer_concatenate(list(mean, log_var))
+model <- keras_model(input, output)
 ```
 
 - This means we can learn _different variances for different data points_. 
@@ -900,29 +918,28 @@ model &lt;- keras_model(input, output)
 
 Instead of mean squared error we use a cost function that does not treat all estimates alike:
 
-`$$\frac{1}{N} \sum_i{\frac{1}{2 \hat{\sigma}^2_i} \ (\mathbf{y}_i - \mathbf{\hat{y}}_i)^2 + \frac{1}{2} log \ \hat{\sigma}^2_i}$$`
+$$\frac{1}{N} \sum_i{\frac{1}{2 \hat{\sigma}^2_i} \ (\mathbf{y}_i - \mathbf{\hat{y}}_i)^2 + \frac{1}{2} log \ \hat{\sigma}^2_i}$$
 
 In addition to the target vs. prediction check, this cost function contains two regularization terms: 
 
-- `\(\frac{1}{2 \hat{\sigma}^2_i}\)` downweights the high-uncertainty predictions in the loss function. The model is encouraged to indicate high uncertainty when its predictions are false.
+- $\frac{1}{2 \hat{\sigma}^2_i}$ downweights the high-uncertainty predictions in the loss function. The model is encouraged to indicate high uncertainty when its predictions are false.
 
-- `\(\frac{1}{2} log \ \hat{\sigma}^2_i\)` makes sure the network does not simply report high uncertainty everywhere.
+- $\frac{1}{2} log \ \hat{\sigma}^2_i$ makes sure the network does not simply report high uncertainty everywhere.
 
 ---
 # Heteroscedastic loss (2)
 
 R code (calculating with the log of the variance):
 
-
-```r
-heteroscedastic_loss &lt;- function(y_true, y_pred) {
-    mean &lt;- y_pred[, 1:output_dim]
-    log_var &lt;- y_pred[, (output_dim + 1):-1]
-    precision &lt;- k_exp(-log_var)
+```{r, eval=FALSE}
+heteroscedastic_loss <- function(y_true, y_pred) {
+    mean <- y_pred[, 1:output_dim]
+    log_var <- y_pred[, (output_dim + 1):-1]
+    precision <- k_exp(-log_var)
     k_sum(precision * (y_true - mean) ^ 2 + log_var, axis = 2)
 }
 
-model %&gt;% compile(
+model %>% compile(
   optimizer = "adam",
   loss = heteroscedastic_loss,
   metrics = c(custom_metric("heteroscedastic_loss", heteroscedastic_loss))
@@ -933,33 +950,30 @@ model %&gt;% compile(
 ---
 # Obtain uncertainty estimates (Monte Carlo)
 
-
-```r
-MC_samples &lt;- array(0, dim = c(num_MC_samples, n_val, 2 * output_dim))
+```{r, eval=FALSE}
+MC_samples <- array(0, dim = c(num_MC_samples, n_val, 2 * output_dim))
 for (k in 1:num_MC_samples) {
-  MC_samples[k, , ] &lt;- (model %&gt;% predict(X_val))
+  MC_samples[k, , ] <- (model %>% predict(X_val))
 }
 ```
 
 Epistemic uncertainty is calculated from the model's "mean" output:
 
-
-```r
-means &lt;- MC_samples[, , 1:output_dim] 
+```{r, eval=FALSE}
+means <- MC_samples[, , 1:output_dim] 
 # predictive mean (average over the MC samples)
-predictive_mean &lt;- apply(means, 2, mean) 
+predictive_mean <- apply(means, 2, mean) 
 # epistemic_uncertainty = variance of the "mean" component of the MC samples
-epistemic_uncertainty &lt;- apply(means, 2, var) 
+epistemic_uncertainty <- apply(means, 2, var) 
 ```
 
 
 While aleatoric uncertainty is calculated from the "variance" output:
 
-
-```r
+```{r, eval=FALSE}
 # aleatoric_uncertainty = mean of the "variance" component of the MC samples
-logvar &lt;- MC_samples[, , (output_dim + 1):dim(MC_samples)[3]]
-aleatoric_uncertainty &lt;- exp(colMeans(logvar))
+logvar <- MC_samples[, , (output_dim + 1):dim(MC_samples)[3]]
+aleatoric_uncertainty <- exp(colMeans(logvar))
 ```
 
 ---
@@ -967,7 +981,7 @@ aleatoric_uncertainty &lt;- exp(colMeans(logvar))
 
 Epistemic uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
 
-![](images/epistemic_1000.png)
+![](4_meta/images/epistemic_1000.png)
 
 Uncertainty is high in regions where the model has not seen many datapoints.
 
@@ -976,7 +990,7 @@ Uncertainty is high in regions where the model has not seen many datapoints.
 
 Aleatoric uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
 
-![](images/aleatoric_1000.png)
+![](4_meta/images/aleatoric_1000.png)
 
 The amount of data seen does not affect irreducible uncertainty.
 
@@ -985,7 +999,7 @@ The amount of data seen does not affect irreducible uncertainty.
 
 Overall predictive uncertainty on validation set (simulated data, x is Gaussian distributed, _train_n_ = 1000).
 
-![](images/overall_1000.png)
+![](4_meta/images/overall_1000.png)
 
 Both types of uncertainty add to yield the final predictive uncertainty.
 
@@ -998,117 +1012,21 @@ Both types of uncertainty add to yield the final predictive uncertainty.
 ---
 # References
 
-Bengio, Y, A. C. Courville and P. Vincent (2012). "Unsupervised
-Feature Learning and Deep Learning: A Review and New
-Perspectives". In: _CoRR_ abs/1206.5538. eprint: 1206.5538. URL:
-[http://arxiv.org/abs/1206.5538](http://arxiv.org/abs/1206.5538).
-
-Frome, A., G. S. Corrado, J. Shlens, et al. (2013). "DeViSE: A
-Deep Visual-Semantic Embedding Model". In: _NIPS_. , pp.
-2121-2129.
-
-Gal, Y. and Z. Ghahramani (2016). "Dropout as a Bayesian
-Approximation: Representing Model Uncertainty in Deep Learning".
-In: _Proceedings of the 33nd International Conference on Machine
-Learning, ICML 2016, New York City, NY, USA, June 19-24, 2016_. ,
-pp. 1050-1059. URL:
-[http://jmlr.org/proceedings/papers/v48/gal16.html](http://jmlr.org/proceedings/papers/v48/gal16.html).
-
-Gal, Y, J. Hron and A. Kendall (2017). "Concrete Dropout". In:
-_ArXiv e-prints_. arXiv: 1705.07832 [stat.ML].
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 1, end = 4)
+```
 
 ---
 # References (cont.)
 
-Goodfellow, I, Y. Bengio and A. Courville (2016). _Deep Learning_.
-MIT Press. URL:
-[http://www.deeplearningbook.org](http://www.deeplearningbook.org).
-
-Kendall, A. and Y. Gal (2017). "What Uncertainties Do We Need in
-Bayesian Deep Learning for Computer Vision?" In: _Advances in
-Neural Information Processing Systems 30_. Ed. by I. Guyon, U. V.
-Luxburg, S. Bengio, H. Wallach, R. Fergus, S. Vishwanathan and R.
-Garnett. Curran Associates, Inc, pp. 5574-5584. URL:
-[http://papers.nips.cc/paper/7141-what-uncertainties-do-we-need-in-bayesian-deep-learning-for-computer-vision.pdf](http://papers.nips.cc/paper/7141-what-uncertainties-do-we-need-in-bayesian-deep-learning-for-computer-vision.pdf).
-
-Leibig, C, V. Allken, M. Seckin Ayhan, et al. (2017). "Leveraging
-uncertainty information from deep neural networks for disease
-detection". In: _bioRxiv_. DOI:
-[10.1101/084210](https://doi.org/10.1101/084210). eprint:
-https://www.biorxiv.org/content/early/2017/10/18/084210.full.pdf.
-URL:
-[https://www.biorxiv.org/content/early/2017/10/18/084210](https://www.biorxiv.org/content/early/2017/10/18/084210).
-
-Lipton, Z. C. (2016). "The Mythos of Model Interpretability". In:
-_CoRR_ abs/1606.03490. eprint: 1606.03490. URL:
-[http://arxiv.org/abs/1606.03490](http://arxiv.org/abs/1606.03490).
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 5, end = 8)
+```
 
 ---
 # References (cont.)
 
-Miller, T. (2017). "Explanation in Artificial Intelligence:
-Insights from the Social Sciences". In: _CoRR_ abs/1706.07269.
-eprint: 1706.07269. URL:
-[http://arxiv.org/abs/1706.07269](http://arxiv.org/abs/1706.07269).
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 9, end = 12)
+```
 
-Radford, A, L. Metz and S. Chintala (2015). "Unsupervised
-Representation Learning with Deep Convolutional Generative
-Adversarial Networks". In: _CoRR_ abs/1511.06434.
-
-Ribeiro, M. T, S. Singh and C. Guestrin (2016). ""Why Should I
-Trust You?": Explaining the Predictions of Any Classifier". In:
-_CoRR_ abs/1602.04938. eprint: 1602.04938. URL:
-[http://arxiv.org/abs/1602.04938](http://arxiv.org/abs/1602.04938).
-
-Zhao, S, J. Song and S. Ermon (2017). "InfoVAE: Information
-Maximizing Variational Autoencoders". In: _CoRR_ abs/1706.02262.
-eprint: 1706.02262. URL:
-[http://arxiv.org/abs/1706.02262](http://arxiv.org/abs/1706.02262).
-    </textarea>
-<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
-<script>var slideshow = remark.create({
-"highlightStyle": "solarized",
-"highlightLines": true,
-"countIncrementalSlides": false
-});
-if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
-  window.dispatchEvent(new Event('resize'));
-});
-(function() {
-  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
-  if (!r) return;
-  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
-  d.head.appendChild(s);
-})();</script>
-
-<script>
-(function() {
-  var i, text, code, codes = document.getElementsByTagName('code');
-  for (i = 0; i < codes.length;) {
-    code = codes[i];
-    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
-      text = code.textContent;
-      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
-          /^\$\$(.|\s)+\$\$$/.test(text) ||
-          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
-        code.outerHTML = code.innerHTML;  // remove <code></code>
-        continue;
-      }
-    }
-    i++;
-  }
-})();
-</script>
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-(function () {
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
-  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
-    script.src  = script.src.replace(/^https?:/, '');
-  document.getElementsByTagName('head')[0].appendChild(script);
-})();
-</script>
-  </body>
-</html>

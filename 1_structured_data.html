@@ -4,8 +4,7 @@
     <title>Deep learning for structured data</title>
     <meta charset="utf-8">
     <meta name="author" content="Sigrid Keydana" />
-    <link rel="stylesheet" href="theme\rstudio.css" type="text/css" />
-    <link rel="stylesheet" href="theme\custom.css" type="text/css" />
+    <link rel="stylesheet" href="theme/rstudio.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -16,7 +15,6 @@ class: center, middle, inverse, title-slide
 ### rstudio::conf 2019
 
 ---
-
 
 
 
@@ -58,6 +56,7 @@ Or:
 ```r
 feature_extractor &lt;-
   application_xception(include_top = FALSE, input_shape = c(224, 224, 3))
+
 model &lt;- keras_model_sequential() %&gt;%
   feature_extractor %&gt;%
   layer_dense(units = 512, activation = "relu") %&gt;%
@@ -66,7 +65,6 @@ model &lt;- keras_model_sequential() %&gt;%
   layer_dense(units = 20, activation = "softmax")
 ```
 
-&lt;br /&gt;
 
 What can you __not__ do with this kind of architecture?
 
@@ -76,12 +74,11 @@ What can you __not__ do with this kind of architecture?
 Example tasks:
 
 - Predict the price of an item from metadata (size, color ...), a verbal description, and an image
-
 - Question answering: The NN is given a source text (sentence, paragraph) and a question, and should answer that question
 
 
-.pull-left[![](images_1fapi_multiple_inputs.png)]
-.pull-right[![](images_1fapi_multiple_inputs_2_scaled.png)]
+.pull-left[![](1_structured_data/images/fapi_multiple_inputs.png)]
+.pull-right[![](1_structured_data/images/fapi_multiple_inputs_2_scaled.png)]
 
 ---
 # Multiple outputs
@@ -92,11 +89,10 @@ Example tasks:
 
 - Predict age, income and gender from a series of tweets of a person
 
-
 &lt;br /&gt;
 
-.pull-left[![](images_1fapi_multiple_outputs.png)]
-.pull-right[![](images_1fapi_multiple_outputs_2.png)]
+.pull-left[![](1_structured_data/images/fapi_multiple_outputs.png)]
+.pull-right[![](1_structured_data/images/fapi_multiple_outputs_2.png)]
 
 ---
 # Internal branching/submodules
@@ -107,9 +103,8 @@ Two famous architectures encountered in computer vision:
 
 - ResNet family: residual connections
 
-.pull-left[![](images_1fapi_inception.png)]
-.pull-right[![](images_1fapi_residual.png)]
-
+.pull-left[![](1_structured_data/images/fapi_inception.png)]
+.pull-right[![](1_structured_data/images/fapi_residual.png)]
 
 ---
 # Functional API - Generic example code
@@ -145,6 +140,9 @@ model %&gt;% fit(
 
 ---
 # Multiple inputs - Question answering example
+
+
+&lt;br /&gt;
 
 
 ```r
@@ -258,9 +256,9 @@ output &lt;- layer_add(list(output, residual))
 
 - The dataset has continuous as well as categorical variables
 
-- Notebook to follow along: [heterogeneous_data_1.Rmd](../notebooks/heterogeneous_data_1.Rmd)
+- Notebook to follow along: [heterogeneous_data_1.Rmd](1_structured_data/heterogeneous_data_1.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 ---
 class: inverse, middle, center
@@ -270,7 +268,7 @@ class: inverse, middle, center
 ---
 # Most people know embeddings for this&lt;sup&gt;1&lt;/sup&gt;
 
-![](images_1mikolov_resized.png)
+![](1_structured_data/images/mikolov_resized.png)
 
 
 
@@ -280,6 +278,8 @@ class: inverse, middle, center
 
 ---
 ### So why would we do that?
+
+&lt;br /&gt;
 
 - Improve accuracy on downstream task
 
@@ -323,13 +323,13 @@ Let's see this in action!
 
 - The [StackOverflow developer survey](https://insights.stackoverflow.com/survey/2018) has lots of categorical variables that can be used as predictors and/or as targets
 
-- Notebook: [embeddings_so.Rmd](embeddings_so.Rmd)
+- Notebook: [embeddings_so.Rmd](1_structured_data/embeddings_so.Rmd)
 
 - Data: [survey_results_public.csv](1_structured_data/data/survey_results_public.csv)
 
 - Variable explanations: [survey_results_schema.csv](1_structured_data/data/survey_results_schema.csv)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 &lt;br /&gt;
 
@@ -361,11 +361,13 @@ class: inverse, middle, center
 ---
 # Using entity embeddings for fraud detection
 
+&lt;br /&gt;
+
 - `sales` dataset from the `DMwR2` package
 
-- Notebook: [embeddings_fraud.Rmd](embeddings_so.Rmd)
+- Notebook: [embeddings_fraud.Rmd](1_structured_data/embeddings_so.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 &lt;br /&gt;
 
@@ -374,14 +376,15 @@ Again, we'll go through the notebook together and then, you'll try to further im
 ---
 # Exercise: Predict salary on the "Census Income" dataset (Part 2) (Optional)
 
+&lt;br /&gt;
 
 - On the now familiar "Census Income" dataset, see if you can improve accuracy using embeddints.
 
 - Before we start: How probable do you think it is you can improve accuracy there?
 
-- Notebook to follow along: [heterogeneous_data_2.Rmd](../notebooks/heterogeneous_data_1.Rmd)
+- Notebook to follow along: [heterogeneous_data_2.Rmd](1_structured_data/heterogeneous_data_1.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 ---
 # Wrapup/feedback

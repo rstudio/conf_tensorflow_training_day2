@@ -12,7 +12,7 @@ output:
       ratio: '16:9'
     css: 
     - theme/rstudio.css
-    - theme/custom.css
+  #  - theme/custom.css
 
 
 
@@ -22,12 +22,6 @@ output:
 options(htmltools.dir.version = FALSE)
 ```
 
-```{r xaringan-themer, include = FALSE}
-# library(xaringanthemer)
-# mono_accent(
-#   base_color = "#006d6f"
-# )
-```
 
 ```{r, load_refs, echo=FALSE, cache=FALSE}
 library(RefManageR)
@@ -72,6 +66,7 @@ Or:
 ```{r, eval=FALSE}
 feature_extractor <-
   application_xception(include_top = FALSE, input_shape = c(224, 224, 3))
+
 model <- keras_model_sequential() %>%
   feature_extractor %>%
   layer_dense(units = 512, activation = "relu") %>%
@@ -80,7 +75,6 @@ model <- keras_model_sequential() %>%
   layer_dense(units = 20, activation = "softmax")
 ```
 
-<br />
 
 What can you __not__ do with this kind of architecture?
 
@@ -90,12 +84,11 @@ What can you __not__ do with this kind of architecture?
 Example tasks:
 
 - Predict the price of an item from metadata (size, color ...), a verbal description, and an image
-
 - Question answering: The NN is given a source text (sentence, paragraph) and a question, and should answer that question
 
 
-.pull-left[![](images_1fapi_multiple_inputs.png)]
-.pull-right[![](images_1fapi_multiple_inputs_2_scaled.png)]
+.pull-left[![](1_structured_data/images/fapi_multiple_inputs.png)]
+.pull-right[![](1_structured_data/images/fapi_multiple_inputs_2_scaled.png)]
 
 ---
 # Multiple outputs
@@ -106,11 +99,10 @@ Example tasks:
 
 - Predict age, income and gender from a series of tweets of a person
 
-
 <br />
 
-.pull-left[![](images_1fapi_multiple_outputs.png)]
-.pull-right[![](images_1fapi_multiple_outputs_2.png)]
+.pull-left[![](1_structured_data/images/fapi_multiple_outputs.png)]
+.pull-right[![](1_structured_data/images/fapi_multiple_outputs_2.png)]
 
 ---
 # Internal branching/submodules
@@ -121,9 +113,8 @@ Two famous architectures encountered in computer vision:
 
 - ResNet family: residual connections
 
-.pull-left[![](images_1fapi_inception.png)]
-.pull-right[![](images_1fapi_residual.png)]
-
+.pull-left[![](1_structured_data/images/fapi_inception.png)]
+.pull-right[![](1_structured_data/images/fapi_residual.png)]
 
 ---
 # Functional API - Generic example code
@@ -159,6 +150,9 @@ model %>% fit(
 
 ---
 # Multiple inputs - Question answering example
+
+
+<br />
 
 ```{r, eval=FALSE}
 text_input <- layer_input(shape = list(NULL), name = "text")
@@ -268,9 +262,9 @@ output <- layer_add(list(output, residual))
 
 - The dataset has continuous as well as categorical variables
 
-- Notebook to follow along: [heterogeneous_data_1.Rmd](../notebooks/heterogeneous_data_1.Rmd)
+- Notebook to follow along: [heterogeneous_data_1.Rmd](1_structured_data/heterogeneous_data_1.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 ---
 class: inverse, middle, center
@@ -280,7 +274,7 @@ class: inverse, middle, center
 ---
 # Most people know embeddings for this<sup>1</sup>
 
-![](images_1mikolov_resized.png)
+![](1_structured_data/images/mikolov_resized.png)
 
 ```{r, echo=FALSE, results=FALSE}
 c1 <- Citet(bib, key = "MikolovSCCD13", .opts = list(cite.style = "authoryear"))
@@ -292,6 +286,8 @@ c1 <- Citet(bib, key = "MikolovSCCD13", .opts = list(cite.style = "authoryear"))
 
 ---
 ### So why would we do that?
+
+<br />
 
 - Improve accuracy on downstream task
 
@@ -335,13 +331,13 @@ Let's see this in action!
 
 - The [StackOverflow developer survey](https://insights.stackoverflow.com/survey/2018) has lots of categorical variables that can be used as predictors and/or as targets
 
-- Notebook: [embeddings_so.Rmd](embeddings_so.Rmd)
+- Notebook: [embeddings_so.Rmd](1_structured_data/embeddings_so.Rmd)
 
 - Data: [survey_results_public.csv](1_structured_data/data/survey_results_public.csv)
 
 - Variable explanations: [survey_results_schema.csv](1_structured_data/data/survey_results_schema.csv)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 <br />
 
@@ -375,11 +371,13 @@ c1 <- Citet(bib, key = "GuoB16", .opts = list(cite.style = "authoryear"))
 ---
 # Using entity embeddings for fraud detection
 
+<br />
+
 - `sales` dataset from the `DMwR2` package
 
-- Notebook: [embeddings_fraud.Rmd](embeddings_so.Rmd)
+- Notebook: [embeddings_fraud.Rmd](1_structured_data/embeddings_so.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 <br />
 
@@ -388,14 +386,15 @@ Again, we'll go through the notebook together and then, you'll try to further im
 ---
 # Exercise: Predict salary on the "Census Income" dataset (Part 2) (Optional)
 
+<br />
 
 - On the now familiar "Census Income" dataset, see if you can improve accuracy using embeddints.
 
 - Before we start: How probable do you think it is you can improve accuracy there?
 
-- Notebook to follow along: [heterogeneous_data_2.Rmd](../notebooks/heterogeneous_data_1.Rmd)
+- Notebook to follow along: [heterogeneous_data_2.Rmd](1_structured_data/heterogeneous_data_1.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
+- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
 
 ---
 # Wrapup/feedback

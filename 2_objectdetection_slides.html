@@ -4,7 +4,7 @@
     <title>Object detection</title>
     <meta charset="utf-8">
     <meta name="author" content="Sigrid Keydana" />
-    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="theme/rstudio.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -15,7 +15,6 @@ class: center, middle, inverse, title-slide
 ### rstudio::conf 2019
 
 ---
-
 
 
 
@@ -66,9 +65,9 @@ class: inverse, middle, center
 ---
 # Object detection examples
 
-![](images/birds_scaled.png)
+![](2_object_detection/images/birds_scaled.png)
 
-![](images/bicycles_scaled.png)
+![](2_object_detection/images/bicycles_scaled.png)
 
 
 ---
@@ -85,14 +84,14 @@ class: inverse, middle, center
 
 .footnote[[1] Image source: Wikipedia.]
 
-![](images/iou.png)
+![](2_object_detection/images/iou.png)
 
 ---
 # Demo/exercise: Single-object classification and localization
 
-- Notebook: classification_localization.png
+- Notebook: [classification_localization.Rmd](2_object_detection/classification_localization.Rmd)
 
-- Quiz: 2_objectdetection_quizzes.Rmd
+- Quiz: [2_objectdetection_quizzes.Rmd](2_object_detection/2_objectdetection_quizzes.Rmd)
 
 
 
@@ -178,7 +177,8 @@ Convolutional Networks". In: _CoRR_ abs/1312.6229. eprint:
 <script>var slideshow = remark.create({
 "highlightStyle": "solarized",
 "highlightLines": true,
-"countIncrementalSlides": false
+"countIncrementalSlides": false,
+"ratio": "16:9"
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));

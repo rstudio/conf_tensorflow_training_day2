@@ -9,7 +9,11 @@ output:
       highlightStyle: solarized
       highlightLines: true
       countIncrementalSlides: false
-    css: xaringan-themer.css
+      ratio: '16:9'
+    css: 
+    - theme/rstudio.css
+  #  - theme/custom.css
+
 
 ---
 
@@ -17,12 +21,6 @@ output:
 options(htmltools.dir.version = FALSE)
 ```
 
-```{r xaringan-themer, include = FALSE}
-library(xaringanthemer)
-mono_accent(
-  base_color = "#006d6f"
-)
-```
 
 ```{r, load_refs, echo=FALSE, cache=FALSE}
 library(RefManageR)
@@ -32,7 +30,7 @@ BibOptions(check.entries = FALSE,
            style = "markdown",
            hyperlink = FALSE, 
            dashed = FALSE)
-bib <- ReadBib("./bibliography.bib", check = FALSE)
+bib <- ReadBib("2_object_detection/bibliography.bib", check = FALSE)
 ```
 
 # Topics
@@ -78,9 +76,9 @@ class: inverse, middle, center
 ---
 # Object detection examples
 
-![](images/birds_scaled.png)
+![](2_object_detection/images/birds_scaled.png)
 
-![](images/bicycles_scaled.png)
+![](2_object_detection/images/bicycles_scaled.png)
 
 
 ---
@@ -97,14 +95,14 @@ class: inverse, middle, center
 
 .footnote[[1] Image source: Wikipedia.]
 
-![](images/iou.png)
+![](2_object_detection/images/iou.png)
 
 ---
 # Demo/exercise: Single-object classification and localization
 
-- Notebook: classification_localization.png
+- Notebook: [classification_localization.Rmd](2_object_detection/classification_localization.Rmd)
 
-- Quiz: 2_objectdetection_quizzes.Rmd
+- Quiz: [2_objectdetection_quizzes.Rmd](2_object_detection/2_objectdetection_quizzes.Rmd)
 
 
 

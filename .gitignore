@@ -37,5 +37,5 @@ rsconnect/
 .Rproj.user
 
 */survey_results_public.csv
-day2_slot2/data
+2_object_detection/data/
 

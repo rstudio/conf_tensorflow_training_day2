@@ -1,40 +1,34 @@
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,600');
-@import url('https://fonts.googleapis.com/css?family=PT+Mono');
+@import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+@import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700);
 
-
+/* body { font-family: 'Droid Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, 'Microsoft YaHei', 'Songti SC', serif; } */
 body {
-  font-family: 'Source Sans Pro ExtraLight';
+  font-family: "Fjalla One", "Source Sans", "Lato", "Fira Sans", sans-serif; 
 }
 
-strong {
-  font-family: 'Source Sans Pro SemiBold';
-  color: #585858;
+h1, h2, h3 {
+  font-family: 'Yanone Kaffeesatz';
+  font-weight: normal;
 }
+
+.remark-code, .remark-inline-code { font-family: 'Source Code Pro', 'Lucida Console', Monaco, monospace; }
+
 
 p {
-  font-size: 36px;
+  font-size: 24px;
 }
 h1 {
   color: #4287c7;
-  font-family: 'Source Sans Pro SemiBold';
-
-  font-size: 60px;
 }
 h2 {
   color: #585858;
-  font-family: 'Source Sans Pro SemiBold';
-
-  font-size: 48px;
 }
 h3 {
   color: #585858;
-  font-family: 'Source Sans Pro SemiBold';
-
-  font-size: 36px;
 }
 
 a, a > code {
-  font-family: 'PT Mono';
   color: rgb(249, 38, 114);
   text-decoration: none;
 }
@@ -45,7 +39,6 @@ a, a > code {
   color: #4287c7;
 }
 .remark-code, .remark-inline-code {
-  font-family: 'PT Mono';
   background-color: #c8c8c8;
 }
 .remark-code-line-highlighted     {
@@ -81,13 +74,11 @@ a, a > code {
 }
 
 .title-slide h1, .title-slide h2 {
-  font-family: 'Source Sans Pro SemiBold';
   margin-top: 20px;
   margin-bottom: 80px;
 }
 
 .title-slide h3 {
-  font-family: 'Source Sans Pro ExtraLight';
   font-weight: normal;
   margin: 0;
 }
