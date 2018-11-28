@@ -1,0 +1,48 @@
+.client-speech {
+  font-size: 50%;
+	position: relative;
+	background: #F1C232;
+	border-radius: .4em;
+	padding: 1em;
+}
+
+.client-speech:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 24px solid transparent;
+	border-right-color: #F1C232;
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -12px;
+	margin-left: -24px;
+}
+
+
+
+
+.agent-speech {
+  font-size: 50%;
+	position: relative;
+	background: #9FC5E8;
+	border-radius: .4em;
+	padding: 1em;
+}
+
+.agent-speech:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 24px solid transparent;
+	border-left-color: #9FC5E8;
+	border-right: 0;
+	border-bottom: 0;
+	margin-top: -12px;
+	margin-right: -24px;
+}

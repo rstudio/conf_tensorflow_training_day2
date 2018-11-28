@@ -1,0 +1,84 @@
+
+
+.smaller p {
+  font-size: 90%;
+}
+
+.smallest p {
+  font-size: 80%;
+}
+
+.larger {
+  font-size: 125%;
+}
+
+.larger {
+  font-size: 150%;
+}
+
+.floatright {
+  float:right;
+}
+
+
+.rightbottom {
+  position:absolute;
+  bottom:0;
+  right:10px;
+}
+
+.rstudio-slide {
+  background-image: url('images/background-white.png');
+  background-size: contain;
+  padding-left: 200px;
+  padding-top: 0;
+  padding-top: 0;
+}
+
+.title-slide {
+  background-image: url('images/title.png');
+  background-size: contain;
+}
+
+.rstudio-fill-slide {
+  background-image: url('images/background-blue.png');
+  background-size: contain;
+  padding-left: 0;
+  padding-top: 0;
+}
+
+.highlight-slide {
+  background-image: url('images/background-blue-4x3.png');
+  background-size: contain;
+  padding-left: 0;
+  padding-top: 0;
+}
+
+.highlight-slide h1 {
+  font-family: 'Source Sans Pro SemiBold';
+  font-size: 500%;
+  color: #FFF;
+}
+
+
+
+.remark-slide .title-slide {
+  padding-left: 200px;
+  padding-top: 0;
+}
+
+.remark-code, .remark-inline-code {
+  font-family: 'PT Mono';
+  background-color: #f4f4f4;
+}
+
+.white-slide {
+  background-color: #fff;
+}
+
+
+
+
+.remark-code-line-highlighted {
+    background-color: #e4e479;
+}

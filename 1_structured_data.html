@@ -1,39 +1,28 @@
----
-title: "Deep learning for structured data"
-author: "Sigrid Keydana"
-date: "rstudio::conf 2019"
-output:
-  xaringan::moon_reader:
-    lib_dir: libs
-    nature:
-      highlightStyle: solarized
-      highlightLines: true
-      countIncrementalSlides: false
-    css: xaringan-themer.css
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Deep learning for structured data</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Sigrid Keydana" />
+    <link rel="stylesheet" href="theme\rstudio.css" type="text/css" />
+    <link rel="stylesheet" href="theme\custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Deep learning for structured data
+### Sigrid Keydana
+### rstudio::conf 2019
 
 ---
 
-```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
-```
 
-```{r xaringan-themer, include = FALSE}
-library(xaringanthemer)
-mono_accent(
-  base_color = "#006d6f"
-)
-```
 
-```{r, load_refs, echo=FALSE, cache=FALSE}
-library(RefManageR)
-BibOptions(check.entries = FALSE, 
-           bib.style = "authoryear", 
-           cite.style = 'alphabetic', 
-           style = "markdown",
-           hyperlink = FALSE, 
-           dashed = FALSE)
-bib <- ReadBib("./bibliography.bib", check = FALSE)
-```
+
+
+
+
 
 # Topics
 
@@ -56,26 +45,28 @@ class: inverse, middle, center
 
 Let's look at some typical code observing the Sequential API:
 
-```{r, eval=FALSE}
-model <- keras_model_sequential() %>%
-layer_dense(units = 32, activation = "relu", input_shape = c(64)) %>%
+
+```r
+model &lt;- keras_model_sequential() %&gt;%
+layer_dense(units = 32, activation = "relu", input_shape = c(64)) %&gt;%
 layer_dense(units = 10, activation = "softmax")
 ```
 
 Or:
 
-```{r, eval=FALSE}
-feature_extractor <-
+
+```r
+feature_extractor &lt;-
   application_xception(include_top = FALSE, input_shape = c(224, 224, 3))
-model <- keras_model_sequential() %>%
-  feature_extractor %>%
-  layer_dense(units = 512, activation = "relu") %>%
-  layer_batch_normalization() %>%
-  layer_dropout(rate = 0.5) %>%
+model &lt;- keras_model_sequential() %&gt;%
+  feature_extractor %&gt;%
+  layer_dense(units = 512, activation = "relu") %&gt;%
+  layer_batch_normalization() %&gt;%
+  layer_dropout(rate = 0.5) %&gt;%
   layer_dense(units = 20, activation = "softmax")
 ```
 
-<br />
+&lt;br /&gt;
 
 What can you __not__ do with this kind of architecture?
 
@@ -89,8 +80,8 @@ Example tasks:
 - Question answering: The NN is given a source text (sentence, paragraph) and a question, and should answer that question
 
 
-.pull-left[![](images/fapi_multiple_inputs.png)]
-.pull-right[![](images/fapi_multiple_inputs_2_scaled.png)]
+.pull-left[![](images_1fapi_multiple_inputs.png)]
+.pull-right[![](images_1fapi_multiple_inputs_2_scaled.png)]
 
 ---
 # Multiple outputs
@@ -102,10 +93,10 @@ Example tasks:
 - Predict age, income and gender from a series of tweets of a person
 
 
-<br />
+&lt;br /&gt;
 
-.pull-left[![](images/fapi_multiple_outputs.png)]
-.pull-right[![](images/fapi_multiple_outputs_2.png)]
+.pull-left[![](images_1fapi_multiple_outputs.png)]
+.pull-right[![](images_1fapi_multiple_outputs_2.png)]
 
 ---
 # Internal branching/submodules
@@ -116,59 +107,60 @@ Two famous architectures encountered in computer vision:
 
 - ResNet family: residual connections
 
-.pull-left[![](images/fapi_inception.png)]
-.pull-right[![](images/fapi_residual.png)]
+.pull-left[![](images_1fapi_inception.png)]
+.pull-right[![](images_1fapi_residual.png)]
 
 
 ---
 # Functional API - Generic example code
 
-```{r, eval=FALSE}
-input1 <- layer_input(shape  = 1)
-input2 <- layer_input(shape = 1)
 
-dense1 <- input1 %>% layer_dense(units = 32, activation = "relu")
-dense2 <- input2 %>% layer_dense(units = 32, activation = "relu")
-concat <- layer_concatenate(list(dense1, dense2))
-output1 <- concat %>%
+```r
+input1 &lt;- layer_input(shape  = 1)
+input2 &lt;- layer_input(shape = 1)
+
+dense1 &lt;- input1 %&gt;% layer_dense(units = 32, activation = "relu")
+dense2 &lt;- input2 %&gt;% layer_dense(units = 32, activation = "relu")
+concat &lt;- layer_concatenate(list(dense1, dense2))
+output1 &lt;- concat %&gt;%
   layer_dense(units = 1, activation = "sigmoid", name = "class_output")
-output2 <- concat %>%
+output2 &lt;- concat %&gt;%
   layer_dense(units = 1, name = "regression_output")
 
-model <- keras_model(inputs = list(input1, input2), outputs = list(output1, output2))
+model &lt;- keras_model(inputs = list(input1, input2), outputs = list(output1, output2))
 
-model %>% compile(
+model %&gt;% compile(
   loss = list(class_output = "binary_crossentropy",
               regression_output = "mse"),
   optimizer = "adam",
   metrics = list(class_output = "binary_crossentropy",
                  regression_output = "mse"))
-model %>% fit(
+model %&gt;% fit(
   x = list(x1, x2),
   y = list(y1, y2),
   epochs = 20
 )
-
 ```
 
 
 ---
 # Multiple inputs - Question answering example
 
-```{r, eval=FALSE}
-text_input <- layer_input(shape = list(NULL), name = "text")
-encoded_text <- text_input %>%
-  layer_embedding(input_dim = 5000, output_dim = 256) %>%
+
+```r
+text_input &lt;- layer_input(shape = list(NULL), name = "text")
+encoded_text &lt;- text_input %&gt;%
+  layer_embedding(input_dim = 5000, output_dim = 256) %&gt;%
   layer_lstm(units = 128)
 
-question_input <- layer_input(shape = list(NULL), name = "question")
-encoded_question <- question_input %>%
-  layer_embedding(input_dim = 5000, output_dim = 256) %>%
+question_input &lt;- layer_input(shape = list(NULL), name = "question")
+encoded_question &lt;- question_input %&gt;%
+  layer_embedding(input_dim = 5000, output_dim = 256) %&gt;%
   layer_lstm(units = 128)
 
-concatenated <- layer_concatenate(list(encoded_text, encoded_question))
+concatenated &lt;- layer_concatenate(list(encoded_text, encoded_question))
 
-answer <- concatenated %>%
+answer &lt;- concatenated %&gt;%
   layer_dense(units = 5000, activation = "softmax")
 ```
 
@@ -176,25 +168,26 @@ answer <- concatenated %>%
 ---
 # Multiple outputs - Multiple feature prediction from tweets
 
-```{r, eval=FALSE}
-posts_input <- layer_input(shape = list(NULL))
-embedded_posts <- posts_input %>%
+
+```r
+posts_input &lt;- layer_input(shape = list(NULL))
+embedded_posts &lt;- posts_input %&gt;%
   layer_embedding(input_dim = 10000, output_dim = 256)
 
-base_model <- embedded_posts %>%
-  layer_conv_1d(filters = 128, kernel_size = 5, activation = "relu") %>%
-  layer_max_pooling_1d(pool_size = 5) %>%
+base_model &lt;- embedded_posts %&gt;%
+  layer_conv_1d(filters = 128, kernel_size = 5, activation = "relu") %&gt;%
+  layer_max_pooling_1d(pool_size = 5) %&gt;%
   ## [more conv and pooling layers]
-  layer_global_max_pooling_1d() %>%
+  layer_global_max_pooling_1d() %&gt;%
   layer_dense(units = 128, activation = "relu")
 
-age_prediction <- base_model %>% layer_dense(units = 1, name = "age")
-income_prediction <- base_model %>% 
+age_prediction &lt;- base_model %&gt;% layer_dense(units = 1, name = "age")
+income_prediction &lt;- base_model %&gt;% 
   layer_dense(num_income_groups, activation = "softmax", name = "income")
-gender_prediction <- base_model %>%
+gender_prediction &lt;- base_model %&gt;%
   layer_dense(units = 1, activation = "sigmoid", name = "gender")
 
-model <- keras_model(
+model &lt;- keras_model(
   posts_input,
   list(age_prediction, income_prediction, gender_prediction)
 )
@@ -204,53 +197,55 @@ model <- keras_model(
 ---
 # Inception Module
 
-```{r, eval=FALSE}
-branch_a <- input %>%
+
+```r
+branch_a &lt;- input %&gt;%
   layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu",
                 strides = 2)
 
-branch_b <- input %>%
-  layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu") %>%
+branch_b &lt;- input %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu") %&gt;%
   layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu",
                 strides = 2)
 
-branch_c <- input %>%
-  layer_average_pooling_2d(pool_size = 3, strides = 2) %>%
+branch_c &lt;- input %&gt;%
+  layer_average_pooling_2d(pool_size = 3, strides = 2) %&gt;%
   layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu")
 
-branch_d <- input %>%
-  layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu") %>%
-  layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu") %>%
+branch_d &lt;- input %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu") %&gt;%
+  layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu") %&gt;%
   layer_conv_2d(filters = 128, kernel_size = 3, activation = "relu",
                 strides = 2)
 
-output <- layer_concatenate(list(branch_a, branch_b, branch_c, branch_d))
+output &lt;- layer_concatenate(list(branch_a, branch_b, branch_c, branch_d))
 ```
 
 ---
 # Residual connections
 
-```{r, eval=FALSE}
-output <- input %>%
+
+```r
+output &lt;- input %&gt;%
   layer_conv_2d(filters = 128, 
                 kernel_size = 3,
                 activation = "relu",
-                padding = "same") %>%
+                padding = "same") %&gt;%
   layer_conv_2d(filters = 128,
                 kernel_size = 3,
                 activation = "relu",
-                padding = "same") %>%
+                padding = "same") %&gt;%
   layer_max_pooling_2d(pool_size = 2, strides = 2)
 
 # we need to do some downsampling on the residual
 # so we can add it to output
-residual <- input %>%
+residual &lt;- input %&gt;%
   layer_conv_2d(filters = 128,
                 kernel_size = 1,
                 strides = 2,
                 padding = "same")
 
-output <- layer_add(list(output, residual))
+output &lt;- layer_add(list(output, residual))
 ```
 
 ---
@@ -259,7 +254,7 @@ output <- layer_add(list(output, residual))
 
 - "Census Income" (a.k.a. "Adult") dataset available at [UCI Machine Learning Repository](http://mlr.cs.umass.edu/ml/datasets/Census+Income)
 
-- Task is to predict predict binarized salary (< resp. > 50k)
+- Task is to predict predict binarized salary (&lt; resp. &gt; 50k)
 
 - The dataset has continuous as well as categorical variables
 
@@ -273,13 +268,11 @@ class: inverse, middle, center
 # Entity embeddings are all the hype
 
 ---
-# Most people know embeddings for this<sup>1</sup>
+# Most people know embeddings for this&lt;sup&gt;1&lt;/sup&gt;
 
-![](images/mikolov_resized.png)
+![](images_1mikolov_resized.png)
 
-```{r, echo=FALSE, results=FALSE}
-c1 <- Citet(bib, key = "MikolovSCCD13", .opts = list(cite.style = "authoryear"))
-```
+
 
 .footnote[[1] cf. Mikolov, T, I. Sutskever, K. Chen, et al. (2013). "Distributed Representations of Words and Phrases and their Compositionality". ]
 
@@ -294,7 +287,7 @@ c1 <- Citet(bib, key = "MikolovSCCD13", .opts = list(cite.style = "authoryear"))
 
 - Everything in-between
 
-<br /> 
+&lt;br /&gt; 
 For an application to e.g. collaborative filtering, see
 
 [Collaborative filtering with embeddings](https://blogs.rstudio.com/tensorflow/posts/2018-09-26-embeddings-recommender/)
@@ -319,7 +312,7 @@ class: inverse, middle, center
 - Can also calculate similarity between points
 - For example, using _cosine similarity_:
 
-$$cos(\theta) = \frac{\mathbf{x^ t}\mathbf{y}}{\mathbf{||x||}\space\mathbf{||y||}}$$
+`$$cos(\theta) = \frac{\mathbf{x^ t}\mathbf{y}}{\mathbf{||x||}\space\mathbf{||y||}}$$`
 
 Let's see this in action!
 
@@ -332,13 +325,13 @@ Let's see this in action!
 
 - Notebook: [embeddings_so.Rmd](embeddings_so.Rmd)
 
-- Data: [survey_results_public.csv](data/survey_results_public.csv)
+- Data: [survey_results_public.csv](1_structured_data/data/survey_results_public.csv)
 
-- Variable explanations: [survey_results_schema.csv](data/survey_results_schema.csv)
+- Variable explanations: [survey_results_schema.csv](1_structured_data/data/survey_results_schema.csv)
 
 - Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
 
-<br />
+&lt;br /&gt;
 
 We'll go through the notebook together and then, you'll pick some variables you're interested in and experiment with them.
 
@@ -352,7 +345,7 @@ class: inverse, middle, center
 ---
 # Using entity embeddings to improve accuracy
 
-- Used by the winning team on the Kaggle Rossmann Sales prediction challenge<sup>1</sup>
+- Used by the winning team on the Kaggle Rossmann Sales prediction challenge&lt;sup&gt;1&lt;/sup&gt;
 
 - Better accuracy compared to one-hot-encoding is not guaranteed
 
@@ -360,9 +353,7 @@ class: inverse, middle, center
 
 
 
-```{r, echo=FALSE, results=FALSE}
-c1 <- Citet(bib, key = "GuoB16", .opts = list(cite.style = "authoryear"))
-```
+
 
 .footnote[[1] cf. Guo, C. and F. Berkhahn (2016). "Entity Embeddings of Categorical Variables". ]
 
@@ -376,7 +367,7 @@ c1 <- Citet(bib, key = "GuoB16", .opts = list(cite.style = "authoryear"))
 
 - Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
 
-<br />
+&lt;br /&gt;
 
 Again, we'll go through the notebook together and then, you'll try to further improve accuracy.
 
@@ -400,6 +391,60 @@ Again, we'll go through the notebook together and then, you'll try to further im
 ---
 # References
 
-```{r, results='asis', echo=FALSE}
-PrintBibliography(bib)
-```
+Guo, C. and F. Berkhahn (2016). "Entity Embeddings of Categorical
+Variables". In: _CoRR_ abs/1604.06737. eprint: 1604.06737. URL:
+[http://arxiv.org/abs/1604.06737](http://arxiv.org/abs/1604.06737).
+
+Mikolov, T, I. Sutskever, K. Chen, et al. (2013). "Distributed
+Representations of Words and Phrases and their Compositionality".
+In: _CoRR_ abs/1310.4546. eprint: 1310.4546. URL:
+[http://arxiv.org/abs/1310.4546](http://arxiv.org/abs/1310.4546).
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "solarized",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
