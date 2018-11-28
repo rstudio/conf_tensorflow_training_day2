@@ -9,7 +9,10 @@ output:
       highlightStyle: solarized
       highlightLines: true
       countIncrementalSlides: false
-    css: xaringan-themer.css
+    css: theme/rstudio.css
+    ratio: "16:9"
+
+
 
 ---
 
@@ -18,10 +21,10 @@ options(htmltools.dir.version = FALSE)
 ```
 
 ```{r xaringan-themer, include = FALSE}
-library(xaringanthemer)
-mono_accent(
-  base_color = "#006d6f"
-)
+# library(xaringanthemer)
+# mono_accent(
+#   base_color = "#006d6f"
+# )
 ```
 
 ```{r, load_refs, echo=FALSE, cache=FALSE}
@@ -32,7 +35,7 @@ BibOptions(check.entries = FALSE,
            style = "markdown",
            hyperlink = FALSE, 
            dashed = FALSE)
-bib <- ReadBib("./bibliography.bib", check = FALSE)
+bib <- ReadBib("1_structured_data/bibliography.bib", check = FALSE)
 ```
 
 # Topics
@@ -89,8 +92,8 @@ Example tasks:
 - Question answering: The NN is given a source text (sentence, paragraph) and a question, and should answer that question
 
 
-.pull-left[![](images/fapi_multiple_inputs.png)]
-.pull-right[![](images/fapi_multiple_inputs_2_scaled.png)]
+.pull-left[![](images_1fapi_multiple_inputs.png)]
+.pull-right[![](images_1fapi_multiple_inputs_2_scaled.png)]
 
 ---
 # Multiple outputs
@@ -104,8 +107,8 @@ Example tasks:
 
 <br />
 
-.pull-left[![](images/fapi_multiple_outputs.png)]
-.pull-right[![](images/fapi_multiple_outputs_2.png)]
+.pull-left[![](images_1fapi_multiple_outputs.png)]
+.pull-right[![](images_1fapi_multiple_outputs_2.png)]
 
 ---
 # Internal branching/submodules
@@ -116,8 +119,8 @@ Two famous architectures encountered in computer vision:
 
 - ResNet family: residual connections
 
-.pull-left[![](images/fapi_inception.png)]
-.pull-right[![](images/fapi_residual.png)]
+.pull-left[![](images_1fapi_inception.png)]
+.pull-right[![](images_1fapi_residual.png)]
 
 
 ---
@@ -275,7 +278,7 @@ class: inverse, middle, center
 ---
 # Most people know embeddings for this<sup>1</sup>
 
-![](images/mikolov_resized.png)
+![](images_1mikolov_resized.png)
 
 ```{r, echo=FALSE, results=FALSE}
 c1 <- Citet(bib, key = "MikolovSCCD13", .opts = list(cite.style = "authoryear"))
@@ -332,9 +335,9 @@ Let's see this in action!
 
 - Notebook: [embeddings_so.Rmd](embeddings_so.Rmd)
 
-- Data: [survey_results_public.csv](data/survey_results_public.csv)
+- Data: [survey_results_public.csv](1_structured_data/data/survey_results_public.csv)
 
-- Variable explanations: [survey_results_schema.csv](data/survey_results_schema.csv)
+- Variable explanations: [survey_results_schema.csv](1_structured_data/data/survey_results_schema.csv)
 
 - Quiz: [1_structureddata_quizzes.Rmd](1_structureddata_quizzes.Rmd)
 
