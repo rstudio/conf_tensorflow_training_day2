@@ -65,7 +65,7 @@ imageinfo
 
 
 Then, object class ids and bounding box coordinates. There may be multiple of these per image.
-In Pascal VOC, there are 20 object classes.
+
 
 ```{r}
 boxinfo <- annotations$annotations %>% {
@@ -321,7 +321,7 @@ model %>% compile(
 ##### Training and predictions
 
 We will skip actually training the model as this would take too long.
-Instead please go on to the first exercise in[2_objectdetection_quizzes.Rmd](2_objectdetection_quizzes.Rmd).
+Instead please go on to the first exercise in [2_objectdetection_quizzes.Rmd](2_objectdetection_quizzes.Rmd).
 
 Here, however, is the training code for further reference.
 
@@ -353,13 +353,8 @@ model %>% predict(load_and_preprocess_image(
 
 Now go to [2_objectdetection_quizzes.Rmd](2_objectdetection_quizzes.Rmd) and look at quiz 1 please.
 
-We can't do everything in a few hours so let's just think about what would have to change if we wanted to detect multiple objects in an image.
 
-- multi-hot-encoding
-- use `sigmoid` loss
-- use `binary_crossentropy`
-
-On to working with a single object and a new task: localization.
+On to working with a single object again, and a new task: localization.
 
 ## Single-object localization
 
@@ -367,19 +362,32 @@ On to working with a single object and a new task: localization.
 
 Let's start with the model this time, so it's clear what the generator has to deliver. 
 
-First, code the feature extractor, and freeze its weights. Use Xception, as before.
+First, code the feature extractor, and freeze its weights. We use Xception, as before.
 However, there's an important difference here: We want to keep all spatial information from the before-last layer, so don't do any pooling or flattening.
 
 
 ```{r}
-feature_extractor <- # tbd
+feature_extractor <- application_xception(
+  include_top = FALSE,
+  input_shape = c(224, 224, 3)
+)
+
+feature_extractor %>% freeze_weights()
 ```
 
 
-Now append a custom head. At the output layer, you want to have 4 units, one for each bounding box coordinate.
+Now we append a custom head. At the output layer, you want to have 4 units, one for each bounding box coordinate.
 
 ```{r}
-model <- # tbd
+model <- keras_model_sequential() %>%
+  feature_extractor %>%
+  layer_flatten() %>%
+  layer_batch_normalization() %>%
+  layer_dropout(rate = 0.25) %>%
+  layer_dense(units = 512, activation = "relu") %>%
+  layer_batch_normalization() %>%
+  layer_dropout(rate = 0.5) %>%
+  layer_dense(units = 4)
 ```
 
 
@@ -415,12 +423,16 @@ metric_iou <- function(y_true, y_pred) {
 Now compile the model.
 
 ```{r}
-model %>% # tbd
+model %>% compile(
+  optimizer = "adam",
+  loss = "mae",
+  metrics = list(custom_metric("iou", metric_iou))
+)
 ```
 
 ### Data generator
 
-Now modify the generator to return bounding box coordinates as targets...
+Now we have to modify the generator to return bounding box coordinates as targets...
 
 ```{r}
 localization_generator <-
@@ -441,13 +453,17 @@ localization_generator <-
       }
       x <-
         array(0, dim = c(length(indices), target_height, target_width, 3))
-      y <- #### tbd
+      y <- array(0, dim = c(length(indices), 4))
       
       for (j in 1:length(indices)) {
         x[j, , , ] <-
           load_and_preprocess_image(data[[indices[j], "file_name"]], 
                                     target_height, target_width)
-        y[j, ] <- #### tbd
+        y[j, ] <-
+          data[indices[j], c("x_left_scaled",
+                             "y_top_scaled",
+                             "x_right_scaled",
+                             "y_bottom_scaled")] %>% as.matrix()
       }
       x <- x / 255
       list(x, y)
@@ -473,10 +489,22 @@ valid_gen <- localization_generator(
 
 ### Train the model
 
-Train for a little time, just to see that the code works.
+This time, we'll want to train for a short time, say 5 epochs, so we have fun and can draw some bouding boxes. 
+
+Start training now, and let's proceed to the next task /exercise.
+
 
 ```{r}
-model %>% 
+model %>% fit_generator(
+  train_gen,
+  epochs = 5,
+  steps_per_epoch = nrow(train_data) / batch_size,
+  validation_data = valid_gen,
+  validation_steps = nrow(validation_data) / batch_size,
+  callbacks = list(
+   callback_early_stopping(patience = 2)
+  )
+)
 ```
 
 ### Verify some predictions
@@ -536,7 +564,7 @@ plot_image_with_boxes <- function(file_name,
 }
 ```
 
-Now look at some predictions from the training set. Given you've probably not been training the model for so long, don't expect too much. In any case: Do you see a systematic problem here?
+Now look at some predictions from the training set. Given you've not been training the model for so long, don't expect too much. 
 
 
 ```{r}
@@ -562,31 +590,57 @@ for (i in 1:8) {
 }
 ```
 
+Here are some predictions from a prior training. Looking at the "wrong" predictions, do you have an idea what's going on?
 
-![Sample bounding box predictions on the training set.](images/preds_train.jpg){width=100%}
+![](images/preds_train.jpg){width=100%}
 
-We'll skip over predictions on the validation set and pass on to the last ask: doing both regression and classification in the same model.
+
 
 ## Single-object detection (classification + localization)
 
-For time reasons, we won't do the actual training, but we look at the model and the data generator.
+Now we think how we can obtain class prediction and bounding box at the same time. 
+
+Before we look at the code, please go to the quizzes and look at quiz 2, which  will ask about the basic approach.
 
 ### Model for single-object detection
 
 Combining regression and classification into one means we'll want to have two outputs in our model.
 We'll thus use the functional API this time. 
 
-Again, start with XCeption as a feature extractor.
+Again, we start with XCeption as a feature extractor.
 
 ```{r}
-feature_extractor <- # tbd
+feature_extractor <- application_xception(
+  include_top = FALSE,
+  input_shape = c(224, 224, 3)
+)
 ```
 
 Then, we'll want a common custom head but at the end, two outputs, one for the class prediction and one for the bounding box regression.
 
 ```{r}
 input <- feature_extractor$input
-common <- feature_extractor$output %>% # tbd
+common <- feature_extractor$output %>%
+  layer_flatten(name = "flatten") %>%
+  layer_activation_relu() %>%
+  layer_dropout(rate = 0.25) %>%
+  layer_dense(units = 512, activation = "relu") %>%
+  layer_batch_normalization() %>%
+  layer_dropout(rate = 0.5)
+
+regression_output <-
+  layer_dense(common, units = 4, name = "regression_output")
+class_output <- layer_dense(
+  common,
+  units = 20,
+  activation = "softmax",
+  name = "class_output"
+)
+
+model <- keras_model(
+  inputs = input,
+  outputs = list(regression_output, class_output)
+)
 ```
 
 Then in `compile`, the losses will have to be a list, like so.
@@ -595,8 +649,17 @@ You'd also want to experiment with weighting losses differently.
 ```{r}
 model %>% freeze_weights(to = "flatten")
 
-model %>% compile(# tbd
+model %>% compile(
+  optimizer = "adam",
+  loss = list("mae", "sparse_categorical_crossentropy"),
+  #loss_weights = list(
+  #  regression_output = 0.05,
+  #  class_output = 0.95),
+  metrics = list(
+    regression_output = custom_metric("iou", metric_iou),
+    class_output = "accuracy"
+  )
+)
 ```
 
-
-We'll stop here and move on to (multiple) object detection.
+To be able to train, we'll also need to adapt the data generator. But we'll stop here and move on to (multiple) object detection.

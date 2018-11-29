@@ -38,4 +38,6 @@ rsconnect/
 
 */survey_results_public.csv
 2_object_detection/data/
+2_object_detection/preds*
+
 
