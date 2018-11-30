@@ -28,7 +28,7 @@ class: center, middle, inverse, title-slide
 
 - Introduction to multiple-object detection
 
-- Basic object detection techniques, as used in SSD (__Single-Shot Multibox Detector__)
+- Coding a basic SSD (__Single-Shot Multibox Detector__)
 
 ---
 class: inverse, middle, center
@@ -94,20 +94,6 @@ class: inverse, middle, center
 - Quiz: [2_objectdetection_quizzes.Rmd](2_object_detection/2_objectdetection_quizzes.Rmd)
 
 
-
----
-# Using entity embeddings to improve accuracy
-
-- Used by the winning team on the Kaggle Rossmann Sales prediction challenge&lt;sup&gt;1&lt;/sup&gt;
-
-- Better accuracy compared to one-hot-encoding is not guaranteed
-
-- Probably most effective with _high-dimensional_ data that have a _significant relationship_ to the target variable
-
-
-
-
-
 ---
 class: inverse, middle, center
 
@@ -121,7 +107,7 @@ class: inverse, middle, center
  - Train network, run sequentially on image patches 
  - May actually run sliding windows synchronously (see _Overfeat_ below)
 
-- Region proposal apporaches (2-step)
+- Region proposal approaches (2-step)
  - Step 1: Some algorithm proposes interesting regions
  - Step 2: Another algorithm (a convnet) classifies the regions and refines localization
 
@@ -136,7 +122,7 @@ class: inverse, middle, center
 .footnote[[1] cf. Sermanet, P, D. Eigen, X. Zhang, et al. (2013). "OverFeat: Integrated Recognition, Localization and Detection using Convolutional Networks". ]
 
 
-![](images/overfeat.png)
+![](2_object_detection/images/overfeat.png)
 
 ---
 # Region proposal approaches
@@ -149,23 +135,74 @@ class: inverse, middle, center
 
 
 
+.footnote[[1] cf. Girshick, R. B. (2015). "Fast R-CNN".
+
+[2] cf. Girshick, R. B, J. Donahue, T. Darrell, et al. (2013). "Rich feature hierarchies for accurate object detection and semantic segmentation".
+
+[3] cf. Ren, S, K. He, R. B. Girshick, et al. (2015). "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks"]
+
+
+---
+# Single-shot detectors
+
+"Synchronous sliding window" (à la _Overfeat_) enhanced by idea of __anchor boxes__
+
+![](2_object_detection/images/ssd_1.png)
+
+---
+# Dense (Yolo v1/2) vs. fully convolutional
+
+
+
+
+---
+# Why fully convolutional?
+
+Receptive field
+
 ---
 class: inverse, middle, center
 
-# Basic object detection techniques, as used in SSD
-
-
-
-
+# Coding a basic SSD (__Single-Shot Multibox Detector__)
 
 
 ---
-# Wrapup/feedback
+# Basic SSD: Code
+
+- To show the basic approach, we will
+ - restrict ourselves to a 4x4 grid of image cells
+ - have one anchor box per cell (thus, 16 anchor boxes)
+ - work with one scale of image only 
+
+- Notebook: [object_detection_ssd.Rmd](2_object_detection/object_detection_ssd.Rmd)
+
+
+---
+# Basic SSD: Ways for improvement
+
+
+- Use anchor boxes of different shapes
+
+- Perform detection at various resolutions
 
 
 
 ---
 # References
+
+Girshick, R. B. (2015). "Fast R-CNN". In: _CoRR_ abs/1504.08083.
+eprint: 1504.08083. URL:
+[http://arxiv.org/abs/1504.08083](http://arxiv.org/abs/1504.08083).
+
+Girshick, R. B, J. Donahue, T. Darrell, et al. (2013). "Rich
+feature hierarchies for accurate object detection and semantic
+segmentation". In: _CoRR_ abs/1311.2524. eprint: 1311.2524. URL:
+[http://arxiv.org/abs/1311.2524](http://arxiv.org/abs/1311.2524).
+
+Ren, S, K. He, R. B. Girshick, et al. (2015). "Faster R-CNN:
+Towards Real-Time Object Detection with Region Proposal Networks".
+In: _CoRR_ abs/1506.01497. eprint: 1506.01497. URL:
+[http://arxiv.org/abs/1506.01497](http://arxiv.org/abs/1506.01497).
 
 Sermanet, P, D. Eigen, X. Zhang, et al. (2013). "OverFeat:
 Integrated Recognition, Localization and Detection using

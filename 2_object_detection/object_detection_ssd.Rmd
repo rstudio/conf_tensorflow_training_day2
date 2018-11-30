@@ -1,0 +1,562 @@
+---
+title: "Object detection as in SSD (basic principles)"
+output:
+  html_notebook:
+    df_print: paged
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+library(keras)
+library(rjson)
+library(magick)
+library(purrr)
+library(tibble)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+
+use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
+```
+
+
+We start with the same preprocessing steps as before - but we don't need to zoom in on the most salient object any more.
+
+Here again are the basic preprocessing steps.
+
+# Data loading / preprocessing (same as in previous notebook)
+
+## Dataset
+
+```{r}
+img_dir <- "data/VOCdevkit/VOC2007/JPEGImages"
+```
+
+```{r}
+annot_file <- "data/pascal_train2007.json"
+```
+
+
+## Preprocessing
+
+```{r}
+annotations <- fromJSON(file = annot_file)
+str(annotations, max.level = 1)
+```
+
+```{r}
+imageinfo <- annotations$images %>% {
+  tibble(
+    id = map_dbl(., "id"),
+    file_name = map_chr(., "file_name"),
+    image_height = map_dbl(., "height"),
+    image_width = map_dbl(., "width")
+  )
+}
+imageinfo
+```
+
+```{r}
+boxinfo <- annotations$annotations %>% {
+  tibble(
+    image_id = map_dbl(., "image_id"),
+    category_id = map_dbl(., "category_id"),
+    bbox = map(., "bbox")
+  )
+}
+boxinfo
+```
+
+```{r}
+boxinfo <- boxinfo %>% 
+  mutate(bbox = unlist(map(.$bbox, function(x) paste(x, collapse = " "))))
+boxinfo <- boxinfo %>% 
+  separate(bbox, into = c("x_left", "y_top", "bbox_width", "bbox_height"))
+boxinfo <- boxinfo %>% mutate_all(as.numeric)
+boxinfo
+```
+
+```{r}
+boxinfo <- boxinfo %>% 
+  mutate(y_bottom = y_top + bbox_height - 1, x_right = x_left + bbox_width - 1)
+boxinfo
+```
+
+```{r}
+catinfo <- annotations$categories %>%  {
+  tibble(id = map_dbl(., "id"), name = map_chr(., "name"))
+}
+catinfo
+```
+
+```{r}
+classes <- catinfo$name
+```
+
+```{r}
+imageinfo <- imageinfo %>%
+  inner_join(boxinfo, by = c("id" = "image_id")) %>%
+  inner_join(catinfo, by = c("category_id" = "id"))
+imageinfo
+```
+
+```{r}
+target_height <- 224
+target_width <- 224
+
+imageinfo <- imageinfo %>% mutate(
+  x_left_scaled = (x_left / image_width * target_width) %>% round(),
+  x_right_scaled = (x_right / image_width * target_width) %>% round(),
+  y_top_scaled = (y_top / image_height * target_height) %>% round(),
+  y_bottom_scaled = (y_bottom / image_height * target_height) %>% round(),
+  bbox_width_scaled =  (bbox_width / image_width * target_width) %>% round(),
+  bbox_height_scaled = (bbox_height / image_height * target_height) %>% round()
+)
+imageinfo
+```
+
+
+# A model for object detection
+
+For reference, let's look at what we did to classify and localize one single object.
+
+
+```{r, eval=FALSE}
+feature_extractor <- application_xception(
+  include_top = FALSE,
+  input_shape = c(224, 224, 3)
+)
+
+input <- feature_extractor$input
+common <- feature_extractor$output %>%
+  layer_flatten(name = "flatten") %>%
+  layer_activation_relu() %>%
+  layer_dropout(rate = 0.25) %>%
+  layer_dense(units = 512, activation = "relu") %>%
+  layer_batch_normalization() %>%
+  layer_dropout(rate = 0.5)
+
+regression_output <-
+  layer_dense(common, units = 4, name = "regression_output")
+class_output <- layer_dense(
+  common,
+  units = 20,
+  activation = "softmax",
+  name = "class_output"
+)
+
+model <- keras_model(
+  inputs = input,
+  outputs = list(regression_output, class_output)
+)
+```
+
+We again start with Xception as the feature extractor.
+
+```{r}
+feature_extractor <- application_xception(
+  include_top = FALSE,
+  input_shape = c(224, 224, 3)
+)
+feature_extractor
+```
+
+
+At this point, we have an output of 7x7x2048.
+
+To arrive at the 4x4 grid cells we want, we apply a convolution with strides 2.
+
+```{r}
+input <- feature_extractor$input
+
+common <- feature_extractor$output %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    padding = "same",
+    name = "head_conv1"
+  ) %>%
+  layer_batch_normalization() %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    strides = 2,
+    padding = "same",
+    name = "head_conv2"
+  ) %>%
+  layer_batch_normalization() 
+
+common
+```
+
+Now we can do as we did before, attach an output for the bounding boxes and one for the classes.
+
+Note how we don't flatten out the spatial grid though. Instead, we reshape it so the 4x4 grid cells appear sequentially (`layer_reshape`). 
+
+We then apply a `tanh` activation so that values lie between -1 and 1. This is because they will be used to compute offsets to the 4x4 grid.
+
+We'll skip over the `layer_lambda` (which does just that) and return to that topic later, when we've covered _anchors_.
+
+```{r, eval=FALSE}
+bbox_output <-
+  layer_conv_2d(
+    common,
+    filters = 4,
+    kernel_size = 3,
+    padding = "same",
+    name = "bbox_conv"
+  ) %>%
+  layer_reshape(target_shape = c(16, 4), name = "bbox_flatten") %>%
+  layer_activation("tanh") %>%
+  layer_lambda(
+    f = function(x) {
+      activation_centers <-
+        (x[, , 1:2] / 2 * gridsize) + anchors_tf[, 1:2]
+      activation_height_width <-
+        (x[, , 3:4] / 2 + 1) * anchors_tf[, 3:4]
+      activation_corners <-
+        k_concatenate(
+          list(
+            activation_centers - activation_height_width / 2,
+            activation_centers + activation_height_width / 2
+          )
+        )
+     activation_corners
+    }
+  )
+```
+
+How here's the class output. We have 21 classes now (the 20 classes from PASCAL, plus background), and we need to classify each cell.
+So we need an output of dimensions 16x21.
+
+```{r}
+class_output <-
+  layer_conv_2d(
+    common,
+    filters = 21,
+    kernel_size = 3,
+    padding = "same",
+    name = "class_conv"
+  ) %>%
+  layer_reshape(target_shape = c(16, 21), name = "class_flatten")
+```
+
+Now that we have a model, we need to step back and get the data into a from it can work with.
+
+# General preprocessing 
+
+First, let's select just the variables we need for this task. In case you're wondering why we keep the unscaled bounding box coordinates, - that's for plotting only.
+
+```{r}
+imageinfo4ssd <- imageinfo %>%
+  select(category_id,
+         file_name,
+         name,
+         x_left,
+         y_top,
+         x_right,
+         y_bottom,
+         ends_with("scaled"))
+```
+
+So far, we have one row per object to be detected, not one row per image as we need. We need to address that first.
+
+```{r}
+imageinfo4ssd <- imageinfo4ssd %>%
+  group_by(file_name) %>%
+  summarise(
+    categories = toString(category_id),
+    name = toString(name),
+    xl = toString(x_left_scaled),
+    yt = toString(y_top_scaled),
+    xr = toString(x_right_scaled),
+    yb = toString(y_bottom_scaled),
+    xl_orig = toString(x_left),
+    yt_orig = toString(y_top),
+    xr_orig = toString(x_right),
+    yb_orig = toString(y_bottom),
+    cnt = n()
+  )
+
+imageinfo4ssd
+```
+
+
+Okay! Let's look at one image, comp
+
+```{r}
+example <- imageinfo4ssd[5, ]
+img <- image_read(file.path(img_dir, example$file_name))
+name <- (example$name %>% str_split(pattern = ", "))[[1]]
+x_left <- (example$xl_orig %>% str_split(pattern = ", "))[[1]]
+x_right <- (example$xr_orig %>% str_split(pattern = ", "))[[1]]
+y_top <- (example$yt_orig %>% str_split(pattern = ", "))[[1]]
+y_bottom <- (example$yb_orig %>% str_split(pattern = ", "))[[1]]
+img <- image_draw(img)
+for (i in 1:example$cnt) {
+  rect(x_left[i],
+       y_bottom[i],
+       x_right[i],
+       y_top[i],
+       border = "white",
+       lwd = 2)
+  text(
+    x = as.integer(x_right[i]),
+    y = as.integer(y_top[i]),
+    labels = name[i],
+    offset = 1,
+    pos = 2,
+    cex = 1,
+    col = "white"
+  )
+}
+dev.off()
+print(img)
+
+```
+
+
+# Anchors
+
+Now we construct the anchor boxes. As here we want to have one anchor box per cell, grid cells and anchor boxes, in our case, are the same thing.
+
+Here, first, are the x resp. y coordinates of the centers of the anchor boxes.
+
+```{r}
+cells_per_row <- 4
+anchor_offset <- 1 / (cells_per_row * 2) 
+
+anchor_xs <-
+  seq(anchor_offset, 1 - anchor_offset, length.out = 4) %>% rep(each = cells_per_row)
+anchor_ys <-
+  seq(anchor_offset, 1 - anchor_offset, length.out = 4) %>% rep(cells_per_row)
+```
+
+Let's plot them.
+
+```{r}
+ggplot(data.frame(x = anchor_xs, y = anchor_ys), aes(x, y)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  theme(aspect.ratio = 1)
+```
+
+
+
+In subsequent manipulations, we sometimes need center coordinates combined with height and width, and sometimes we need the corners (top-left, top-right, bottom-right, bottom-left) of the grid cells (anchor boxes).
+
+We thus compute all of these representations and store them.
+
+Here's the centers + height/width representation:
+
+```{r}
+anchor_centers <- cbind(anchor_xs, anchor_ys)
+anchor_height_width <- matrix(1 / cells_per_row, nrow = 16, ncol = 2)
+
+anchors <- cbind(anchor_centers, anchor_height_width)
+anchors
+```
+
+And here's the representation storing corners.
+
+```{r}
+hw2corners <- function(centers, height_width) {
+  cbind(centers - height_width / 2, centers + height_width / 2) %>% unname()
+}
+
+# cells are indicated by (xl, yt, xr, yb)
+# successive rows first go down in the image, then to the right
+anchor_corners <- hw2corners(anchor_centers, anchor_height_width)
+anchor_corners
+```
+
+
+Let's take our sample image again and plot it, this time including the anchor boxes / grid cells.
+Note that we display the scaled image now - the way the network is going to see it.
+
+```{r}
+example <- imageinfo4ssd[5, ]
+name <- (example$name %>% str_split(pattern = ", "))[[1]]
+x_left <- (example$xl %>% str_split(pattern = ", "))[[1]]
+x_right <- (example$xr %>% str_split(pattern = ", "))[[1]]
+y_top <- (example$yt %>% str_split(pattern = ", "))[[1]]
+y_bottom <- (example$yb %>% str_split(pattern = ", "))[[1]]
+
+
+img <- image_read(file.path(img_dir, example$file_name))
+img <- image_resize(img, geometry = "224x224!")
+img <- image_draw(img)
+
+for (i in 1:example$cnt) {
+  rect(x_left[i],
+       y_bottom[i],
+       x_right[i],
+       y_top[i],
+       border = "white",
+       lwd = 2)
+  text(
+    x = as.integer(x_right[i]),
+    y = as.integer(y_top[i]),
+    labels = name[i],
+    offset = 0,
+    pos = 2,
+    cex = 1,
+    col = "white"
+  )
+}
+for (i in 1:nrow(anchor_corners)) {
+  rect(
+    anchor_corners[i, 1] * 224,
+    anchor_corners[i, 4] * 224,
+    anchor_corners[i, 3] * 224,
+    anchor_corners[i, 2] * 224,
+    border = "cyan",
+    lwd = 1,
+    lty = 3
+  )
+}
+
+dev.off()
+print(img)
+
+```
+
+
+Now it's time to address the possibly greatest mystery when you're new to object detection: How do you actually construct the ground truth input to the network?
+
+That is the so-called "matching problem".
+
+# Matching problem
+
+To train the network, we need to assign the ground truth boxes to the grid cells/anchor boxes.
+
+Assume we've already computed the Jaccard index (= IoU) for all ground truth box - grid cell combinations. We then use the following algorithm:
+
+1. For each ground truth object, find the grid cell it maximally overlaps with.
+
+2. For each grid cell, find the object it overlaps with most.
+
+3. In both cases, identify the _entity_ of greatest overlap as well as the _amount_ of overlap.
+
+4. When criterium (1) applies, it overrides criterium (2).
+
+4. When criterium (1) applies, set the amount overlap to a constant, high value: 1.99.
+
+5. Return the combined result, that is, for each grid cell, the object and amount of best (as per the above criteria) overlap.
+
+```{r}
+# overlaps shape is: number of ground truth objects * number of grid cells
+map_to_ground_truth <- function(overlaps) {
+  
+  # for each ground truth object, find maximally overlapping cell (crit. 1)
+  # measure of overlap, shape: number of ground truth objects
+  prior_overlap <- apply(overlaps, 1, max)
+  # which cell is this, for each object
+  prior_idx <- apply(overlaps, 1, which.max)
+  
+  # for each grid cell, what object does it overlap with most (crit. 2)
+  # measure of overlap, shape: number of grid cells
+  gt_overlap <-  apply(overlaps, 2, max)
+  # which object is this, for each cell
+  gt_idx <- apply(overlaps, 2, which.max)
+  
+  # set all definitely overlapping cells to respective object (crit. 1)
+  gt_overlap[prior_idx] <- 1.99
+  
+  # now still set all others to best match by crit. 2
+  # actually it's other way round, we start from (2) and overwrite with (1)
+  for (i in 1:length(prior_idx)) {
+    # iterate over all cells "absolutely assigned"
+    p <- prior_idx[i] # get respective grid cell
+    gt_idx[p] <- i # assign this cell the object number
+  }
+  
+  # return: for each grid cell, object it overlaps with most + measure of overlap
+  list(gt_overlap, gt_idx)
+  
+}
+```
+
+
+```{r}
+# compute IOU
+jaccard <- function(bbox, anchor_corners) {
+  bbox <- k_constant(bbox)
+  anchor_corners <- k_constant(anchor_corners)
+  intersection <- intersect(bbox, anchor_corners)
+  union <-
+    k_expand_dims(box_area(bbox), axis = 2)  + k_expand_dims(box_area(anchor_corners), axis = 1) - intersection
+  res <- intersection / union
+  res %>% k_eval()
+}
+
+# compute intersection for IOU
+intersect <- function(box1, box2) {
+  box1_a <- box1[, 3:4] %>% k_expand_dims(axis = 2)
+  box2_a <- box2[, 3:4] %>% k_expand_dims(axis = 1)
+  max_xy <- k_minimum(box1_a, box2_a)
+  
+  box1_b <- box1[, 1:2] %>% k_expand_dims(axis = 2)
+  box2_b <- box2[, 1:2] %>% k_expand_dims(axis = 1)
+  min_xy <- k_maximum(box1_b, box2_b)
+  
+  intersection <- k_clip(max_xy - min_xy, min = 0, max = Inf)
+  intersection[, , 1] * intersection[, , 2]
+  
+}
+
+box_area <- function(box) {
+  (box[, 3] - box[, 1]) * (box[, 4] - box[, 2]) ## these are corners!
+}
+
+```
+
+
+
+```{r}
+bbox_output <-
+  layer_conv_2d(
+    common,
+    filters = 4,
+    kernel_size = 3,
+    padding = "same",
+    name = "bbox_conv"
+  ) %>%
+  layer_reshape(target_shape = c(16, 4), name = "bbox_flatten") %>%
+  layer_activation("tanh") %>%
+  layer_lambda(
+    f = function(x) {
+      activation_centers <-
+        (x[, , 1:2] / 2 * gridsize) + anchors_tf[, 1:2]
+      activation_height_width <-
+        (x[, , 3:4] / 2 + 1) * anchors_tf[, 3:4]
+      # then convert to corners
+      activation_corners <-
+        k_concatenate(
+          list(
+            activation_centers - activation_height_width / 2,
+            activation_centers + activation_height_width / 2
+          )
+        )
+     activation_corners
+    }
+  )
+
+class_output <-
+  layer_conv_2d(
+    common,
+    filters = 21,
+    kernel_size = 3,
+    padding = "same",
+    name = "class_conv"
+  ) %>%
+  layer_reshape(target_shape = c(16, 21), name = "class_flatten")
+
+model <-
+  keras_model(inputs = input,
+              outputs = list(class_output, bbox_output))
+```
+
+#
