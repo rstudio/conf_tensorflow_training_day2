@@ -228,7 +228,7 @@ For the bounding box output, we apply a `tanh` activation so that values lie bet
 
 We'll skip over the subsequent `layer_lambda` (which does just that) and return to that topic later, when we've covered _anchors_.
 
-```{r}
+```{r, eval=FALSE}
 bbox_output <-
   layer_conv_2d(
     common,
@@ -342,6 +342,7 @@ Here, first, are the x resp. y coordinates of the centers of the anchor boxes.
 
 ```{r}
 cells_per_row <- 4
+gridsize <- 1/cells_per_row
 anchor_offset <- 1 / (cells_per_row * 2) 
 
 anchor_xs <-
@@ -719,7 +720,7 @@ The following gives us a 16x4 matrix of cells and the boxes they are responsible
 ```{r}
 orig_boxes <- rbind(xl, yt, xr, yb)
 # columns correspond to object boxes according to gt_idx
-gt_bbox <- boxes[, gt_idx]
+gt_bbox <- orig_boxes[, gt_idx]
 # set those with non-sufficient overlap to 0
 gt_bbox[, !pos] <- 0
 gt_bbox <- gt_bbox %>% t()
@@ -767,7 +768,7 @@ In the `layer_lambda`, we start from the actual anchor box centers, and move the
 We then convert these to anchor corners (same as we did above with the ground truth anchors, just operating on tensors this time).
 
 
-```{r}
+```{r, eval=TRUE}
 bbox_output <-
   layer_conv_2d(
     common,
@@ -776,9 +777,9 @@ bbox_output <-
     padding = "same",
     name = "bbox_conv"
   ) %>%
+  layer_permute(dims = c(2,1,3)) %>%
   layer_reshape(target_shape = c(16, 4), name = "bbox_flatten") %>%
   layer_activation("tanh") %>%
-  layer_permute(dims = c(2,1,3)) %>%
   layer_lambda(
     f = function(x) {
       activation_centers <-
@@ -811,3 +812,43 @@ model <-
 The last ingredient missing is the loss function.
 
 # Loss 
+
+To the model's two outputs - a classification output and a regression output - correspond two losses, just as in the basic classification + localization model. Only this time, we have 16 grid cells to take care of.
+
+The class loss uses `tf$nn$sigmoid_cross_entropy_with_logits` to compute the binary crossentropy between targets and unnormalized network activation, summing over grid cells and dividing by the number of classes.
+
+```{r}
+# shapes are batch_size * 16 * 21
+class_loss <- function(y_true, y_pred) {
+  # leave out background for class loss calculation
+  class_loss  <-
+    tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true[, , 1:20], logits = y_pred[, , 1:20])
+
+  class_loss <-
+    tf$reduce_sum(class_loss) / tf$cast(n_classes, "float32")
+  
+  class_loss
+}
+
+```
+
+The localization loss 
+
+```{r}
+# shapes are batch_size * 16 * 4
+bbox_loss <- function(y_true, y_pred) {
+  # calculate localization loss for all boxes where ground truth was assigned some overlap
+  pos <- y_true[, , 1] + y_true[, , 3]> 0
+  pos <-
+    pos %>% k_cast(tf$float32) %>% k_reshape(shape = c(batch_size, 16, 1))
+  pos <-
+    tf$tile(pos, multiples = k_constant(c(1L, 1L, 4L), dtype = tf$int32))
+  diff <- y_pred - y_true
+  diff <- diff %>% tf$multiply(pos)
+  loc_loss <- diff %>% tf$abs() %>% tf$reduce_mean()
+  
+  loc_loss * 100
+}
+
+```
+

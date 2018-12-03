@@ -28,7 +28,7 @@ quiz(
     answer("... we would have to change the data generator to use multi-hot encoding", correct = TRUE),
     answer("we should use a sigmoid activation instead of softmax", correct = TRUE),
     answer("we should use mean squared error loss instead of categorical crossentropy"),
-    answer("we should use binary crossentropy instead of categorical crossentropy", correct = TRUE),
+    answer("we should use binary crossentropy instead of categorical crossentropy", correct = TRUE)
   )
 )
 ```

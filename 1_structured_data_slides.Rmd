@@ -285,7 +285,7 @@ c1 <- Citet(bib, key = "MikolovSCCD13", .opts = list(cite.style = "authoryear"))
 #### But not just words or sentences can be embedded... we can embed relations/concepts/__entities__ of all kinds
 
 ---
-### So why would we do that?
+# So why would we do that?
 
 <br />
 
