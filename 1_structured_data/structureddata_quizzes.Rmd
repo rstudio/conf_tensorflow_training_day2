@@ -29,23 +29,25 @@ Note: All answers in this quiz will be indicated correct as we just want to see 
 ```{r quiz1}
 quiz(
   question("Which categorical variable did you choose?",
-    answer("workclass"),
-    answer("education"),
-    answer("marital_status"),
-    answer("occupation"),
-    answer("relationship"),
-    answer("sex"),
-    answer("race"),
-    answer("native_country")
+    answer("workclass", correct = TRUE),
+    answer("education", correct = TRUE),
+    answer("marital_status", correct = TRUE),
+    answer("occupation", correct = TRUE),
+    answer("relationship", correct = TRUE),
+    answer("sex", correct = TRUE),
+    answer("race", correct = TRUE),
+    answer("native_country", correct = TRUE),
+    type = "single"
   ),
   question("In which region is the final accuracy on the validation split?",
-    answer("lower than 0.8"),
-    answer("between 0.8 and 0.82"),
-    answer("between 0.82 and 0.83"),
-    answer("between 0.83 and 0.84"),
-    answer("between 0.84 and 0.85"),
-    answer("between 0.85 and 0.86"),
-    answer("higher than 0.86")
+    answer("lower than 0.8", correct = TRUE),
+    answer("between 0.8 and 0.82", correct = TRUE),
+    answer("between 0.82 and 0.83", correct = TRUE),
+    answer("between 0.83 and 0.84", correct = TRUE),
+    answer("between 0.84 and 0.85", correct = TRUE),
+    answer("between 0.85 and 0.86", correct = TRUE),
+    answer("higher than 0.86", correct = TRUE),
+    type = "single"
   )
 )
 ```
