@@ -20,6 +20,7 @@ p {
 }
 h1 {
   color: #4287c7;
+  text-align: center;
 }
 h2 {
   color: #585858;
@@ -34,9 +35,10 @@ a, a > code {
 }
 .footnote {
   position: absolute;
-  bottom: 3em;
+  bottom: 2em;
   padding-right: 4em;
   color: #4287c7;
+  font-size: 0.7em;
 }
 .remark-code, .remark-inline-code {
   background-color: #c8c8c8;
@@ -155,6 +157,15 @@ thead, tfoot, tr:nth-child(even) { background: #eee }
 }
 
 .remark-slide-content {
-  padding-left: 180px;
+  padding-left: 120px;
   padding-right: 40px;
+}
+
+.large { font-size: 130% }
+.small { font-size: 70% }
+
+/*.mjx-char { font-size: 160% }*/
+
+.remark-code-line-highlighted {
+    background-color: #d9f4f3;
 }

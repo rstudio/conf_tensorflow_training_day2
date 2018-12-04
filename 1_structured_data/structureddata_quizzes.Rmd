@@ -12,25 +12,40 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Using the Keras Functional API 
 
-The quiz starts from the `heterogeneous_data_1.Rmd` notebook.
+The quiz starts from the `1_heterogeneous_data_1.Rmd` notebook.
 
 __Note that we've copied common chunks (chunks you can re-use) to the end of the notebook so you don't have to start from scratch__.
 
 ### Quiz 1
 
-On the same prediction task, use the Keras Functional API such that:
+On the same prediction task, now use the Keras Functional API.
 
-- each categorical variable has its own input
-- the continuous inputs share one single input
+Use all of the continuous variables and have them share a single input.
 
-Train for 20 epochs just as we did before.
+In addition, add a categorical variable of your choice (this will need to get its own input).
+
+Note: All answers in this quiz will be indicated correct as we just want to see the actual accuracy you obtained.
 
 ```{r quiz1}
 quiz(
+  question("Which categorical variable did you choose?",
+    answer("workclass"),
+    answer("education"),
+    answer("marital_status"),
+    answer("occupation"),
+    answer("relationship"),
+    answer("sex"),
+    answer("race"),
+    answer("native_country")
+  ),
   question("In which region is the final accuracy on the validation split?",
-    answer("between 0.7 and 0.8"),
-    answer("between 0.8 and 0.9", correct = TRUE),
-    answer("between 0.9 and 0.95")
+    answer("lower than 0.8"),
+    answer("between 0.8 and 0.82"),
+    answer("between 0.82 and 0.83"),
+    answer("between 0.83 and 0.84"),
+    answer("between 0.84 and 0.85"),
+    answer("between 0.85 and 0.86"),
+    answer("higher than 0.86")
   )
 )
 ```
@@ -45,10 +60,10 @@ Train for 20 epochs just as we did before.
 
 ```{r quiz2}
 quiz(
-  question("What can you say regarding accuracy on salary prediction on the one hand, and mean squared error on age on the other hand?",
-    answer("accuracy on salary is about the same as before, MSE on age is around 50"),
-    answer("accuracy on salary is noticeably worse, MSE on age is around 50"),
-    answer("accuracy on salary is noticeably worse, MSE on age is around 100", correct = TRUE)
+  question("What can you say regarding accuracy on salary prediction on the one hand, and mean squared error on age on the other hand? We're referring to the validation set.",
+    answer("accuracy on salary is about the same as before, MSE on age is < 100"),
+    answer("accuracy on salary is noticeably worse, MSE on age is < 100"),
+    answer("accuracy on salary is noticeably worse, MSE on age is > 100", correct = TRUE)
   )
 )
 ```
@@ -56,11 +71,11 @@ quiz(
 
 ## Embeddings for uncovering relationships 
 
-All quizzes in this section start from the `embeddings_so.Rmd` notebook.
+All quizzes in this section start from the `2_embeddings_so.Rmd` notebook.
 
 ### Quiz 1
 
-We just ran the embeddings model in `embeddings_so.Rmd`. 
+We just ran the embeddings model in `2_embeddings_so.Rmd`. 
 
 Find the cosine similarity between the embedded representation of `R` and
 
@@ -120,6 +135,17 @@ Some concrete ideas:
 - try including salesperson ID
 
 Feel free to try whatever you like best / comes to mind!
+
+```{r quiz5}
+quiz(
+  question("Were you able to improve accuracy on the validation set? If so, in what area did you land?",
+    answer("No."),
+    answer("higher than 0.966"),
+    answer("higher than 0.97"),
+    answer("higher than 0.975")
+  )
+)
+```
 
 ## Embeddings on the Census Income dataset (optional)
 

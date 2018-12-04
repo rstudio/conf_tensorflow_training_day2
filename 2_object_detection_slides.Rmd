@@ -6,14 +6,13 @@ output:
   xaringan::moon_reader:
     lib_dir: libs
     nature:
-      highlightStyle: solarized
+      highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
       ratio: '16:9'
     css: 
     - theme/rstudio.css
   #  - theme/custom.css
-
 
 ---
 
@@ -67,9 +66,9 @@ class: inverse, middle, center
  
 - We'll use the training set from the [2007 challenge](http://host.robots.ox.ac.uk/pascal/VOC/voc2007/index.html)
 
-- Number of object classes in 2007: 20
+- Number of object classes: 20
 
-- Number of training images:
+- Number of training images: 2501
 
 - We focus on concepts and the how-to, not accuracy
 
@@ -100,9 +99,9 @@ class: inverse, middle, center
 ---
 # Demo/exercise: Single-object classification and localization
 
-- Notebook: [classification_localization.Rmd](2_object_detection/classification_localization.Rmd)
+- Notebook: [2_object_detection/1_classification_localization.Rmd](2_object_detection/1_classification_localization.Rmd)
 
-- Quiz: [2_objectdetection_quizzes.Rmd](2_object_detection/2_objectdetection_quizzes.Rmd)
+- Quiz: [2_object_detection/object_detection_quizzes.Rmd](2_object_detection/object_detection_quizzes.Rmd)
 
 
 ---
@@ -132,7 +131,7 @@ class: inverse, middle, center
 c1 <- Citet(bib, key = "SermanetEZMFL13", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] cf. Sermanet, P, D. Eigen, X. Zhang, et al. (2013). "OverFeat: Integrated Recognition, Localization and Detection using Convolutional Networks". ]
+.footnote[[1] cf. Sermanet, P, D. Eigen, X. Zhang, et al. (2013). OverFeat: Integrated Recognition, Localization and Detection using Convolutional Networks. ]
 
 
 ![](2_object_detection/images/overfeat.png)
@@ -152,11 +151,13 @@ c2 <- Citet(bib, key = "Girshick15", .opts = list(cite.style = "authoryear"))
 c3 <- Citet(bib, key = "RenHG015", .opts = list(cite.style = "authoryear"))
 ```
 
-.footnote[[1] cf. Girshick, R. B. (2015). "Fast R-CNN".
+<span class="footnote">
+[1] cf. Girshick, R. B. (2015). Fast R-CNN.<br />
+[2] cf. Girshick, R. B, J. Donahue, T. Darrell, et al. (2013). Rich feature hierarchies for accurate object detection and semantic segmentation.<br />
+[3] cf. Ren, S, K. He, R. B. Girshick, et al. (2015). Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks.
+</span>
 
-[2] cf. Girshick, R. B, J. Donahue, T. Darrell, et al. (2013). "Rich feature hierarchies for accurate object detection and semantic segmentation".
 
-[3] cf. Ren, S, K. He, R. B. Girshick, et al. (2015). "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks"]
 
 
 ---
@@ -180,7 +181,7 @@ Receptive field
 ---
 class: inverse, middle, center
 
-# Coding a basic SSD (__Single-Shot Multibox Detector__)
+# Coding a basic SSD (Single-Shot Multibox Detector)
 
 
 ---
@@ -191,7 +192,7 @@ class: inverse, middle, center
  - have one anchor box per cell (thus, 16 anchor boxes)
  - work with one scale of image only 
 
-- Notebook: [object_detection_ssd.Rmd](2_object_detection/object_detection_ssd.Rmd)
+- Notebook: [2_object_detection/2_object_detection_ssd.Rmd](2_object_detection/2_object_detection_ssd.Rmd)
 
 
 ---

@@ -187,12 +187,15 @@ Now go to `1_structureddata_quizzes.rmd` where you will be asked to use the Func
 
 # Quiz 1
 
-On the same prediction task, use the Keras Functional API such that:
+On the same prediction task, now use the Keras Functional API.
 
-- each categorical variable has its own input
-- while the continuous inputs share one single input
+Use all of the continuous variables and have them share a single input.
 
-We've copied some common code for you from above so you don't have to copy-paste the individual chunks.
+In addition, add a categorical variable of your choice (this will need to get its own input).
+In the quiz, you'll be asked to indicate the variable you chose and the accuracy you obtained.
+
+We've copied some common, reusable code for you from above so you don't have to copy-paste the individual chunks.
+
 
 ```{r}
 library(keras)
@@ -244,36 +247,14 @@ Now please continue from here.
 ```{r}
 input_continuous <- layer_input(shape = 6)
 input_workclass <- layer_input(shape = 8)
-input_education <- layer_input(shape = 17)
-input_marital_status <- layer_input(shape = 8)
-input_occupation <- layer_input(shape = 15)
-input_relationship <- layer_input(shape = 7)
-input_race <- layer_input(shape = 6)
-input_sex <- layer_input(shape = 3)
-input_native_country <- layer_input(shape = 42)
 
 dense_continuous <- input_continuous %>% layer_dense(units = 64)
 dense_workclass <- input_workclass %>% layer_dense(units = 64)
-dense_education <- input_education %>% layer_dense(units = 64)
-dense_marital_status <- input_marital_status %>% layer_dense(units = 64)
-dense_occupation <- input_occupation %>% layer_dense(units = 64)
-dense_relationship <- input_relationship %>% layer_dense(units = 64)
-dense_race <- input_race %>% layer_dense(units = 64)
-dense_sex <- input_sex %>% layer_dense(units = 64)
-dense_native_country <- input_native_country %>% layer_dense(units = 64)
 
 output <- layer_concatenate(
   list(
     dense_continuous,
-    dense_workclass,
-    dense_education,
-    dense_marital_status,
-    dense_occupation,
-    dense_relationship,
-    dense_race,
-    dense_sex,
-    dense_native_country
-  )
+    dense_workclass)
 ) %>%
   layer_dropout(rate = 0.5) %>%
   layer_dense(units = 64, activation = "relu") %>%
@@ -285,14 +266,7 @@ output <- layer_concatenate(
 model <- keras_model(
   inputs = list(
     input_continuous,
-    input_workclass,
-    input_education,
-    input_marital_status,
-    input_occupation,
-    input_relationship,
-    input_race,
-    input_sex,
-    input_native_country
+    input_workclass
   ),
   outputs = output
 )
@@ -302,14 +276,7 @@ model %>% compile(loss = "binary_crossentropy", optimizer = "adam", metrics = "a
 model %>% fit(
   x = list(
     x_train_continuous,
-    workclass,
-    education,
-    marital_status,
-    occupation,
-    relationship,
-    race,
-    sex,
-    native_country
+    workclass
   ),
   y = y_train,
   epochs = 20,
@@ -374,35 +341,14 @@ c(workclass, education, marital_status, occupation, relationship, race, sex, nat
 
 input_continuous <- layer_input(shape = 5)
 input_workclass <- layer_input(shape = 8)
-input_education <- layer_input(shape = 17)
-input_marital_status <- layer_input(shape = 8)
-input_occupation <- layer_input(shape = 15)
-input_relationship <- layer_input(shape = 7)
-input_race <- layer_input(shape = 6)
-input_sex <- layer_input(shape = 3)
-input_native_country <- layer_input(shape = 42)
 
 dense_continuous <- input_continuous %>% layer_dense(units = 64)
 dense_workclass <- input_workclass %>% layer_dense(units = 64)
-dense_education <- input_education %>% layer_dense(units = 64)
-dense_marital_status <- input_marital_status %>% layer_dense(units = 64)
-dense_occupation <- input_occupation %>% layer_dense(units = 64)
-dense_relationship <- input_relationship %>% layer_dense(units = 64)
-dense_race <- input_race %>% layer_dense(units = 64)
-dense_sex <- input_sex %>% layer_dense(units = 64)
-dense_native_country <- input_native_country %>% layer_dense(units = 64)
 
 common <- layer_concatenate(
   list(
     dense_continuous,
-    dense_workclass,
-    dense_education,
-    dense_marital_status,
-    dense_occupation,
-    dense_relationship,
-    dense_race,
-    dense_sex,
-    dense_native_country
+    dense_workclass
   )
 ) %>%
   layer_dropout(rate = 0.5) %>%
@@ -419,14 +365,7 @@ output_age <- common %>% layer_dense(units = 1, name = "output_age")
 model <- keras_model(
   inputs = list(
     input_continuous,
-    input_workclass,
-    input_education,
-    input_marital_status,
-    input_occupation,
-    input_relationship,
-    input_race,
-    input_sex,
-    input_native_country
+    input_workclass
   ),
   outputs = list(
     output_salary,
@@ -442,14 +381,7 @@ model %>% compile(
 model %>% fit(
   x = list(
     x_train_continuous,
-    workclass,
-    education,
-    marital_status,
-    occupation,
-    relationship,
-    race,
-    sex,
-    native_country
+    workclass
   ),
   y = list(y_train_salary, y_train_age),
   epochs = 20,

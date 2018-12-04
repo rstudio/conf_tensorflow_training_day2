@@ -187,12 +187,14 @@ Now go to `1_structureddata_quizzes.rmd` where you will be asked to use the Func
 
 # Quiz 1
 
-On the same prediction task, use the Keras Functional API such that:
+On the same prediction task, now use the Keras Functional API.
 
-- each categorical variable has its own input
-- while the continuous inputs share one single input
+Use all of the continuous variables and have them share a single input.
 
-We've copied some common code for you from above so you don't have to copy-paste the individual chunks.
+In addition, add a categorical variable of your choice (this will need to get its own input).
+In the quiz, you'll be asked to indicate the variable you chose and the accuracy you obtained.
+
+We've copied some common, reusable code for you from above so you don't have to copy-paste the individual chunks.
 
 ```{r}
 library(keras)

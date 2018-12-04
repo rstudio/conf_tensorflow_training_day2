@@ -6,14 +6,13 @@ output:
   xaringan::moon_reader:
     lib_dir: libs
     nature:
-      highlightStyle: solarized
+      highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
       ratio: '16:9'
     css: 
     - theme/rstudio.css
-  #  - theme/custom.css
-
+    # -theme/custom.css
 
 
 ---
@@ -126,23 +125,20 @@ input2 <- layer_input(shape = 1)
 dense1 <- input1 %>% layer_dense(units = 32, activation = "relu")
 dense2 <- input2 %>% layer_dense(units = 32, activation = "relu")
 concat <- layer_concatenate(list(dense1, dense2))
-output1 <- concat %>%
-  layer_dense(units = 1, activation = "sigmoid", name = "class_output")
-output2 <- concat %>%
-  layer_dense(units = 1, name = "regression_output")
+
+output1 <- concat %>% layer_dense(units = 1, activation = "sigmoid", name = "class_output")
+output2 <- concat %>% layer_dense(units = 1, name = "regression_output")
 
 model <- keras_model(inputs = list(input1, input2), outputs = list(output1, output2))
 
 model %>% compile(
-  loss = list(class_output = "binary_crossentropy",
-              regression_output = "mse"),
+  loss = list(class_output = "binary_crossentropy", regression_output = "mse"),
   optimizer = "adam",
-  metrics = list(class_output = "binary_crossentropy",
-                 regression_output = "mse"))
+  metrics = list(class_output = "binary_crossentropy", regression_output = "mse"))
+
 model %>% fit(
   x = list(x1, x2),
-  y = list(y1, y2),
-  epochs = 20
+  y = list(y1, y2)
 )
 
 ```
@@ -151,8 +147,17 @@ model %>% fit(
 ---
 # Multiple inputs - Question answering example
 
+Example task:
 
-<br />
+- Question answering: The NN is given a source text (sentence, paragraph) and a question, and should answer that question
+
+
+![](1_structured_data/images/fapi_multiple_inputs_2_scaled.png)
+
+
+---
+# Multiple inputs - Question answering example
+
 
 ```{r, eval=FALSE}
 text_input <- layer_input(shape = list(NULL), name = "text")
@@ -170,6 +175,17 @@ concatenated <- layer_concatenate(list(encoded_text, encoded_question))
 answer <- concatenated %>%
   layer_dense(units = 5000, activation = "softmax")
 ```
+
+---
+# Multiple outputs - Multiple feature prediction from tweets
+
+Example task:
+
+- Predict age, income and gender from a series of tweets of a person
+
+<br />
+
+![](1_structured_data/images/fapi_multiple_outputs_2.png)
 
 
 ---
@@ -203,6 +219,13 @@ model <- keras_model(
 ---
 # Inception Module
 
+<br />
+
+<img src="1_structured_data/images/fapi_inception.png" style = "width: 600px; margin-left: 200px;" />
+
+---
+# Inception Module
+
 ```{r, eval=FALSE}
 branch_a <- input %>%
   layer_conv_2d(filters = 128, kernel_size = 1, activation = "relu",
@@ -225,6 +248,14 @@ branch_d <- input %>%
 
 output <- layer_concatenate(list(branch_a, branch_b, branch_c, branch_d))
 ```
+
+---
+# Residual connections
+
+<br />
+
+<img src="1_structured_data/images/fapi_residual.png" style = "margin-left: 320px; " />
+
 
 ---
 # Residual connections
@@ -262,9 +293,9 @@ output <- layer_add(list(output, residual))
 
 - The dataset has continuous as well as categorical variables
 
-- Notebook to follow along: [heterogeneous_data_1.Rmd](1_structured_data/heterogeneous_data_1.Rmd)
+- Notebook to follow along: [1_structured_data/1_heterogeneous_data_1.Rmd](1_structured_data/1_heterogeneous_data_1.Rmd) 
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
+- Quiz: [1_structured_data/structured_data_quizzes.Rmd](1_structured_data/structured_data_quizzes.Rmd)
 
 ---
 class: inverse, middle, center
@@ -274,7 +305,7 @@ class: inverse, middle, center
 ---
 # Most people know embeddings for this<sup>1</sup>
 
-![](1_structured_data/images/mikolov_resized.png)
+<img src="1_structured_data/images/mikolov.png" width = 500px />
 
 ```{r, echo=FALSE, results=FALSE}
 c1 <- Citet(bib, key = "MikolovSCCD13", .opts = list(cite.style = "authoryear"))
@@ -318,9 +349,11 @@ class: inverse, middle, center
  - ...
  
 - Can also calculate similarity between points
+
 - For example, using _cosine similarity_:
 
 $$cos(\theta) = \frac{\mathbf{x^ t}\mathbf{y}}{\mathbf{||x||}\space\mathbf{||y||}}$$
+
 
 Let's see this in action!
 
@@ -331,13 +364,13 @@ Let's see this in action!
 
 - The [StackOverflow developer survey](https://insights.stackoverflow.com/survey/2018) has lots of categorical variables that can be used as predictors and/or as targets
 
-- Notebook: [embeddings_so.Rmd](1_structured_data/embeddings_so.Rmd)
+- Notebook: [1_structured_data/2_embeddings_so.Rmd](1_structured_data/2_embeddings_so.Rmd)
 
-- Data: [survey_results_public.csv](1_structured_data/data/survey_results_public.csv)
+- Data: [1_structured_data/data/survey_results_public.csv](1_structured_data/data/survey_results_public.csv)
 
-- Variable explanations: [survey_results_schema.csv](1_structured_data/data/survey_results_schema.csv)
+- Variable explanations: [1_structured_data/data/survey_results_schema.csv](1_structured_data/data/survey_results_schema.csv)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
+- Quiz: [1_structured_data/structured_data_quizzes.Rmd](1_structured_data/structured_data_quizzes.Rmd)
 
 <br />
 
@@ -375,26 +408,26 @@ c1 <- Citet(bib, key = "GuoB16", .opts = list(cite.style = "authoryear"))
 
 - `sales` dataset from the `DMwR2` package
 
-- Notebook: [embeddings_fraud.Rmd](1_structured_data/embeddings_so.Rmd)
+- Notebook: [1_structured_data/3_embeddings_fraud.Rmd](1_structured_data/3_embeddings_fraud.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
+- Quiz: [1_structured_data/structured_data_quizzes.Rmd](1_structured_data/structured_data_quizzes.Rmd)
 
 <br />
 
 Again, we'll go through the notebook together and then, you'll try to further improve accuracy.
 
 ---
-# Exercise: Predict salary on the "Census Income" dataset (Part 2) (Optional)
+# Exercise: "Census Income" dataset (Part 2) (Optional)
 
 <br />
 
-- On the now familiar "Census Income" dataset, see if you can improve accuracy using embeddints.
+- On the now familiar "Census Income" dataset, see if you can improve accuracy using embeddings.
 
 - Before we start: How probable do you think it is you can improve accuracy there?
 
-- Notebook to follow along: [heterogeneous_data_2.Rmd](1_structured_data/heterogeneous_data_1.Rmd)
+- Notebook to follow along: [1_structured_data/4_heterogeneous_data_2.Rmd](1_structured_data/4_heterogeneous_data_2.Rmd)
 
-- Quiz: [1_structureddata_quizzes.Rmd](1_structured_data/1_structureddata_quizzes.Rmd)
+- Quiz: [1_structured_data/structured_data_quizzes.Rmd](1_structured_data/1_structured_data_quizzes.Rmd)
 
 ---
 # Wrapup/feedback

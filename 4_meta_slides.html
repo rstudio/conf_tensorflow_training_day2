@@ -79,9 +79,10 @@ Examples:
 
 
 
-.footnote[[1] See chapter 15 in Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.
-
-[2] Also, Bengio, Y, A. C. Courville and P. Vincent (2012). Unsupervised Feature Learning and Deep Learning: A Review and New Perspectives.]
+&lt;span class="footnote"&gt;
+[1] See chapter 15 in Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.&lt;br /&gt;
+[2] Also, Bengio, Y, A. C. Courville and P. Vincent (2012). Unsupervised Feature Learning and Deep Learning: A Review and New Perspectives.
+&lt;/span&gt;
 
 ---
 # Example: Zero-shot learning with DeVise
@@ -145,7 +146,7 @@ Let's see an example!
 # Variational autoencoders (VAEs)
 
 
-![](4_meta/images/dpkingmavae_scaled.png)
+&lt;img src="4_meta/images/dpkingmavae.png" style = "width: 450px; " /&gt;
 
 
 ---
@@ -166,7 +167,8 @@ Let's see an example!
 
 Minimize: Evidence lower bound (ELBO)
 
-`$$ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$`
+`$$\Large ELBO\ = \ E[log\ p(x|z)]\ -\ KL(q(z)||p(z))$$`
+
 
 ---
 # VAE variants
@@ -224,16 +226,15 @@ class: inverse, middle, center
 ---
 # Eager execution exercise
 
-- notebook: [eager_intro.Rmd](4_meta/eager_intro.Rmd)
+- notebook: [4_meta/1_eager_intro.Rmd](4_meta/1_eager_intro.Rmd)
 
-- exercise: [4_meta_quizzes.Rmd](4_meta/4_meta_quizzes.Rmd)
+- exercise: [4_meta/meta_quizzes.Rmd](4_meta/meta_quizzes.Rmd)
 
 
 ---
 class: inverse, middle, center
 
 # Variational autoencoder (MMD-VAE)
-
 
 ---
 
@@ -261,7 +262,7 @@ class: inverse, middle, center
 ---
 # MMD-VAE, main steps (1): data streaming
 
-We use `tfdatasets` to stream the data.
+We use _tfdatasets_ to stream the data.
 
 
 ```r
@@ -317,6 +318,7 @@ encoder_model &lt;- function(name = NULL) {
 ```
 
 
+
 ---
 # MMD-VAE, main steps (3): decoder model
 
@@ -345,6 +347,7 @@ decoder_model &lt;- function(name = NULL) {
     }})}
 ```
 
+
 ---
 # MMD-VAE, main steps (4): MMD loss
 
@@ -352,7 +355,7 @@ decoder_model &lt;- function(name = NULL) {
 
 - Concretely, similarity between distributions is estimated using a _kernel_, such as the Gaussian kernel
 
-`$$k(z,z')=\frac{e^{||z-z'||}}{2\sigma^2}$$`
+`$$\Large k(z,z')=\frac{e^{||z-z'||}}{2\sigma^2}$$`
 
 - The idea then is:
 
@@ -360,7 +363,7 @@ decoder_model &lt;- function(name = NULL) {
 
 If two distributions are identical, the average __within-distribution__ similarity should be identical to the average __between-distributions__ similarity:
 
-`$$MMD(p(z)||q(z))=E_{p(z),p(z')}[k(z,z')]+E_{q(z),q(z')}[k(z,z')]−2E_{p(z),q(z')}[k(z,z')]$$`
+`$$\Large MMD(p(z)||q(z))=E_{p(z),p(z')}[k(z,z')]+E_{q(z),q(z')}[k(z,z')]−2E_{p(z),q(z')}[k(z,z')]$$`
 
 ---
 # MMD-VAE, main steps (4): MMD loss (code)
@@ -441,7 +444,7 @@ And here we see how the different types of clothing cluster in latent space.
 # Variational autoencoders: Exercise
 
 
-Exercise: [4_meta_quizzes.Rmd](4_meta/4_meta_quizzes.Rmd)
+Exercise: [4_meta/meta_quizzes.Rmd](4_meta/meta_quizzes.Rmd)
 
 
 ---
@@ -510,7 +513,7 @@ LIME provides sparse linear approximations by
 ---
 # LIME (1): Create an explainer
 
-We first create an _explainer_ using the `lime` factory function
+We first create an _explainer_ using the _lime_ factory function
 
 
 ```r
@@ -523,7 +526,7 @@ explainer &lt;- lime(img_path, as_classifier(model, labels), image_prep)
 
 &lt;br /&gt;
 
-And here's the preprocessing function that has to be passed to `lime`
+And here's the preprocessing function that has to be passed to _lime_
 
 
 ```r
@@ -589,7 +592,7 @@ plot_superpixels(img_path, colour = "cyan",
 ---
 # LIME (4): Get explanation
 
-Call `explain` with the path to the image, the `explainer`, and optional parameters:
+Call _explain_ with the path to the image, the _explainer_, and optional parameters:
 
 
 ```r
@@ -725,11 +728,11 @@ heatmap &lt;- apply(conv_layer_output_value, c(1,2), mean)
 
 The notebooks listed are for later reference; they are not needed for this exercise.
 
-- notebook: [lime.Rmd](4_meta/lime.Rmd) 
+- notebook: [4_meta/3_lime.Rmd](4_meta/3_lime.Rmd) 
 
-- notebook: [class_activation_maps.Rmd](4_meta/class_activation_maps.Rmd) 
+- notebook: [4_meta/4_class_activation_maps.Rmd](4_meta/4_class_activation_maps.Rmd) 
 
-- exercise: [4_meta_quizzes.Rmd](4_meta/4_meta_quizzes.Rmd)
+- exercise: [4_meta/meta_quizzes.Rmd](4_meta/meta_quizzes.Rmd)
 
 ---
 # Interpretability, a citation to go ... 
@@ -780,13 +783,11 @@ class: inverse, middle, center
 
 
 
-.footnote[
-[1] cf. Gal, Y. and Z. Ghahramani (2016). Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning.
-
-[2] cf. Gal, Y, J. Hron and A. Kendall (2017). Concrete Dropout.
-
+&lt;span class="footnote"&gt;
+[1] cf. Gal, Y. and Z. Ghahramani (2016). Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning.&lt;br /&gt;
+[2] cf. Gal, Y, J. Hron and A. Kendall (2017). Concrete Dropout.&lt;br /&gt;
 [3] cf. Kendall, A. and Y. Gal (2017). What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?
-]
+&lt;/span&gt;
 
 ---
 # Types of uncertainty
@@ -860,7 +861,7 @@ ConcreteDropout &lt;- R6::R6Class("ConcreteDropout",
 ---
 # Dropout model (1)
 
-This example has 3 hidden dense layers each wrapped with `ConcreteDropout`.
+This example has 3 hidden dense layers each wrapped with _ConcreteDropout_.
 
 
 ```r
@@ -905,13 +906,13 @@ model &lt;- keras_model(input, output)
 
 Instead of mean squared error we use a cost function that does not treat all estimates alike:
 
-`$$\frac{1}{N} \sum_i{\frac{1}{2 \hat{\sigma}^2_i} \ (\mathbf{y}_i - \mathbf{\hat{y}}_i)^2 + \frac{1}{2} log \ \hat{\sigma}^2_i}$$`
+`$$\Large \frac{1}{N} \sum_i{\frac{1}{2 \hat{\sigma}^2_i} \ (\mathbf{y}_i - \mathbf{\hat{y}}_i)^2 + \frac{1}{2} log \ \hat{\sigma}^2_i}$$`
 
 In addition to the target vs. prediction check, this cost function contains two regularization terms: 
 
-- `\(\frac{1}{2 \hat{\sigma}^2_i}\)` downweights the high-uncertainty predictions in the loss function. The model is encouraged to indicate high uncertainty when its predictions are false.
+- `\(\Large \frac{1}{2 \hat{\sigma}^2_i}\)` downweights the high-uncertainty predictions in the loss function. The model is encouraged to indicate high uncertainty when its predictions are false.
 
-- `\(\frac{1}{2} log \ \hat{\sigma}^2_i\)` makes sure the network does not simply report high uncertainty everywhere.
+- `\(\large \frac{1}{2} log \ \hat{\sigma}^2_i\)` makes sure the network does not simply report high uncertainty everywhere.
 
 ---
 # Heteroscedastic loss (2)
@@ -1072,7 +1073,7 @@ eprint: 1706.02262. URL:
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"highlightStyle": "solarized",
+"highlightStyle": "github",
 "highlightLines": true,
 "countIncrementalSlides": false,
 "ratio": "16:9"
