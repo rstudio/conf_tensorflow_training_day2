@@ -32,13 +32,15 @@ BibOptions(check.entries = FALSE,
 bib <- ReadBib("2_object_detection/bibliography.bib", check = FALSE)
 ```
 
-# Topics
+# Learning objectives
 
-- Road to object detection: Single-object classification and localization
+- Perform classification and localization on a single object 
 
-- Introduction to multiple-object detection
+- Important concepts in multiple-object detection
 
-- Coding a basic SSD (__Single-Shot Multibox Detector__)
+- Understand how to code a _very_ basic version of SSD (__Single-Shot Multibox Detector__)
+
+- Understand the options to improve on this basic detector
 
 ---
 class: inverse, middle, center
@@ -87,7 +89,7 @@ class: inverse, middle, center
 
  - often trained with mean absolute error
 
-- Predict pixel coordinates of box corners (`x_left`, `y_top`, `x_right`, `y_bottom`)
+- Predict pixel coordinates of box corners (_x_left_, _y_top_, _x_right_, _y_bottom_)
 
 - Relevant metric is __Intersection over Union__ (__IOU__), also known as Jaccard index<sup>1</sup>
 
@@ -163,9 +165,15 @@ c3 <- Citet(bib, key = "RenHG015", .opts = list(cite.style = "authoryear"))
 ---
 # Single-shot detectors
 
-"Synchronous sliding window" (à la _Overfeat_) enhanced by idea of __anchor boxes__
+"Synchronous sliding window" (à la _Overfeat_) enhanced by idea of __anchor boxes__<sup>1</sup>
 
 ![](2_object_detection/images/ssd_1.png)
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "LiuAESR15", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[[1] illustration from: Liu, W, D. Anguelov, D. Erhan, et al. (2015). SSD: Single Shot MultiBox Detector.]
 
 ---
 # Dense (Yolo v1/2) vs. fully convolutional

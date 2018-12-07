@@ -8,6 +8,7 @@ editor_options:
 ---
 
 ```{r}
+library(tensorflow)
 library(keras)
 library(rjson)
 library(magick)
@@ -106,7 +107,8 @@ catinfo
 ```
 
 ```{r}
-classes <- catinfo$name
+class_names <- c(catinfo$name, "bg")
+n_classes <- 20
 ```
 
 ```{r}
@@ -170,7 +172,7 @@ model <- keras_model(
 We again start with Xception as the feature extractor.
 
 ```{r}
-feature_extractor <- application_xception(
+feature_extractor <- application_resnet50(
   include_top = FALSE,
   input_shape = c(224, 224, 3)
 )
@@ -221,7 +223,8 @@ class_output <-
     padding = "same",
     name = "class_conv"
   ) %>%
-  layer_reshape(target_shape = c(16, 21), name = "class_flatten")
+  layer_permute(dims = c(2,1,3)) %>%
+  layer_reshape(target_shape = c(16, 21), name = "class_output")
 ```
 
 For the bounding box output, we apply a `tanh` activation so that values lie between -1 and 1. This is because they will be used to compute offsets to the 4x4 grid.
@@ -254,12 +257,13 @@ bbox_output <-
           )
         )
      activation_corners
-    }
+    },
+    name = "bbox_output"
   )
 ```
 
 
-Now that we have a model, we need to step back and get the data into a from it can work with.
+Now that we have a model, we need to step back and get the data into a form it can work with.
 
 # General preprocessing 
 
@@ -541,7 +545,7 @@ The generator has the now familiar structure, but performs some more actions.
 We'll talk through them after listing the complete code.
 
 ```{r}
-batch_size <- 8
+batch_size <- 16
 image_size <- target_width # same as height
 
 threshold <- 0.4
@@ -794,7 +798,8 @@ bbox_output <-
           )
         )
      activation_corners
-    }
+    },
+    name = "bbox_output"
   )
 
 ```
@@ -821,29 +826,35 @@ The class loss uses `tf$nn$sigmoid_cross_entropy_with_logits` to compute the bin
 # shapes are batch_size * 16 * 21
 class_loss <- function(y_true, y_pred) {
   # leave out background for class loss calculation
+  #class_loss  <-
+  #  tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true[, , 1:20], logits = y_pred[, , 1:20])
   class_loss  <-
-    tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true[, , 1:20], logits = y_pred[, , 1:20])
+    tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true, logits = y_pred)
 
   class_loss <-
-    tf$reduce_sum(class_loss) / tf$cast(n_classes, "float32")
+    tf$reduce_sum(class_loss) / tf$cast(n_classes + 1, "float32")
   
   class_loss
 }
 
 ```
 
-The localization loss 
+The localization loss is calculated for all boxes where in fact there is an object present in the ground truth. For that, we calculate a mask and use that to mask out all activations that are irrelevant to the task.
+
+The loss itself then is mean absolute error, scaled by a multiplier designed to bring both loss components to similar magnitudes.
 
 ```{r}
 # shapes are batch_size * 16 * 4
 bbox_loss <- function(y_true, y_pred) {
   # calculate localization loss for all boxes where ground truth was assigned some overlap
-  pos <- y_true[, , 1] + y_true[, , 3]> 0
+  # calculate mask
+  pos <- y_true[, , 1] + y_true[, , 3] > 0
   pos <-
     pos %>% k_cast(tf$float32) %>% k_reshape(shape = c(batch_size, 16, 1))
   pos <-
     tf$tile(pos, multiples = k_constant(c(1L, 1L, 4L), dtype = tf$int32))
   diff <- y_pred - y_true
+  # mask out irrelevant activations
   diff <- diff %>% tf$multiply(pos)
   loc_loss <- diff %>% tf$abs() %>% tf$reduce_mean()
   
@@ -851,4 +862,305 @@ bbox_loss <- function(y_true, y_pred) {
 }
 
 ```
+
+
+# Training
+
+
+Above, we've already defined the model but we still need to freeze the feature detector's weights and compile it.
+
+```{r}
+model %>% freeze_weights()
+model %>% unfreeze_weights(from = "head_conv1")
+model
+```
+
+```{r}
+model %>% compile(
+  loss = list(class_loss, bbox_loss),
+  optimizer = "adam",
+  metrics = list(
+    class_output = custom_metric("class_loss", metric_fn = class_loss),
+    bbox_output = custom_metric("bbox_loss", metric_fn = bbox_loss)
+  )
+)
+```
+
+
+And we're ready to train.
+
+```{r}
+steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
+
+#model %>% fit_generator(
+#   train_gen,
+#  steps_per_epoch = steps_per_epoch,
+#  epochs = 5,
+#  callbacks = callback_model_checkpoint("weights_withbg.{epoch:02d}-{loss:.2f}.hdf5", 
+#                                        save_weights_only = TRUE)
+#)
+
+```
+
+
+# Results
+
+```{r}
+model %>% load_model_weights_hdf5("weights_focal.02-4.29.hdf5")
+```
+
+```{r}
+idx <- 5
+```
+
+
+```{r}
+gen <- ssd_generator(
+  imageinfo4ssd,
+  target_height = target_height,
+  target_width = target_width,
+  shuffle = FALSE,
+  batch_size = batch_size
+)
+c(x, c(y1, y2)) %<-% gen()
+y1[idx,,]
+```
+
+
+```{r}
+preds <- model %>% predict(x)
+pred_classes <- preds[[1]]
+pred_classes[idx,,]
+```
+
+```{r}
+prob_classes_idx <- pred_classes[idx, ,] %>% k_sigmoid() %>% k_eval()
+prob_classes_idx
+```
+
+```{r}
+class_maxprob <- prob_classes_idx %>% apply(1, max)
+class_maxprob
+```
+
+```{r}
+class_idx <- prob_classes_idx %>% apply(1, which.max)
+class_idx
+```
+
+
+```{r}
+class_names_idx <- class_names[class_idx]
+class_names_idx
+```
+
+```{r}
+pred_bbox <- preds[[2]]
+bbox_idx <- pred_bbox[idx, ,]
+bbox_idx[class_idx == 21,] <- 0
+bbox_idx
+```
+
+```{r}
+example <- imageinfo4ssd[idx, ]
+name <- (example$name %>% str_split(pattern = ", "))[[1]]
+x_left <- (example$xl %>% str_split(pattern = ", "))[[1]]
+x_right <- (example$xr %>% str_split(pattern = ", "))[[1]]
+y_top <- (example$yt %>% str_split(pattern = ", "))[[1]]
+y_bottom <- (example$yb %>% str_split(pattern = ", "))[[1]]
+
+
+img <- image_read(file.path(img_dir, example$file_name))
+img <- image_resize(img, geometry = "224x224!")
+img <- image_draw(img)
+
+for (i in 1:example$cnt) {
+  rect(x_left[i],
+       y_bottom[i],
+       x_right[i],
+       y_top[i],
+       border = "white",
+       lwd = 2)
+  text(
+    x = as.integer(x_right[i]),
+    y = as.integer(y_top[i]),
+    labels = name[i],
+    offset = 1,
+    pos = 3,
+    cex = 1,
+    col = "white"
+  )
+}
+
+for (i in 1:nrow(anchor_corners)) {
+  rect(
+    anchor_corners[i, 1] * 224,
+    anchor_corners[i, 4] * 224,
+    anchor_corners[i, 3] * 224,
+    anchor_corners[i, 2] * 224,
+    border = "cyan",
+    lwd = 1,
+    lty = 3
+  )
+}
+
+for (i in 1:nrow(bbox_idx)) {
+  if (bbox_idx[i, 1] + bbox_idx[i, 3] != 0) {
+    rect(
+      bbox_idx[i, 1] * 224,
+      bbox_idx[i, 4] * 224,
+      bbox_idx[i, 3] * 224,
+      bbox_idx[i, 2] * 224,
+      border = "purple",
+      lwd = 1,
+      lty = 5
+    )
+    text(
+      x = bbox_idx[i, 3] * 224,
+      y = bbox_idx[i, 2] * 224,
+      labels = class_names_idx[i],
+      offset = 1,
+      pos = 3,
+      cex = 1,
+      col = "purple"
+    )
+  }
+  
+}
+
+dev.off()
+print(img)
+```
+
+
+# Focal loss
+
+```{r}
+alpha <- 0.25
+gamma <- 1
+
+
+get_weights <- function(y_true, y_pred) {
+  p <- y_pred %>% k_sigmoid()
+  pt <-  y_true*p + (1-p)*(1-y_true)
+  w <- alpha*y_true + (1-alpha)*(1-y_true)
+  w <-  w * (1-pt)^gamma
+  w
+}
+
+class_loss_focal  <- function(y_true, y_pred) {
+  
+  w <- get_weights(y_true, y_pred)
+  cx <- tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true, logits = y_pred)
+  weighted_cx <- w * cx
+
+  class_loss <-
+    tf$reduce_sum(weighted_cx) / tf$cast(21, "float32")
+  
+  class_loss
+}
+```
+
+```{r}
+y_pred <- k_constant(c(-10,0,10))
+#y_true <- k_constant(c(0,0,0))
+y_true <- k_constant(c(1,1,1))
+
+class_loss_focal(y_true, y_pred) %>% k_eval()
+
+tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true, logits = y_pred) %>% k_eval()
+```
+
+
+```{r}
+feature_extractor <- application_resnet50(
+  include_top = FALSE,
+  input_shape = c(224, 224, 3)
+)
+input <- feature_extractor$input
+
+common <- feature_extractor$output %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    padding = "same",
+    name = "head_conv1"
+  ) %>%
+  layer_batch_normalization() %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    strides = 2,
+    padding = "same",
+    name = "head_conv2"
+  ) %>%
+  layer_batch_normalization() 
+
+class_output <-
+  layer_conv_2d(
+    common,
+    filters = 21,
+    kernel_size = 3,
+    padding = "same",
+    name = "class_conv"
+  ) %>%
+  layer_reshape(target_shape = c(16, 21), name = "class_output")
+
+bbox_output <-
+  layer_conv_2d(
+    common,
+    filters = 4,
+    kernel_size = 3,
+    padding = "same",
+    name = "bbox_conv"
+  ) %>%
+  layer_permute(dims = c(2,1,3)) %>%
+  layer_reshape(target_shape = c(16, 4), name = "bbox_flatten") %>%
+  layer_activation("tanh") %>%
+  layer_lambda(
+    f = function(x) {
+      activation_centers <-
+        (x[, , 1:2] / 2 * gridsize) + k_constant(anchors[, 1:2])
+      activation_height_width <-
+        (x[, , 3:4] / 2 + 1) * k_constant(anchors[, 3:4])
+      activation_corners <-
+        k_concatenate(
+          list(
+            activation_centers - activation_height_width / 2,
+            activation_centers + activation_height_width / 2
+          )
+        )
+     activation_corners
+    },
+    name = "bbox_output"
+  )
+
+model <-
+  keras_model(inputs = input,
+              outputs = list(class_output, bbox_output))
+
+model %>% freeze_weights()
+model %>% unfreeze_weights(from = "head_conv1")
+
+model %>% compile(
+  loss = list(class_loss_focal, bbox_loss),
+  optimizer = "adam",
+  metrics = list(
+    class_output = custom_metric("class_loss_focal", metric_fn = class_loss_focal),
+    bbox_output = custom_metric("bbox_loss", metric_fn = bbox_loss)
+  )
+)
+```
+
+
+```{r}
+steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
+model %>% fit_generator(
+  train_gen,
+  steps_per_epoch = steps_per_epoch,
+  epochs = 5,
+  callbacks = callback_model_checkpoint("weights_focal.{epoch:02d}-{loss:.2f}.hdf5", save_weights_only = TRUE)
+)
+```
+
 

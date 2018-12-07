@@ -22,13 +22,15 @@ class: center, middle, inverse, title-slide
 
 
 
-# Topics
+# Learning objectives
 
-- Road to object detection: Single-object classification and localization
+- Perform classification and localization on a single object 
 
-- Introduction to multiple-object detection
+- Important concepts in multiple-object detection
 
-- Coding a basic SSD (__Single-Shot Multibox Detector__)
+- Understand how to code a _very_ basic version of SSD (__Single-Shot Multibox Detector__)
+
+- Understand the options to improve on this basic detector
 
 ---
 class: inverse, middle, center
@@ -77,7 +79,7 @@ class: inverse, middle, center
 
  - often trained with mean absolute error
 
-- Predict pixel coordinates of box corners (`x_left`, `y_top`, `x_right`, `y_bottom`)
+- Predict pixel coordinates of box corners (_x_left_, _y_top_, _x_right_, _y_bottom_)
 
 - Relevant metric is __Intersection over Union__ (__IOU__), also known as Jaccard index&lt;sup&gt;1&lt;/sup&gt;
 
@@ -147,9 +149,13 @@ class: inverse, middle, center
 ---
 # Single-shot detectors
 
-"Synchronous sliding window" (à la _Overfeat_) enhanced by idea of __anchor boxes__
+"Synchronous sliding window" (à la _Overfeat_) enhanced by idea of __anchor boxes__&lt;sup&gt;1&lt;/sup&gt;
 
 ![](2_object_detection/images/ssd_1.png)
+
+
+
+.footnote[[1] illustration from: Liu, W, D. Anguelov, D. Erhan, et al. (2015). SSD: Single Shot MultiBox Detector.]
 
 ---
 # Dense (Yolo v1/2) vs. fully convolutional
@@ -200,6 +206,11 @@ Girshick, R. B, J. Donahue, T. Darrell, et al. (2013). "Rich
 feature hierarchies for accurate object detection and semantic
 segmentation". In: _CoRR_ abs/1311.2524. eprint: 1311.2524. URL:
 [http://arxiv.org/abs/1311.2524](http://arxiv.org/abs/1311.2524).
+
+Liu, W, D. Anguelov, D. Erhan, et al. (2015). "SSD: Single Shot
+MultiBox Detector". In: _CoRR_ abs/1512.02325. eprint: 1512.02325.
+URL:
+[http://arxiv.org/abs/1512.02325](http://arxiv.org/abs/1512.02325).
 
 Ren, S, K. He, R. B. Girshick, et al. (2015). "Faster R-CNN:
 Towards Real-Time Object Detection with Region Proposal Networks".
