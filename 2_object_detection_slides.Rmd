@@ -113,7 +113,22 @@ class: inverse, middle, center
 
 
 ---
-# How do we extend this to detect multiple objects?
+# Why can't we just have more bounding boxes?
+
+
+Each bounding box detector will try to detect all objects:<sup>1</sup>
+
+![](2_object_detection/images/2boxes.jpg)
+
+We need to either:
+
+- zoom in on single objects in some way, or
+- have detectors __specialize__ in what to detect
+
+.footnote[[1] Image source: http://machinethink.net/blog/object-detection/]
+
+---
+# Object detection main approaches / paradigms
 
 - Sliding windows approaches
  - Train network, run sequentially on image patches 
@@ -165,7 +180,7 @@ c3 <- Citet(bib, key = "RenHG015", .opts = list(cite.style = "authoryear"))
 ---
 # Single-shot detectors
 
-"Synchronous sliding window" (à la _Overfeat_) enhanced by idea of __anchor boxes__<sup>1</sup>
+Make detectors __specialize__ using __anchor boxes__<sup>1</sup>
 
 ![](2_object_detection/images/ssd_1.png)
 
@@ -175,21 +190,60 @@ c1 <- Citet(bib, key = "LiuAESR15", .opts = list(cite.style = "authoryear"))
 
 .footnote[[1] illustration from: Liu, W, D. Anguelov, D. Erhan, et al. (2015). SSD: Single Shot MultiBox Detector.]
 
+
 ---
-# Dense (Yolo v1/2) vs. fully convolutional
+# Why do anchor boxes help?
 
+### Concept 1: Grid
 
+By laying a grid over the image, we _map detectors to image regions_.
+
+### Concept 2: Different aspect rations and scales
+
+Objects of different shapes are localized more easily because we lean on different customized _priors_.
+
+<br />
+
+<img src="2_object_detection/images/ssd_1.png" width = "50%">
+
+---
+# SSD architecture
+
+<br />
+
+How do we detect objects that are of completely different sizes than a grid cell (e.g., span the whole image)?
+
+SSD adds anchor boxes at different resolutions:
+
+<img src="2_object_detection/images/ssd_arch.png" width = "120%">
+
+---
+# SSD vs. YOLO
+
+- Early YOLO versions (v1/v2) had dense layers before the final output, but current YOLO is fully convolutional just like SSD
+
+- In addition to _number of classes_ class scores and 4 bounding box coordinates __per detector__, YOLO also has a _confidence score_
+
+- YOLO determines anchor boxes for each dataset individually (using k-means clustering on the actual bounding boxes), while SSD uses _default boxes_
+
+- Details of bounding box computations differ
 
 
 ---
 # Why fully convolutional?
 
-Receptive field
+As long for every detector, the part of the image it's responsible for is visible (in its receptive field), we don't need a fully connected layer at the end<sup>1</sup>
+
+<br />
+
+<img src="2_object_detection/images/receptive_field.png" width = "50%"/>
+
+.footnote[[1] Image from: Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.]
 
 ---
 class: inverse, middle, center
 
-# Coding a basic SSD (Single-Shot Multibox Detector)
+# Coding a (very!) basic single-shot detector
 
 
 ---
@@ -198,7 +252,7 @@ class: inverse, middle, center
 - To show the basic approach, we will
  - restrict ourselves to a 4x4 grid of image cells
  - have one anchor box per cell (thus, 16 anchor boxes)
- - work with one scale of image only 
+ - don't aggregate detections from different resolutions 
 
 - Notebook: [2_object_detection/2_object_detection_ssd.Rmd](2_object_detection/2_object_detection_ssd.Rmd)
 
@@ -206,16 +260,25 @@ class: inverse, middle, center
 ---
 # Basic SSD: Ways for improvement
 
+- Use focal loss
 
-- Use anchor boxes of different shapes
+- Use anchor boxes of different aspect rations
 
 - Perform detection at various resolutions
 
-
+- (not object detection specific:) Use data augmentation
 
 ---
 # References
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib)
+PrintBibliography(bib, start = 1, end = 5)
 ```
+
+---
+# References (cont.)
+
+```{r, results='asis', echo=FALSE}
+PrintBibliography(bib, start = 6, end = 9)
+```
+

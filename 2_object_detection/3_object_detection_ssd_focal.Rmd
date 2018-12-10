@@ -1049,3 +1049,134 @@ print(img)
 ```
 
 
+# Focal loss
+
+```{r}
+alpha <- 0.25
+gamma <- 1
+
+
+get_weights <- function(y_true, y_pred) {
+  p <- y_pred %>% k_sigmoid()
+  pt <-  y_true*p + (1-p)*(1-y_true)
+  w <- alpha*y_true + (1-alpha)*(1-y_true)
+  w <-  w * (1-pt)^gamma
+  w
+}
+
+class_loss_focal  <- function(y_true, y_pred) {
+  
+  w <- get_weights(y_true, y_pred)
+  cx <- tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true, logits = y_pred)
+  weighted_cx <- w * cx
+
+  class_loss <-
+    tf$reduce_sum(weighted_cx) / tf$cast(21, "float32")
+  
+  class_loss
+}
+```
+
+```{r}
+y_pred <- k_constant(c(-10,0,10))
+#y_true <- k_constant(c(0,0,0))
+y_true <- k_constant(c(1,1,1))
+
+class_loss_focal(y_true, y_pred) %>% k_eval()
+
+tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true, logits = y_pred) %>% k_eval()
+```
+
+
+```{r}
+feature_extractor <- application_resnet50(
+  include_top = FALSE,
+  input_shape = c(224, 224, 3)
+)
+input <- feature_extractor$input
+
+common <- feature_extractor$output %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    padding = "same",
+    name = "head_conv1"
+  ) %>%
+  layer_batch_normalization() %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    strides = 2,
+    padding = "same",
+    name = "head_conv2"
+  ) %>%
+  layer_batch_normalization() 
+
+class_output <-
+  layer_conv_2d(
+    common,
+    filters = 21,
+    kernel_size = 3,
+    padding = "same",
+    name = "class_conv"
+  ) %>%
+  layer_reshape(target_shape = c(16, 21), name = "class_output")
+
+bbox_output <-
+  layer_conv_2d(
+    common,
+    filters = 4,
+    kernel_size = 3,
+    padding = "same",
+    name = "bbox_conv"
+  ) %>%
+  layer_permute(dims = c(2,1,3)) %>%
+  layer_reshape(target_shape = c(16, 4), name = "bbox_flatten") %>%
+  layer_activation("tanh") %>%
+  layer_lambda(
+    f = function(x) {
+      activation_centers <-
+        (x[, , 1:2] / 2 * gridsize) + k_constant(anchors[, 1:2])
+      activation_height_width <-
+        (x[, , 3:4] / 2 + 1) * k_constant(anchors[, 3:4])
+      activation_corners <-
+        k_concatenate(
+          list(
+            activation_centers - activation_height_width / 2,
+            activation_centers + activation_height_width / 2
+          )
+        )
+     activation_corners
+    },
+    name = "bbox_output"
+  )
+
+model <-
+  keras_model(inputs = input,
+              outputs = list(class_output, bbox_output))
+
+model %>% freeze_weights()
+model %>% unfreeze_weights(from = "head_conv1")
+
+model %>% compile(
+  loss = list(class_loss_focal, bbox_loss),
+  optimizer = "adam",
+  metrics = list(
+    class_output = custom_metric("class_loss_focal", metric_fn = class_loss_focal),
+    bbox_output = custom_metric("bbox_loss", metric_fn = bbox_loss)
+  )
+)
+```
+
+
+```{r}
+steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
+model %>% fit_generator(
+  train_gen,
+  steps_per_epoch = steps_per_epoch,
+  epochs = 5,
+  callbacks = callback_model_checkpoint("weights_focal.{epoch:02d}-{loss:.2f}.hdf5", save_weights_only = TRUE)
+)
+```
+
+
