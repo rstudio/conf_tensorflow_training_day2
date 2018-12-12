@@ -16,21 +16,14 @@ unzip 1_structured_data/data/survey_results_public.csv.zip -d 1_structured_data/
 # Setup for slot 2 
 
 ```{bash}
-echo "Creating data dir ..."
 cd 2_object_detection
 mkdir data && cd data
-echo "Downloading http://pjreddie.com/media/files/VOCtrainval_06-Nov-2007.tar ..."
 curl -OL http://pjreddie.com/media/files/VOCtrainval_06-Nov-2007.tar
-echo "Downloading PASCAL_VOC.zip ..."
 curl -OL https://storage.googleapis.com/coco-dataset/external/PASCAL_VOC.zip
-echo "Unpacking/cleaning up files..."
-tar -xf VOCtrainval_06-Nov-2007.tar
+tar -xvf VOCtrainval_06-Nov-2007.tar
 unzip PASCAL_VOC.zip
 mv PASCAL_VOC/*.json .
 rmdir PASCAL_VOC
-tar -xvf VOCtrainval_06-Nov-2007.tar
-echo "Ready!"
-ls -l .
 ```
 
 
