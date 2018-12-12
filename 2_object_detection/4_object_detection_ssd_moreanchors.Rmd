@@ -1,0 +1,464 @@
+---
+title: "Object detection as in SSD (basic principles)"
+output:
+  html_notebook:
+    df_print: paged
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+library(tensorflow)
+library(keras)
+library(rjson)
+library(magick)
+library(purrr)
+library(tibble)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(abind)
+
+use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
+```
+
+
+```{r}
+img_dir <- "data/VOCdevkit/VOC2007/JPEGImages"
+```
+
+```{r}
+annot_file <- "data/pascal_train2007.json"
+```
+
+
+## Preprocessing
+
+```{r}
+load_and_preprocess_image <- function(image_name, target_height, target_width) {
+  img_array <- image_load(
+    file.path(img_dir, image_name),
+    target_size = c(target_height, target_width)
+    ) %>%
+    image_to_array() %>%
+    imagenet_preprocess_input() 
+  dim(img_array) <- c(1, dim(img_array))
+  img_array
+}
+```
+
+
+```{r}
+annotations <- fromJSON(file = annot_file)
+str(annotations, max.level = 1)
+```
+
+```{r}
+imageinfo <- annotations$images %>% {
+  tibble(
+    id = map_dbl(., "id"),
+    file_name = map_chr(., "file_name"),
+    image_height = map_dbl(., "height"),
+    image_width = map_dbl(., "width")
+  )
+}
+imageinfo
+```
+
+```{r}
+boxinfo <- annotations$annotations %>% {
+  tibble(
+    image_id = map_dbl(., "image_id"),
+    category_id = map_dbl(., "category_id"),
+    bbox = map(., "bbox")
+  )
+}
+boxinfo
+```
+
+```{r}
+boxinfo <- boxinfo %>% 
+  mutate(bbox = unlist(map(.$bbox, function(x) paste(x, collapse = " "))))
+boxinfo <- boxinfo %>% 
+  separate(bbox, into = c("x_left", "y_top", "bbox_width", "bbox_height"))
+boxinfo <- boxinfo %>% mutate_all(as.numeric)
+boxinfo
+```
+
+```{r}
+boxinfo <- boxinfo %>% 
+  mutate(y_bottom = y_top + bbox_height - 1, x_right = x_left + bbox_width - 1)
+boxinfo
+```
+
+```{r}
+catinfo <- annotations$categories %>%  {
+  tibble(id = map_dbl(., "id"), name = map_chr(., "name"))
+}
+catinfo
+```
+
+```{r}
+class_names <- c(catinfo$name, "bg")
+n_classes <- 20
+```
+
+```{r}
+imageinfo <- imageinfo %>%
+  inner_join(boxinfo, by = c("id" = "image_id")) %>%
+  inner_join(catinfo, by = c("category_id" = "id"))
+imageinfo
+```
+
+```{r}
+target_height <- 224
+target_width <- 224
+
+imageinfo <- imageinfo %>% mutate(
+  x_left_scaled = (x_left / image_width * target_width) %>% round(),
+  x_right_scaled = (x_right / image_width * target_width) %>% round(),
+  y_top_scaled = (y_top / image_height * target_height) %>% round(),
+  y_bottom_scaled = (y_bottom / image_height * target_height) %>% round(),
+  bbox_width_scaled =  (bbox_width / image_width * target_width) %>% round(),
+  bbox_height_scaled = (bbox_height / image_height * target_height) %>% round()
+)
+imageinfo
+```
+
+```{r}
+imageinfo4ssd <- imageinfo %>%
+  select(category_id,
+         file_name,
+         name,
+         x_left,
+         y_top,
+         x_right,
+         y_bottom,
+         ends_with("scaled"))
+```
+
+
+```{r}
+imageinfo4ssd <- imageinfo4ssd %>%
+  group_by(file_name) %>%
+  summarise(
+    categories = toString(category_id),
+    name = toString(name),
+    xl = toString(x_left_scaled),
+    yt = toString(y_top_scaled),
+    xr = toString(x_right_scaled),
+    yb = toString(y_bottom_scaled),
+    xl_orig = toString(x_left),
+    yt_orig = toString(y_top),
+    xr_orig = toString(x_right),
+    yb_orig = toString(y_bottom),
+    cnt = n()
+  )
+
+imageinfo4ssd
+```
+
+
+# More anchors
+
+```{r}
+anchor_zooms <- c(0.7, 1, 1.3)
+anchor_ratios <- matrix(c(1, 1, 1, 0.5, 0.5, 1), ncol = 2, byrow = TRUE)
+anchor_scales <- rbind(anchor_ratios * anchor_zooms[1], anchor_ratios * anchor_zooms[2], anchor_ratios * anchor_zooms[3])
+anchor_scales
+```
+
+```{r}
+k <- nrow(anchor_scales)
+k
+```
+
+```{r}
+anchor_grids <- c(4,2,1)
+anchor_offsets <- 1/(anchor_grids * 2)
+anchor_offsets
+```
+
+
+```{r}
+anchor_x <- map(1:3, function(x)
+  rep(seq(anchor_offsets[x], 1 - anchor_offsets[x], length.out = anchor_grids[x]), each = anchor_grids[x])) %>%
+  flatten() %>%
+  unlist()
+anchor_x
+```
+
+```{r}
+anchor_y <- map(1:3, function(y)
+  rep(seq(anchor_offsets[y], 1 - anchor_offsets[y], length.out = anchor_grids[y]), times = anchor_grids[y])) %>%
+  flatten() %>%
+  unlist()
+anchor_y
+```
+
+```{r}
+anchor_centers <- cbind(rep(anchor_x, each = k), rep(anchor_y, each = k))
+anchor_centers
+
+```
+
+```{r}
+anchor_sizes <- map(anchor_grids, function(x)
+   matrix(rep(t(anchor_scales/x), x*x), ncol = 2, byrow = TRUE)
+  ) %>%
+  abind(along = 1)
+anchor_sizes
+```
+
+```{r}
+grid_sizes <- c(rep(0.25, k * anchor_grids[1]^2), rep(0.5, k * anchor_grids[2]^2), rep(1, k * anchor_grids[3]^2))
+grid_sizes 
+```
+
+```{r}
+anchors <- cbind(anchor_centers, anchor_sizes)
+anchors #%>% dim()
+```
+
+```{r}
+hw2corners <- function(centers, height_width) {
+  cbind(centers - height_width / 2, centers + height_width / 2) %>% unname()
+}
+
+# cells are indicated by (xl, yt, xr, yb)
+# successive rows first go down in the image, then to the right
+anchor_corners <- hw2corners(anchors[ , 1:2], anchors[ , 3:4])
+anchor_corners
+```
+
+```{r}
+ggplot(data.frame(x = anchors[ ,1], y = anchors[ , 2]), aes(x, y)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
+  theme(aspect.ratio = 1)
+```
+
+
+```{r}
+example <- imageinfo4ssd[5, ]
+name <- (example$name %>% str_split(pattern = ", "))[[1]]
+x_left <- (example$xl %>% str_split(pattern = ", "))[[1]]
+x_right <- (example$xr %>% str_split(pattern = ", "))[[1]]
+y_top <- (example$yt %>% str_split(pattern = ", "))[[1]]
+y_bottom <- (example$yb %>% str_split(pattern = ", "))[[1]]
+
+
+img <- image_read(file.path(img_dir, example$file_name))
+img <- image_resize(img, geometry = "224x224!")
+img <- image_draw(img)
+
+for (i in 1:144) {
+  rect(
+    anchor_corners[i, 1] * 224,
+    anchor_corners[i, 4] * 224,
+    anchor_corners[i, 3] * 224,
+    anchor_corners[i, 2] * 224,
+    border = "cyan",
+    lwd = 1,
+    lty = 1
+  )
+}
+
+for (i in 145:180) {
+  rect(
+    anchor_corners[i, 1] * 224,
+    anchor_corners[i, 4] * 224,
+    anchor_corners[i, 3] * 224,
+    anchor_corners[i, 2] * 224,
+    border = "violet",
+    lwd = 2,
+    lty = 1
+  )
+}
+
+for (i in 181:nrow(anchor_corners)) {
+  rect(
+    anchor_corners[i, 1] * 224,
+    anchor_corners[i, 4] * 224,
+    anchor_corners[i, 3] * 224,
+    anchor_corners[i, 2] * 224,
+    border = "yellow",
+    lwd = 3,
+    lty = 1
+  )
+}
+dev.off()
+print(img)
+
+```
+
+
+
+# Model
+
+```{r}
+feature_extractor <- application_resnet50(
+  include_top = FALSE,
+  input_shape = c(224, 224, 3)
+)
+feature_extractor
+```
+
+
+```{r}
+input <- feature_extractor$input
+
+common <- feature_extractor$output %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    padding = "same",
+    activation = "relu",
+    name = "head_conv1_1"
+  ) %>%
+  layer_batch_normalization() %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    padding = "same",
+    activation = "relu",
+    name = "head_conv1_2"
+  ) %>%
+  layer_batch_normalization() %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    padding = "same",
+    activation = "relu",
+    name = "head_conv1_3"
+  ) %>%
+  layer_batch_normalization()
+
+common
+```
+
+```{r}
+ downscale_4x4 <- common %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    strides = 2,
+    padding = "same",
+    activation = "relu",
+    name = "downscale_4x4"
+  ) %>%
+  layer_batch_normalization() 
+
+downscale_4x4
+```
+
+```{r}
+downscale_2x2 <- downscale_4x4 %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    strides = 2,
+    padding = "same",
+    activation = "relu",
+    name = "downscale_2x2"
+  ) %>%
+  layer_batch_normalization() 
+
+downscale_2x2
+```
+
+```{r}
+downscale_1x1 <- downscale_2x2 %>%
+  layer_conv_2d(
+    filters = 256,
+    kernel_size = 3,
+    strides = 2,
+    padding = "same",
+    activation = "relu",
+    name = "downscale_1x1"
+  ) %>%
+  layer_batch_normalization() 
+
+downscale_1x1
+```
+
+```{r}
+create_bbox_output <- function(prev_layer, anchor_start, anchor_stop, suffix) {
+  output <- layer_conv_2d(
+    prev_layer,
+    filters = 4 * k,
+    kernel_size = 3,
+    padding = "same",
+    name = paste0("bbox_conv_", suffix)
+  ) %>%
+  layer_reshape(target_shape = c(-1, 4), name = paste0("bbox_flatten_", suffix)) %>%
+  layer_activation("tanh") %>%
+  layer_lambda(
+    f = function(x) {
+      activation_centers <-
+        (x[, , 1:2] / 2 * matrix(grid_sizes[anchor_start:anchor_stop], ncol = 1)) + k_constant(anchors[anchor_start:anchor_stop, 1:2])
+      activation_height_width <-
+        (x[, , 3:4] / 2 + 1) * k_constant(anchors[anchor_start:anchor_stop, 3:4])
+      activation_corners <-
+        k_concatenate(
+          list(
+            activation_centers - activation_height_width / 2,
+            activation_centers + activation_height_width / 2
+          )
+        )
+     activation_corners
+    },
+    name = paste0("bbox_output_", suffix)
+  )
+  output
+}
+```
+
+```{r}
+bbox_output_4x4 <- create_bbox_output(downscale_4x4, 1, 144, "4x4")
+```
+
+```{r}
+bbox_output_2x2 <- create_bbox_output(downscale_2x2, 145, 180, "2x2")
+```
+
+```{r}
+bbox_output_1x1 <- create_bbox_output(downscale_1x1, 181, 189, "1x1")
+```
+
+
+```{r}
+create_class_output <- function(prev_layer, suffix) {
+  output <-
+  layer_conv_2d(
+    prev_layer,
+    filters = 21 * k,
+    kernel_size = 3,
+    padding = "same",
+    name = paste0("class_conv_", suffix)
+  ) %>%
+  layer_reshape(target_shape = c(-1, 21), name = paste0("class_output_", suffix))
+  output
+}
+```
+
+```{r}
+class_output_4x4 <- create_class_output(downscale_4x4, "4x4")
+```
+
+```{r}
+class_output_2x2 <- create_class_output(downscale_2x2, "2x2")
+```
+
+```{r}
+class_output_1x1 <- create_class_output(downscale_1x1, "1x1")
+```
+
+
+```{r}
+model <- keras_model(inputs = input, outputs = list(bbox_output_1x1, bbox_output_2x2, bbox_output_4x4,
+                                                    class_output_1x1, class_output_2x2, class_output_4x4))
+model
+```
+

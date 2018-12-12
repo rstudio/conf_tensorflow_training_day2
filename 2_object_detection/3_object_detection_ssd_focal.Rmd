@@ -49,7 +49,7 @@ load_and_preprocess_image <- function(image_name, target_height, target_width) {
     target_size = c(target_height, target_width)
     ) %>%
     image_to_array() %>%
-    xception_preprocess_input() 
+    imagenet_preprocess_input() 
   dim(img_array) <- c(1, dim(img_array))
   img_array
 }
@@ -140,7 +140,7 @@ For reference, let's look at what we did to classify and localize one single obj
 
 
 ```{r, eval=FALSE}
-feature_extractor <- application_xception(
+feature_extractor <- application_resnet50(
   include_top = FALSE,
   input_shape = c(224, 224, 3)
 )
@@ -169,7 +169,8 @@ model <- keras_model(
 )
 ```
 
-We again start with Xception as the feature extractor.
+
+Now we start with Resnet instead.
 
 ```{r}
 feature_extractor <- application_resnet50(
