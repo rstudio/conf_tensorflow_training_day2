@@ -180,7 +180,7 @@ Make detectors __specialize__ using __anchor boxes__&lt;sup&gt;1&lt;/sup&gt;
 
 By laying a grid over the image, we _map detectors to image regions_.
 
-### Concept 2: Different aspect rations and scales
+### Concept 2: Different aspect ratios and scales
 
 Objects of different shapes are localized more easily because we lean on different customized _priors_.
 
@@ -202,7 +202,7 @@ SSD adds anchor boxes at different resolutions:
 ---
 # SSD vs. YOLO
 
-- Early YOLO versions (v1/v2) had dense layers before the final output, but current YOLO is fully convolutional just like SSD
+- Early YOLO versions (v1&lt;sup&gt;1&lt;/sup&gt;/v2&lt;sup&gt;2&lt;/sup&gt;) had dense layers before the final output, but current YOLO&lt;sup&gt;3&lt;/sup&gt; is fully convolutional just like SSD
 
 - In addition to _number of classes_ class scores and 4 bounding box coordinates __per detector__, YOLO also has a _confidence score_
 
@@ -211,14 +211,23 @@ SSD adds anchor boxes at different resolutions:
 - Details of bounding box computations differ
 
 
+
+&lt;span class="footnote"&gt;
+[1] cf. Redmon, J, S. K. Divvala, R. B. Girshick, et al. (2015). You Only Look Once: Unified, Real-Time Object Detection. &lt;br /&gt;
+[2] cf. Redmon, J. and A. Farhadi (2016). YOLO9000: Better, Faster, Stronger. &lt;br /&gt;
+[3] cf. Redmon, J. and A. Farhadi (2018). YOLOv3: An Incremental Improvement.
+&lt;/span&gt;
+
 ---
 # Why fully convolutional?
 
-As long for every detector, the part of the image it's responsible for is visible (in its receptive field), we don't need a fully connected layer at the end&lt;sup&gt;1&lt;/sup&gt;
+As long as for every detector, the part of the image it's responsible for is visible (= is in its receptive field), we don't need a fully connected layer at the end&lt;sup&gt;1&lt;/sup&gt;
 
 &lt;br /&gt;
 
 &lt;img src="2_object_detection/images/receptive_field.png" width = "50%"/&gt;
+
+
 
 .footnote[[1] Image from: Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.]
 
@@ -244,11 +253,39 @@ class: inverse, middle, center
 
 - Use focal loss
 
-- Use anchor boxes of different aspect rations
+- Use anchor boxes of different aspect ratios
 
 - Perform detection at various resolutions
 
 - (not object detection specific:) Use data augmentation
+
+
+---
+# Focal Loss&lt;sup&gt;1&lt;/sup&gt;
+
+
+
+&lt;img src="2_object_detection/images/focal.png" width = "70%"/&gt;
+
+
+
+.footnote[[1] Image from: Lin, T, P. Goyal, R. B. Girshick, et al. (2017). Focal Loss for Dense Object Detection.]
+
+
+---
+# Focal loss, and more anchors
+
+&lt;br /&gt;
+
+Implementation stubs:
+
+- Focal loss: [2_object_detection/3_object_detection_ssd_focal.Rmd](2_object_detection/3_object_detection_ssd_focal.Rmd)
+
+
+- More anchors: [2_object_detection/4_object_detection_ssd_moreanchors.Rmd](2_object_detection/4_object_detection_ssd_moreanchors.Rmd)
+
+---
+# Wrapup / feedback
 
 ---
 # References
@@ -262,10 +299,34 @@ feature hierarchies for accurate object detection and semantic
 segmentation". In: _CoRR_ abs/1311.2524. eprint: 1311.2524. URL:
 [http://arxiv.org/abs/1311.2524](http://arxiv.org/abs/1311.2524).
 
+Goodfellow, I, Y. Bengio and A. Courville (2016). _Deep Learning_.
+&lt;URL: http://www.deeplearningbook.org&gt;. MIT Press.
+
+Lin, T, P. Goyal, R. B. Girshick, et al. (2017). "Focal Loss for
+Dense Object Detection". In: _CoRR_ abs/1708.02002. eprint:
+1708.02002. URL:
+[http://arxiv.org/abs/1708.02002](http://arxiv.org/abs/1708.02002).
+
 Liu, W, D. Anguelov, D. Erhan, et al. (2015). "SSD: Single Shot
 MultiBox Detector". In: _CoRR_ abs/1512.02325. eprint: 1512.02325.
 URL:
 [http://arxiv.org/abs/1512.02325](http://arxiv.org/abs/1512.02325).
+
+---
+# References (cont.)
+
+Redmon, J, S. K. Divvala, R. B. Girshick, et al. (2015). "You Only
+Look Once: Unified, Real-Time Object Detection". In: _CoRR_
+abs/1506.02640. eprint: 1506.02640. URL:
+[http://arxiv.org/abs/1506.02640](http://arxiv.org/abs/1506.02640).
+
+Redmon, J. and A. Farhadi (2016). "YOLO9000: Better, Faster,
+Stronger". In: _CoRR_ abs/1612.08242. eprint: 1612.08242. URL:
+[http://arxiv.org/abs/1612.08242](http://arxiv.org/abs/1612.08242).
+
+Redmon, J. and A. Farhadi (2018). "YOLOv3: An Incremental
+Improvement". In: _CoRR_ abs/1804.02767. eprint: 1804.02767. URL:
+[http://arxiv.org/abs/1804.02767](http://arxiv.org/abs/1804.02767).
 
 Ren, S, K. He, R. B. Girshick, et al. (2015). "Faster R-CNN:
 Towards Real-Time Object Detection with Region Proposal Networks".
@@ -277,14 +338,6 @@ Integrated Recognition, Localization and Detection using
 Convolutional Networks". In: _CoRR_ abs/1312.6229. eprint:
 1312.6229. URL:
 [http://arxiv.org/abs/1312.6229](http://arxiv.org/abs/1312.6229).
-
----
-# References (cont.)
-
-
-```
-## Warning in `[[.BibEntry`(x, ind): subscript out of bounds
-```
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({

@@ -320,7 +320,7 @@ imageinfo4ssd
 ```
 
 
-Okay! Let's look at one image, comp
+Okay! Let's look at one image:
 
 ```{r}
 example <- imageinfo4ssd[5, ]
@@ -679,7 +679,7 @@ And its left bounding box coordinates:
 xl
 ```
 
-Now we can `cbind` those vectors to obtain a object (`bbox`) where rows are objects, and coordinates are in the columns: 
+Now we can `cbind` those vectors together to obtain a object (`bbox`) where rows are objects, and coordinates are in the columns: 
 
 ```{r}
 # rows are objects, columns are coordinates (xl, yt, xr, yb)
@@ -704,7 +704,7 @@ gt_overlap
 ```
 
 
-Looking for the value `1.99` in the above - the value indicating maximal, by the above criteria, overlap of an object with a grid cell - we see that boxes 4 (counting in column-major order here like R does) got matched (to a person, as we'll see soon), the sixth did (to an airplane), and the seventh did (to a person). How about the other airplane? It got lost in the matching.
+Looking for the value `1.99` in the above - the value indicating maximal, by the above criteria, overlap of an object with a grid cell - we see that box 4 (counting in column-major order here like R does) got matched (to a person, as we'll see soon), box 6 did (to an airplane), and box 7 did (to a person). How about the other airplane? It got lost in the matching.
 
 This is not a problem of the matching algorithm though - it would disappear if we had more than one anchor box per grid cell.
 
@@ -727,13 +727,13 @@ So far, we count as overlap even the very slightest overlap - of 0.1 percent eve
 Of course, this makes no sense. We set all cells with an overlap < 0.4 to the background class:
 
 ```{r}
- pos <- gt_overlap > threshold
+pos <- gt_overlap > threshold
 gt_class[gt_overlap < threshold] <- 21
 
 gt_class
 ```
 
-Now, to construct the targets for learning, we need to put the bounding boxes for the objects that were found present in a cell into a matrix matching boxes to cells.
+Now, to construct the targets for learning, we need to put the mapping we found into a data structure.
 
 The following gives us a 16x4 matrix of cells and the boxes they are responsible for:
 
@@ -902,7 +902,7 @@ model %>% compile(
 ```
 
 
-And we're ready to train.
+And we're ready to train - or would be, if we had the time.
 
 ```{r}
 steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
@@ -921,7 +921,7 @@ steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
 # Results
 
 ```{r}
-model %>% load_model_weights_hdf5("weights_focal.02-4.29.hdf5")
+model %>% load_model_weights_hdf5("epoch_5-loss_0.29.hdf5")
 ```
 
 ```{r}
@@ -1047,4 +1047,111 @@ dev.off()
 print(img)
 ```
 
+```{r}
+gen <- ssd_generator(
+  imageinfo4ssd,
+  target_height = target_height,
+  target_width = target_width,
+  shuffle = FALSE,
+  batch_size = batch_size
+)
+c(x, c(y1, y2)) %<-% gen()
 
+library(magick)
+for (idx in 1:8) {
+  preds <- model %>% predict(x)
+  pred_classes <- preds[[1]]
+  pred_classes[idx,,]
+
+  prob_classes_idx <- pred_classes[idx, ,] %>% k_sigmoid() %>% k_eval()
+  prob_classes_idx
+
+  class_maxprob <- prob_classes_idx %>% apply(1, max)
+  class_maxprob
+
+  class_idx <- prob_classes_idx %>% apply(1, which.max)
+  class_idx
+
+  class_names_idx <- class_names[class_idx]
+  class_names_idx
+
+  pred_bbox <- preds[[2]]
+  bbox_idx <- pred_bbox[idx, ,]
+  bbox_idx[class_idx == 21,] <- 0
+  
+  example <- imageinfo4ssd[idx, ]
+  name <- (example$name %>% str_split(pattern = ", "))[[1]]
+  x_left <- (example$xl %>% str_split(pattern = ", "))[[1]]
+  x_right <- (example$xr %>% str_split(pattern = ", "))[[1]]
+  y_top <- (example$yt %>% str_split(pattern = ", "))[[1]]
+  y_bottom <- (example$yb %>% str_split(pattern = ", "))[[1]]
+
+
+  img <- image_read(file.path(img_dir, example$file_name))
+  img <- image_resize(img, geometry = "224x224!")
+  img <- image_draw(img)
+
+  for (i in 1:example$cnt) {
+    rect(x_left[i],
+         y_bottom[i],
+         x_right[i],
+         y_top[i],
+         border = "white",
+         lwd = 2)
+    text(
+      x = as.integer(x_right[i]),
+      y = as.integer(y_top[i]),
+      labels = name[i],
+      offset = 1,
+      pos = 3,
+      cex = 1,
+      col = "white"
+    )
+  }
+
+  for (i in 1:nrow(anchor_corners)) {
+    rect(
+      anchor_corners[i, 1] * 224,
+      anchor_corners[i, 4] * 224,
+      anchor_corners[i, 3] * 224,
+      anchor_corners[i, 2] * 224,
+      border = "cyan",
+      lwd = 1,
+      lty = 3
+    )
+  }
+
+  for (i in 1:nrow(bbox_idx)) {
+    if (bbox_idx[i, 1] + bbox_idx[i, 3] != 0) {
+      rect(
+        bbox_idx[i, 1] * 224,
+        bbox_idx[i, 4] * 224,
+        bbox_idx[i, 3] * 224,
+        bbox_idx[i, 2] * 224,
+        border = "yellow",
+        lwd = 2,
+        lty = 5
+      )
+      text(
+        x = bbox_idx[i, 3] * 224,
+        y = bbox_idx[i, 2] * 224,
+        labels = class_names_idx[i],
+        offset = 1,
+        pos = 3,
+        cex = 1,
+        col = "yellow"
+      )
+    }
+
+  }
+
+  dev.off()
+  image_write(img, path = paste0("/tmp/pic_", idx, ".jpg"))
+  print(class_names_idx)
+}
+```
+
+
+Just in case ... here are predictions as static images:
+
+![](images/results.jpg)

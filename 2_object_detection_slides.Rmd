@@ -198,7 +198,7 @@ c1 <- Citet(bib, key = "LiuAESR15", .opts = list(cite.style = "authoryear"))
 
 By laying a grid over the image, we _map detectors to image regions_.
 
-### Concept 2: Different aspect rations and scales
+### Concept 2: Different aspect ratios and scales
 
 Objects of different shapes are localized more easily because we lean on different customized _priors_.
 
@@ -220,7 +220,7 @@ SSD adds anchor boxes at different resolutions:
 ---
 # SSD vs. YOLO
 
-- Early YOLO versions (v1/v2) had dense layers before the final output, but current YOLO is fully convolutional just like SSD
+- Early YOLO versions (v1<sup>1</sup>/v2<sup>2</sup>) had dense layers before the final output, but current YOLO<sup>3</sup> is fully convolutional just like SSD
 
 - In addition to _number of classes_ class scores and 4 bounding box coordinates __per detector__, YOLO also has a _confidence score_
 
@@ -228,15 +228,30 @@ SSD adds anchor boxes at different resolutions:
 
 - Details of bounding box computations differ
 
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "RedmonDGF15", .opts = list(cite.style = "authoryear"))
+c2 <- Citet(bib, key = "RedmonF16", .opts = list(cite.style = "authoryear"))
+c3 <- Citet(bib, key = "abs-1804-02767", .opts = list(cite.style = "authoryear"))
+```
+
+<span class="footnote">
+[1] cf. Redmon, J, S. K. Divvala, R. B. Girshick, et al. (2015). You Only Look Once: Unified, Real-Time Object Detection. <br />
+[2] cf. Redmon, J. and A. Farhadi (2016). YOLO9000: Better, Faster, Stronger. <br />
+[3] cf. Redmon, J. and A. Farhadi (2018). YOLOv3: An Incremental Improvement.
+</span>
 
 ---
 # Why fully convolutional?
 
-As long for every detector, the part of the image it's responsible for is visible (in its receptive field), we don't need a fully connected layer at the end<sup>1</sup>
+As long as for every detector, the part of the image it's responsible for is visible (= is in its receptive field), we don't need a fully connected layer at the end<sup>1</sup>
 
 <br />
 
 <img src="2_object_detection/images/receptive_field.png" width = "50%"/>
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "Goodfellow-et-al-2016", .opts = list(cite.style = "authoryear"))
+```
 
 .footnote[[1] Image from: Goodfellow, I, Y. Bengio and A. Courville (2016). Deep Learning.]
 
@@ -262,11 +277,41 @@ class: inverse, middle, center
 
 - Use focal loss
 
-- Use anchor boxes of different aspect rations
+- Use anchor boxes of different aspect ratios
 
 - Perform detection at various resolutions
 
 - (not object detection specific:) Use data augmentation
+
+
+---
+# Focal Loss<sup>1</sup>
+
+
+
+<img src="2_object_detection/images/focal.png" width = "70%"/>
+
+```{r, echo=FALSE, results=FALSE}
+c1 <- Citet(bib, key = "abs-1708-02002", .opts = list(cite.style = "authoryear"))
+```
+
+.footnote[[1] Image from: Lin, T, P. Goyal, R. B. Girshick, et al. (2017). Focal Loss for Dense Object Detection.]
+
+
+---
+# Focal loss, and more anchors
+
+<br />
+
+Implementation stubs:
+
+- Focal loss: [2_object_detection/3_object_detection_ssd_focal.Rmd](2_object_detection/3_object_detection_ssd_focal.Rmd)
+
+
+- More anchors: [2_object_detection/4_object_detection_ssd_moreanchors.Rmd](2_object_detection/4_object_detection_ssd_moreanchors.Rmd)
+
+---
+# Wrapup / feedback
 
 ---
 # References
@@ -279,6 +324,6 @@ PrintBibliography(bib, start = 1, end = 5)
 # References (cont.)
 
 ```{r, results='asis', echo=FALSE}
-PrintBibliography(bib, start = 6, end = 9)
+PrintBibliography(bib, start = 6, end = 10)
 ```
 
