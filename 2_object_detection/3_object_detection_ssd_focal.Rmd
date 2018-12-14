@@ -321,7 +321,7 @@ imageinfo4ssd
 ```
 
 
-Okay! Let's look at one image, comp
+Okay! Let's look at one image:
 
 ```{r}
 example <- imageinfo4ssd[5, ]
@@ -920,135 +920,6 @@ steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
 ```
 
 
-# Results
-
-```{r}
-model %>% load_model_weights_hdf5("weights_focal.02-4.29.hdf5")
-```
-
-```{r}
-idx <- 5
-```
-
-
-```{r}
-gen <- ssd_generator(
-  imageinfo4ssd,
-  target_height = target_height,
-  target_width = target_width,
-  shuffle = FALSE,
-  batch_size = batch_size
-)
-c(x, c(y1, y2)) %<-% gen()
-y1[idx,,]
-```
-
-
-```{r}
-preds <- model %>% predict(x)
-pred_classes <- preds[[1]]
-pred_classes[idx,,]
-```
-
-```{r}
-prob_classes_idx <- pred_classes[idx, ,] %>% k_sigmoid() %>% k_eval()
-prob_classes_idx
-```
-
-```{r}
-class_maxprob <- prob_classes_idx %>% apply(1, max)
-class_maxprob
-```
-
-```{r}
-class_idx <- prob_classes_idx %>% apply(1, which.max)
-class_idx
-```
-
-
-```{r}
-class_names_idx <- class_names[class_idx]
-class_names_idx
-```
-
-```{r}
-pred_bbox <- preds[[2]]
-bbox_idx <- pred_bbox[idx, ,]
-bbox_idx[class_idx == 21,] <- 0
-bbox_idx
-```
-
-```{r}
-example <- imageinfo4ssd[idx, ]
-name <- (example$name %>% str_split(pattern = ", "))[[1]]
-x_left <- (example$xl %>% str_split(pattern = ", "))[[1]]
-x_right <- (example$xr %>% str_split(pattern = ", "))[[1]]
-y_top <- (example$yt %>% str_split(pattern = ", "))[[1]]
-y_bottom <- (example$yb %>% str_split(pattern = ", "))[[1]]
-
-
-img <- image_read(file.path(img_dir, example$file_name))
-img <- image_resize(img, geometry = "224x224!")
-img <- image_draw(img)
-
-for (i in 1:example$cnt) {
-  rect(x_left[i],
-       y_bottom[i],
-       x_right[i],
-       y_top[i],
-       border = "white",
-       lwd = 2)
-  text(
-    x = as.integer(x_right[i]),
-    y = as.integer(y_top[i]),
-    labels = name[i],
-    offset = 1,
-    pos = 3,
-    cex = 1,
-    col = "white"
-  )
-}
-
-for (i in 1:nrow(anchor_corners)) {
-  rect(
-    anchor_corners[i, 1] * 224,
-    anchor_corners[i, 4] * 224,
-    anchor_corners[i, 3] * 224,
-    anchor_corners[i, 2] * 224,
-    border = "cyan",
-    lwd = 1,
-    lty = 3
-  )
-}
-
-for (i in 1:nrow(bbox_idx)) {
-  if (bbox_idx[i, 1] + bbox_idx[i, 3] != 0) {
-    rect(
-      bbox_idx[i, 1] * 224,
-      bbox_idx[i, 4] * 224,
-      bbox_idx[i, 3] * 224,
-      bbox_idx[i, 2] * 224,
-      border = "purple",
-      lwd = 1,
-      lty = 5
-    )
-    text(
-      x = bbox_idx[i, 3] * 224,
-      y = bbox_idx[i, 2] * 224,
-      labels = class_names_idx[i],
-      offset = 1,
-      pos = 3,
-      cex = 1,
-      col = "purple"
-    )
-  }
-  
-}
-
-dev.off()
-print(img)
-```
-
 
 # Focal loss
 
@@ -1072,20 +943,10 @@ class_loss_focal  <- function(y_true, y_pred) {
   weighted_cx <- w * cx
 
   class_loss <-
-    tf$reduce_sum(weighted_cx) / tf$cast(21, "float32")
+   tf$reduce_sum(weighted_cx) / tf$cast(21, "float32")
   
   class_loss
 }
-```
-
-```{r}
-y_pred <- k_constant(c(-10,0,10))
-#y_true <- k_constant(c(0,0,0))
-y_true <- k_constant(c(1,1,1))
-
-class_loss_focal(y_true, y_pred) %>% k_eval()
-
-tf$nn$sigmoid_cross_entropy_with_logits(labels = y_true, logits = y_pred) %>% k_eval()
 ```
 
 
@@ -1172,12 +1033,12 @@ model %>% compile(
 
 ```{r}
 steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
-model %>% fit_generator(
-  train_gen,
-  steps_per_epoch = steps_per_epoch,
-  epochs = 5,
-  callbacks = callback_model_checkpoint("weights_focal.{epoch:02d}-{loss:.2f}.hdf5", save_weights_only = TRUE)
-)
+#model %>% fit_generator(
+#  train_gen,
+#  steps_per_epoch = steps_per_epoch,
+#  epochs = 5,
+#  callbacks = callback_model_checkpoint("weights_focal.{epoch:02d}-{loss:.2f}.hdf5", #save_weights_only = TRUE)
+#)
 ```
 
 

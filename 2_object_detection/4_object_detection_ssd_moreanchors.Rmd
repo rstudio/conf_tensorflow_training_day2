@@ -160,77 +160,120 @@ imageinfo4ssd
 ```
 
 
-# More anchors
+# More anchor boxes
+
+We create anchor boxes as combinations of
+
+- different scales:
 
 ```{r}
 anchor_zooms <- c(0.7, 1, 1.3)
+anchor_zooms
+```
+
+- and different aspect ratios:
+
+```{r}
 anchor_ratios <- matrix(c(1, 1, 1, 0.5, 0.5, 1), ncol = 2, byrow = TRUE)
-anchor_scales <- rbind(anchor_ratios * anchor_zooms[1], anchor_ratios * anchor_zooms[2], anchor_ratios * anchor_zooms[3])
+anchor_ratios
+```
+
+In this example, we have nine different combinations:
+
+```{r}
+anchor_scales <- rbind(
+  anchor_ratios * anchor_zooms[1],
+  anchor_ratios * anchor_zooms[2],
+  anchor_ratios * anchor_zooms[3]
+)
+
+k <- nrow(anchor_scales)
+
 anchor_scales
 ```
 
-```{r}
-k <- nrow(anchor_scales)
-k
-```
+We place detectors at three stages. Resolutions will be 4x4 (as we had before) and additionally, 2x2 and 1x1:
 
 ```{r}
 anchor_grids <- c(4,2,1)
-anchor_offsets <- 1/(anchor_grids * 2)
-anchor_offsets
 ```
 
+Once that's been determined, we can compute
+
+- x coordinates of the box centers:
 
 ```{r}
-anchor_x <- map(1:3, function(x)
-  rep(seq(anchor_offsets[x], 1 - anchor_offsets[x], length.out = anchor_grids[x]), each = anchor_grids[x])) %>%
+anchor_offsets <- 1/(anchor_grids * 2)
+
+anchor_x <- map(
+  1:3,
+  function(x) rep(seq(anchor_offsets[x], 1 - anchor_offsets[x], length.out = anchor_grids[x]), each = anchor_grids[x])) %>%
   flatten() %>%
   unlist()
+
 anchor_x
 ```
 
+- y coordinates of the box centers:
+
 ```{r}
-anchor_y <- map(1:3, function(y)
-  rep(seq(anchor_offsets[y], 1 - anchor_offsets[y], length.out = anchor_grids[y]), times = anchor_grids[y])) %>%
+anchor_y <- map(
+  1:3,
+  function(y) rep(seq(anchor_offsets[y], 1 - anchor_offsets[y], length.out = anchor_grids[y]), times = anchor_grids[y])) %>%
   flatten() %>%
   unlist()
+
 anchor_y
 ```
+
+- the x-y representations of the centers:
 
 ```{r}
 anchor_centers <- cbind(rep(anchor_x, each = k), rep(anchor_y, each = k))
 anchor_centers
-
 ```
 
+
+- the sizes of the boxes:
+
 ```{r}
-anchor_sizes <- map(anchor_grids, function(x)
+anchor_sizes <- map(
+  anchor_grids,
+  function(x)
    matrix(rep(t(anchor_scales/x), x*x), ncol = 2, byrow = TRUE)
   ) %>%
   abind(along = 1)
+
 anchor_sizes
 ```
 
+- the sizes of the base grids (0.25, 0.5, and 1):
+
 ```{r}
 grid_sizes <- c(rep(0.25, k * anchor_grids[1]^2), rep(0.5, k * anchor_grids[2]^2), rep(1, k * anchor_grids[3]^2))
+
 grid_sizes 
 ```
 
+- the centers-width-height representations of the anchor boxes:
+
 ```{r}
 anchors <- cbind(anchor_centers, anchor_sizes)
-anchors #%>% dim()
+anchors 
 ```
+
+- and finally, the _corners_ representation of the boxes!
 
 ```{r}
 hw2corners <- function(centers, height_width) {
   cbind(centers - height_width / 2, centers + height_width / 2) %>% unname()
 }
 
-# cells are indicated by (xl, yt, xr, yb)
-# successive rows first go down in the image, then to the right
 anchor_corners <- hw2corners(anchors[ , 1:2], anchors[ , 3:4])
 anchor_corners
 ```
+
+So here, then, is a plot of the (distinct) box centers: One in the middle, for the 9 large boxes, 4 for the 4 * 9 medium-size boxes, and 16 for the 16 * 9 small boxes.
 
 ```{r}
 ggplot(data.frame(x = anchors[ ,1], y = anchors[ , 2]), aes(x, y)) +
@@ -238,6 +281,8 @@ ggplot(data.frame(x = anchors[ ,1], y = anchors[ , 2]), aes(x, y)) +
   coord_cartesian(xlim = c(0,1), ylim = c(0,1)) +
   theme(aspect.ratio = 1)
 ```
+
+Of course, even if we aren't going to train this version, we at least need to see these in action!
 
 
 ```{r}
@@ -293,18 +338,20 @@ print(img)
 
 ```
 
-
+How would a model look that could deal with these?
 
 # Model
+
+Again, we'd start from a feature detector ...
 
 ```{r}
 feature_extractor <- application_resnet50(
   include_top = FALSE,
   input_shape = c(224, 224, 3)
 )
-feature_extractor
 ```
 
+... and attach some custom conv layers.
 
 ```{r}
 input <- feature_extractor$input
@@ -334,9 +381,12 @@ common <- feature_extractor$output %>%
     name = "head_conv1_3"
   ) %>%
   layer_batch_normalization()
-
-common
 ```
+
+Then, things get different. We want to attach detectors (= output layers) to different stages in a pipeline of successive downsamplings.
+If that doesn't call for the Keras functional API...
+
+Here's the downsizing pipeline.
 
 ```{r}
  downscale_4x4 <- common %>%
@@ -383,6 +433,8 @@ downscale_1x1 <- downscale_2x2 %>%
 downscale_1x1
 ```
 
+The bounding box output efinitions get a little messier than before, as each output has to take into account its relative anchor box coordinates.
+
 ```{r}
 create_bbox_output <- function(prev_layer, anchor_start, anchor_stop, suffix) {
   output <- layer_conv_2d(
@@ -415,6 +467,8 @@ create_bbox_output <- function(prev_layer, anchor_start, anchor_stop, suffix) {
 }
 ```
 
+Here they are: Each one attached to the required stage in the pipeline.
+
 ```{r}
 bbox_output_4x4 <- create_bbox_output(downscale_4x4, 1, 144, "4x4")
 ```
@@ -427,6 +481,7 @@ bbox_output_2x2 <- create_bbox_output(downscale_2x2, 145, 180, "2x2")
 bbox_output_1x1 <- create_bbox_output(downscale_1x1, 181, 189, "1x1")
 ```
 
+The same principle applies to the class outputs.
 
 ```{r}
 create_class_output <- function(prev_layer, suffix) {
@@ -457,8 +512,16 @@ class_output_1x1 <- create_class_output(downscale_1x1, "1x1")
 
 
 ```{r}
-model <- keras_model(inputs = input, outputs = list(bbox_output_1x1, bbox_output_2x2, bbox_output_4x4,
-                                                    class_output_1x1, class_output_2x2, class_output_4x4))
+model <- keras_model(
+  inputs = input,
+  outputs = list(
+    bbox_output_1x1,
+    bbox_output_2x2,
+    bbox_output_4x4,
+    class_output_1x1, 
+    class_output_2x2, 
+    class_output_4x4)
+)
 model
 ```
 
