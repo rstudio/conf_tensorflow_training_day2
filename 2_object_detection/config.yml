@@ -1,0 +1,5 @@
+default:
+  data_dir: "data"
+  
+classroom:
+  data_dir: "/usr/share/class"

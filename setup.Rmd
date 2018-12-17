@@ -6,13 +6,6 @@ output: html_document
 ---
 
 
-# Setup for slot 1
-
-```{bash}
-unzip 1_structured_data/data/survey_results_public.csv.zip -d 1_structured_data/data
-```
-
-
 # Setup for slot 2 
 
 ```{bash}

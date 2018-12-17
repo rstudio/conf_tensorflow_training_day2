@@ -22,6 +22,8 @@ library(ggrepel)
 
 use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
 
+unzip("data/survey_results_public.csv.zip", exdir = "data/")
+
 data <- read_csv("data/survey_results_public.csv", progress = FALSE)
 ```
 

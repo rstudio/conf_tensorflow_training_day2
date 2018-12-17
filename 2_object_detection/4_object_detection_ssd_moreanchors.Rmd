@@ -25,11 +25,12 @@ use_session_with_seed(7777, disable_gpu = FALSE, disable_parallel_cpu = FALSE)
 
 
 ```{r}
-img_dir <- "data/VOCdevkit/VOC2007/JPEGImages"
+data_dir <- config::get("data_dir")
+img_dir <- file.path(data_dir, "VOCdevkit/VOC2007/JPEGImages")
 ```
 
 ```{r}
-annot_file <- "data/pascal_train2007.json"
+annot_file <- file.path(data_dir, "pascal_train2007.json")
 ```
 
 

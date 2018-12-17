@@ -32,11 +32,12 @@ Here again are the basic preprocessing steps.
 ## Dataset
 
 ```{r}
-img_dir <- "data/VOCdevkit/VOC2007/JPEGImages"
+data_dir <- config::get("data_dir")
+img_dir <- file.path(data_dir, "VOCdevkit/VOC2007/JPEGImages")
 ```
 
 ```{r}
-annot_file <- "data/pascal_train2007.json"
+annot_file <- file.path(data_dir, "pascal_train2007.json")
 ```
 
 
@@ -921,7 +922,7 @@ steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
 # Results
 
 ```{r}
-model %>% load_model_weights_hdf5("epoch_5-loss_0.29.hdf5")
+model %>% load_model_weights_hdf5("data/epoch_5-loss_0.29.hdf5")
 ```
 
 ```{r}
