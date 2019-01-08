@@ -922,7 +922,7 @@ steps_per_epoch <- nrow(imageinfo4ssd) / batch_size
 # Results
 
 ```{r}
-model %>% load_model_weights_hdf5("data/epoch_5-loss_0.29.hdf5")
+model %>% load_model_weights_hdf5(file.path(data_dir, "data/epoch_5-loss_0.29.hdf5"))
 ```
 
 ```{r}
