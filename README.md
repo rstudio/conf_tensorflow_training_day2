@@ -10,3 +10,5 @@ Topics are:
 
 
 Setup instructions are given in setup.Rmd.
+
+The material for the Intro workshop can be found at [https://github.com/Scavetta/conf_tensorflow_training_day1](https://github.com/Scavetta/conf_tensorflow_training_day1).
